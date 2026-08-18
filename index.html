@@ -1,0 +1,1407 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo — ERP Contábil Ledware</title>
+<meta name="description" content="Protótipo navegável do ERP Contábil Ledware — dados fictícios, sem backend.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230E6E5C'/><text x='16' y='22' font-size='17' font-weight='800' font-family='Segoe UI,sans-serif' fill='white' text-anchor='middle'>L</text></svg>">
+</head>
+<body>
+
+<!-- ===== BARRA DO PROTÓTIPO ===== -->
+<div class="proto">
+  <span class="pt">Protótipo navegável · ERP Contábil</span>
+  <span class="pd">Ledware Tecnologia · versão web · dados fictícios</span>
+  <div class="sw" role="tablist" aria-label="Persona">
+    <button id="sw-sys" class="on" onclick="persona('sys')">Sistema do escritório</button>
+    <button id="sw-por" onclick="persona('por')">Portal do cliente</button>
+  </div>
+  <button class="rst" onclick="restart()">↺ reiniciar</button>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div id="login" class="stage on">
+  <div class="logcard">
+    <div class="brandrow"><div class="mark" style="width:38px;height:38px;font-size:16px">L</div>
+      <div><h1>ERP Contábil</h1><div class="s">by Ledware Tecnologia</div></div></div>
+    <div class="fld" style="margin-bottom:12px"><label>E-mail</label><div class="inp">rafael@ledware.com.br</div></div>
+    <div class="fld" style="margin-bottom:16px"><label>Senha</label><div class="inp">••••••••••</div></div>
+    <button class="btn pri" style="width:100%; justify-content:center; padding:11px" onclick="enter()">Entrar</button>
+    <div class="hint">Login com <b>verificação em duas etapas (2FA)</b> · recuperação de senha por e-mail<br>perfis: administrador · contador · colaborador · cliente</div>
+  </div>
+</div>
+
+<!-- ===== APP (ESCRITÓRIO) ===== -->
+<div id="app" class="stage">
+<div class="scrim" id="scrim" onclick="closeDrawer()"></div>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><div class="mark">L</div><div><div class="t">ERP Contábil</div><div class="s">by Ledware Tecnologia</div></div>
+      <button class="sideclose" onclick="closeDrawer()" aria-label="fechar menu">✕</button></div>
+    <div class="comp">
+      <button class="compbtn" onclick="toggleComp(event)" aria-haspopup="listbox">
+        <span class="cav" id="comp-av">PS</span>
+        <span><span class="cn" id="comp-name">Padaria São José ME</span><span class="cs">multiempresa · 42 empresas</span></span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="compdd" id="compdd" role="listbox">
+        <button class="sel" onclick="pickComp('Padaria São José ME','PS',this)"><span class="cav">PS</span><span>Padaria São José ME<small>Simples Nacional · CNPJ 12.345.678/0001-90</small></span></button>
+        <button onclick="pickComp('Auto Peças Cruzeiro LTDA','AC',this)"><span class="cav" style="background:#8FB6E0;color:#0E2C4A">AC</span><span>Auto Peças Cruzeiro LTDA<small>Lucro Presumido · CNPJ 98.765.432/0001-10</small></span></button>
+        <button onclick="pickComp('Clínica Vida','CV',this)"><span class="cav" style="background:#B7A7E3;color:#2C1A5E">CV</span><span>Clínica Vida<small>Lucro Presumido · CNPJ 45.678.912/0001-55</small></span></button>
+        <button onclick="pickComp('Transportes Alvorada','TA',this)"><span class="cav" style="background:#E8A2A2;color:#5E1A1A">TA</span><span>Transportes Alvorada<small>Lucro Real · CNPJ 33.222.111/0001-77</small></span></button>
+        <button onclick="pickComp('Ledware Contabilidade','LC',this)"><span class="cav" style="background:#2FBF96;color:#04352A">LC</span><span>Ledware Contabilidade<small>o próprio escritório</small></span></button>
+      </div>
+    </div>
+    <ul class="nav" id="nav">
+      <li><button class="on" data-v="dash" onclick="go('dash',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button></li>
+      <li><button data-v="esc" onclick="go('esc',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Dashboard do Escritório</button></li>
+      <li class="sec">Escritório</li>
+      <li><button data-v="obr" onclick="go('obr',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Agenda de Obrigações<span class="badge r">3</span></button></li>
+      <li><button data-v="tar" onclick="go('tar',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tarefas<span class="badge">12</span></button></li>
+      <li><button data-v="doc" onclick="go('doc',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Documentos &amp; Mensagens</button></li>
+      <li><button data-v="hon" onclick="go('hon',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Contratos &amp; Honorários</button></li>
+      <li class="sec">Cadastros</li>
+      <li><button data-v="cli" onclick="go('cli',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clientes</button></li>
+      <li><button data-v="pla" onclick="go('pla',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Plano de Contas</button></li>
+      <li><button onclick="toast('Cadastros auxiliares (centros de custo, contas bancárias, patrimônio, certificados digitais) — telas do mesmo padrão das demais')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4m11-11h-4M5 12H1m16.5-6.5L19 4M5 20l1.5-1.5M19 20l-1.5-1.5M5 4l1.5 1.5"/></svg>Cadastros Auxiliares</button></li>
+      <li class="sec">Contabilidade</li>
+      <li><button data-v="lan" onclick="go('lan',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7h13M8 7l3-3M8 7l3 3M16 17H3m13 0l-3-3m3 3l-3 3"/></svg>Lançamentos</button></li>
+      <li><button data-v="dre" onclick="go('dre',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/></svg>Demonstrações (DRE/Balanço)</button></li>
+      <li><button data-v="fec" onclick="go('fec',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Fechamento Contábil</button></li>
+      <li class="sec">Fiscal</li>
+      <li><button data-v="nf" onclick="go('nf',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Notas Fiscais</button></li>
+      <li><button data-v="apu" onclick="go('apu',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h2m4 0h2M8 14h2m4 0h2M8 18h2m4 0h2"/></svg>Apuração de Impostos</button></li>
+      <li><button data-v="gui" onclick="go('gui',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16M8 4v16M12 4v10M16 4v16M20 4v12"/></svg>Guias (DARF/DAS/GPS)<span class="badge r">2</span></button></li>
+      <li><button data-v="sped" onclick="go('sped',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>SPED &amp; Declarações</button></li>
+      <li class="sec">Folha &amp; Pessoal</li>
+      <li><button data-v="fun" onclick="go('fun',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Funcionários</button></li>
+      <li><button data-v="fol" onclick="go('fol',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20M7 15h4"/></svg>Folha de Pagamento</button></li>
+      <li><button data-v="eso" onclick="go('eso',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>eSocial &amp; EFD-Reinf</button></li>
+      <li class="sec">Financeiro</li>
+      <li><button data-v="rec" onclick="go('rec',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Contas a Receber</button></li>
+      <li><button data-v="pag" onclick="go('pag',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Contas a Pagar</button></li>
+      <li><button data-v="conc" onclick="go('conc',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Conciliação Bancária</button></li>
+      <li><button data-v="flu" onclick="go('flu',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg>Fluxo de Caixa</button></li>
+      <li><button data-v="bol" onclick="go('bol',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Cobrança · Boletos &amp; PIX</button></li>
+      <li class="sec">Administração</li>
+      <li><button data-v="usu" onclick="go('usu',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>Usuários &amp; Permissões</button></li>
+      <li><button data-v="aud" onclick="go('aud',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Auditoria &amp; LGPD</button></li>
+      <li><button onclick="toast('Configurações (parâmetros da empresa, integrações, backup, API) — tela do mesmo padrão')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 0-14 0 7 7 0 0 0 14 0z"/></svg>Configurações</button></li>
+      <li><button onclick="restart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</button></li>
+    </ul>
+    <div class="foot"><div class="av">RC</div><div><div class="n">Rafael Contador</div><div class="r">Administrador · CRC 1SP123456</div></div></div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section class="view on" id="v-dash">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar cliente, lançamento, nota, guia…</div>
+        <div class="grow"></div>
+        <button class="btn good" onclick="openModal('in')">+ Receita</button>
+        <button class="btn bad" onclick="openModal('out')">+ Despesa</button>
+        <button class="btn pri" onclick="openLanc()">+ Lançamento contábil</button>
+        <div class="bell" onclick="toast('7 notificações: 3 obrigações desta semana, 2 guias a vencer, 2 mensagens de clientes')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></div>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Visão geral</h2><span class="sub">terça-feira, 18 de agosto de 2026 · <b class="comp-echo">Padaria São José ME</b></span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Faturamento · Ago</div><div class="val">R$ 86.410,00</div><div class="sub">37 notas emitidas no mês</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Impostos apurados · Jul</div><div class="val">R$ 7.943,12</div><div class="sub">DAS vence em 20/08</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Resultado · Jul</div><div class="val">R$ 21.884,00</div><div class="sub">margem líquida 25,3%</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Obrigações em atraso</div><div class="val">3</div><div class="sub">de 14 previstas para agosto</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="ct"><h3>Receita × Despesa</h3><span class="hint">últimos 6 meses</span>
+              <div class="end legend"><span><i style="background:var(--pri)"></i>Receitas</span><span><i style="background:#D98B85"></i>Despesas</span></div></div>
+            <svg viewBox="0 0 560 224" width="100%" role="img" aria-label="Gráfico de barras receita por despesa">
+              <line x1="16" y1="190" x2="552" y2="190" stroke="#E2E9EC"/><line x1="16" y1="110" x2="552" y2="110" stroke="#EEF3F5"/><line x1="16" y1="30" x2="552" y2="30" stroke="#EEF3F5"/>
+              <text x="552" y="106" font-size="9" fill="#8AA0A7" text-anchor="end">R$ 50 mil</text>
+              <text x="552" y="26" font-size="9" fill="#8AA0A7" text-anchor="end">R$ 100 mil</text>
+              <rect x="32" y="88" width="26" height="102" rx="4" fill="#0E6E5C"/><rect x="64" y="123" width="26" height="67" rx="4" fill="#D98B85"/>
+              <rect x="122" y="68" width="26" height="122" rx="4" fill="#0E6E5C"/><rect x="154" y="113" width="26" height="77" rx="4" fill="#D98B85"/>
+              <rect x="212" y="78" width="26" height="112" rx="4" fill="#0E6E5C"/><rect x="244" y="120" width="26" height="70" rx="4" fill="#D98B85"/>
+              <rect x="302" y="59" width="26" height="131" rx="4" fill="#0E6E5C"/><rect x="334" y="107" width="26" height="83" rx="4" fill="#D98B85"/>
+              <rect x="392" y="49" width="26" height="141" rx="4" fill="#0E6E5C"/><rect x="424" y="110" width="26" height="80" rx="4" fill="#D98B85"/>
+              <rect x="482" y="40" width="26" height="150" rx="4" fill="#0E6E5C"/><rect x="514" y="104" width="26" height="86" rx="4" fill="#D98B85"/>
+              <text x="61" y="208" font-size="10" fill="#5E7178" text-anchor="middle">Mar</text>
+              <text x="151" y="208" font-size="10" fill="#5E7178" text-anchor="middle">Abr</text>
+              <text x="241" y="208" font-size="10" fill="#5E7178" text-anchor="middle">Mai</text>
+              <text x="331" y="208" font-size="10" fill="#5E7178" text-anchor="middle">Jun</text>
+              <text x="421" y="208" font-size="10" fill="#5E7178" text-anchor="middle">Jul</text>
+              <text x="511" y="208" font-size="10" fill="#1B2B31" font-weight="700" text-anchor="middle">Ago</text>
+            </svg>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Alertas</h3><span class="hint">4 pendências</span></div>
+            <div class="alert bad"><div class="ic">!</div><div><b>3 obrigações em atraso</b><small>EFD Contribuições Jul, DCTF Jun e mais 1</small><br><button class="lk" onclick="nav('obr')">Ver agenda →</button></div></div>
+            <div class="alert warn"><div class="ic">−</div><div><b>DAS de julho vence em 2 dias — R$ 7.943,12</b><small>guia gerada, aguardando pagamento</small><br><button class="lk" onclick="nav('gui')">Ver guias →</button></div></div>
+            <div class="alert info"><div class="ic">⧗</div><div><b>18 XMLs novos importados hoje</b><small>12 NF-e de entrada · 6 NFS-e emitidas</small><br><button class="lk" onclick="nav('nf')">Ver notas →</button></div></div>
+            <div class="alert good"><div class="ic">✓</div><div><b>Folha de julho fechada e contabilizada</b><small>8 colaboradores · eSocial transmitido</small></div></div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="ct"><h3>Próximos vencimentos</h3><span class="hint">7 dias</span><div class="end"><button class="lk" onclick="nav('obr')">Ver agenda completa →</button></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 26px" class="cards2" >
+              <div class="duelist">
+                <div class="duehead">Obrigações fiscais</div>
+                <div class="row"><div><div class="who">DAS — Simples Nacional</div><div class="cat">competência Jul/2026</div></div><span class="d">20/08</span><span class="amt out">R$ 7.943,12</span></div>
+                <div class="row"><div><div class="who">FGTS (via eSocial)</div><div class="cat">folha Jul/2026</div></div><span class="d">20/08</span><span class="amt out">R$ 2.212,50</span></div>
+                <div class="row"><div><div class="who">EFD Contribuições</div><div class="cat">entrega Jul/2026</div></div><span class="d">25/08</span><span class="amt">—</span></div>
+              </div>
+              <div class="duelist">
+                <div class="duehead">Financeiro</div>
+                <div class="row"><div><div class="who">Honorários contábeis</div><div class="cat">a receber do cliente</div></div><span class="d">20/08</span><span class="amt in">R$ 890,00</span></div>
+                <div class="row"><div><div class="who">Energia elétrica</div><div class="cat">despesa fixa</div></div><span class="d">18/08</span><span class="amt out">R$ 486,20</span></div>
+                <div class="row"><div><div class="who">Fornecedor Moinho Sul</div><div class="cat">duplicata 4412/2</div></div><span class="d">22/08</span><span class="amt out">R$ 3.120,00</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Situação do mês contábil</h3><span class="hint">agosto/2026</span></div>
+            <div class="barrow"><span class="nm">Notas importadas</span><div class="bar"><i style="width:92%"></i></div><span class="vl">92%</span></div>
+            <div class="barrow"><span class="nm">Conciliação bancária</span><div class="bar"><i class="g" style="width:78%"></i></div><span class="vl">78%</span></div>
+            <div class="barrow"><span class="nm">Lançamentos revisados</span><div class="bar"><i class="b" style="width:64%"></i></div><span class="vl">64%</span></div>
+            <div class="barrow"><span class="nm">Folha processada</span><div class="bar"><i class="w" style="width:35%"></i></div><span class="vl">35%</span></div>
+            <div style="margin-top:10px"><button class="lk" onclick="nav('fec')">Ir para o fechamento contábil →</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DASHBOARD DO ESCRITÓRIO ===== -->
+    <section class="view" id="v-esc">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Exportação do painel em PDF/Excel (protótipo)')">Exportar</button>
+        <button class="btn pri" onclick="openTarefa()">+ Nova tarefa</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Dashboard do Escritório</h2><span class="sub">visão consolidada das 42 empresas · agosto/2026</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Clientes ativos</div><div class="val">42</div><div class="sub">+3 novos neste trimestre</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Honorários · MRR</div><div class="val">R$ 38.140,00</div><div class="sub">ticket médio R$ 908</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Inadimplência</div><div class="val">R$ 4.310,00</div><div class="sub">5 clientes · 11,3% do MRR</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Tarefas no prazo</div><div class="val">87%</div><div class="sub">146 de 168 em agosto</div></div>
+        </div>
+        <div class="grid2e">
+          <div class="card">
+            <div class="ct"><h3>Carteira por regime tributário</h3></div>
+            <div class="barrow"><span class="nm">Simples Nacional</span><div class="bar"><i style="width:62%"></i></div><span class="vl">26 emp.</span></div>
+            <div class="barrow"><span class="nm">Lucro Presumido</span><div class="bar"><i class="b" style="width:29%"></i></div><span class="vl">12 emp.</span></div>
+            <div class="barrow"><span class="nm">Lucro Real</span><div class="bar"><i class="w" style="width:7%"></i></div><span class="vl">3 emp.</span></div>
+            <div class="barrow"><span class="nm">MEI / PF</span><div class="bar"><i class="g" style="width:2%"></i></div><span class="vl">1 emp.</span></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Produtividade da equipe</h3><span class="hint">tarefas concluídas · agosto</span></div>
+            <div class="barrow"><span class="nm">Ana Souza</span><div class="bar"><i class="g" style="width:88%"></i></div><span class="vl">44/50</span></div>
+            <div class="barrow"><span class="nm">Bruno Lima</span><div class="bar"><i class="g" style="width:80%"></i></div><span class="vl">36/45</span></div>
+            <div class="barrow"><span class="nm">Carla Nunes</span><div class="bar"><i style="width:74%"></i></div><span class="vl">29/39</span></div>
+            <div class="barrow"><span class="nm">Diego Alves</span><div class="bar"><i class="w" style="width:62%"></i></div><span class="vl">21/34</span></div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="ct"><h3>Clientes que exigem atenção</h3><div class="end"><button class="lk" onclick="nav('cli')">Ver todos →</button></div></div>
+            <div class="tbwrap stack">
+              <table class="tb">
+                <thead><tr><th>Cliente</th><th>Pendência</th><th>Responsável</th><th class="num">Risco</th></tr></thead>
+                <tbody>
+                  <tr><td class="main-cell" data-l="Cliente">Transportes Alvorada</td><td class="desc" data-l="Pendência">2 obrigações em atraso · honorários vencidos há 34 dias</td><td data-l="Responsável">Bruno Lima</td><td class="num" data-l="Risco"><span class="pill err"><i></i>Alto</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Mercado Central</td><td class="desc" data-l="Pendência">honorários vencidos há 18 dias</td><td data-l="Responsável">Ana Souza</td><td class="num" data-l="Risco"><span class="pill pend"><i></i>Médio</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Studio Fit Academia</td><td class="desc" data-l="Pendência">documentos da folha não enviados (2ª cobrança)</td><td data-l="Responsável">Carla Nunes</td><td class="num" data-l="Risco"><span class="pill pend"><i></i>Médio</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Pet Shop Amigo Fiel</td><td class="desc" data-l="Pendência">contrato vence em 15 dias — renovação pendente</td><td data-l="Responsável">Rafael C.</td><td class="num" data-l="Risco"><span class="pill inf"><i></i>Baixo</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Atividade recente</h3></div>
+            <div class="tline">
+              <div class="ti g"><b>Folha Jul/2026 transmitida ao eSocial</b><small>Clínica Vida · há 20 min · Carla Nunes</small></div>
+              <div class="ti"><b>14 XMLs importados via monitor automático</b><small>Auto Peças Cruzeiro · há 1 h</small></div>
+              <div class="ti w"><b>Honorários de Ago gerados em lote — 42 faturas</b><small>boletos com PIX registrados · há 3 h · Rafael C.</small></div>
+              <div class="ti r"><b>EFD Contribuições Jul não entregue no prazo</b><small>Transportes Alvorada · ontem 23:59</small></div>
+              <div class="ti g"><b>Cliente aprovou o balancete Jul/2026 no portal</b><small>Padaria São José ME · ontem 17:40</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== AGENDA DE OBRIGAÇÕES ===== -->
+    <section class="view" id="v-obr">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar obrigação…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Agenda gerada automaticamente a partir do regime tributário de cada cliente')">Gerar agenda do mês</button>
+        <button class="btn pri" onclick="toast('Nova obrigação manual (protótipo)')">+ Obrigação</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Agenda de Obrigações</h2><span class="sub">agosto/2026 · todas as empresas</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Previstas no mês</div><div class="val">14</div><div class="sub">42 empresas monitoradas</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Concluídas</div><div class="val">8</div><div class="sub">57% da agenda</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Próximas 7 dias</div><div class="val">3</div><div class="sub">DAS, FGTS, EFD Contribuições</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Em atraso</div><div class="val">3</div><div class="sub">exigem regularização</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="ct"><h3>Calendário</h3><span class="hint">agosto/2026</span>
+              <div class="end legend"><span><i style="background:var(--bad)"></i>atrasada</span><span><i style="background:var(--warn)"></i>a vencer</span><span><i style="background:var(--info)"></i>declaração</span><span><i style="background:var(--good)"></i>concluída</span></div></div>
+            <div class="cal">
+              <div class="dh">Dom</div><div class="dh">Seg</div><div class="dh">Ter</div><div class="dh">Qua</div><div class="dh">Qui</div><div class="dh">Sex</div><div class="dh">Sáb</div>
+              <div class="dc out"><span class="dn">26</span></div><div class="dc out"><span class="dn">27</span></div><div class="dc out"><span class="dn">28</span></div><div class="dc out"><span class="dn">29</span></div><div class="dc out"><span class="dn">30</span></div><div class="dc out"><span class="dn">31</span></div><div class="dc"><span class="dn">1</span></div>
+              <div class="dc"><span class="dn">2</span></div><div class="dc"><span class="dn">3</span></div><div class="dc"><span class="dn">4</span></div><div class="dc"><span class="dn">5</span><span class="ev d">✓ GPS</span></div><div class="dc"><span class="dn">6</span></div><div class="dc"><span class="dn">7</span><span class="ev d">✓ FGTS men.</span></div><div class="dc"><span class="dn">8</span></div>
+              <div class="dc"><span class="dn">9</span></div><div class="dc"><span class="dn">10</span><span class="ev d">✓ ISS</span></div><div class="dc"><span class="dn">11</span></div><div class="dc"><span class="dn">12</span></div><div class="dc"><span class="dn">13</span></div><div class="dc"><span class="dn">14</span><span class="ev a">DCTF Jun</span></div><div class="dc"><span class="dn">15</span><span class="ev a">EFD ICMS</span></div>
+              <div class="dc"><span class="dn">16</span></div><div class="dc"><span class="dn">17</span></div><div class="dc today"><span class="dn">18</span></div><div class="dc"><span class="dn">19</span></div><div class="dc"><span class="dn">20</span><span class="ev b">DAS</span><span class="ev b">FGTS</span></div><div class="dc"><span class="dn">21</span></div><div class="dc"><span class="dn">22</span></div>
+              <div class="dc"><span class="dn">23</span></div><div class="dc"><span class="dn">24</span></div><div class="dc"><span class="dn">25</span><span class="ev c">EFD Contrib.</span></div><div class="dc"><span class="dn">26</span></div><div class="dc"><span class="dn">27</span></div><div class="dc"><span class="dn">28</span><span class="ev c">DCTFWeb</span></div><div class="dc"><span class="dn">29</span></div>
+              <div class="dc"><span class="dn">30</span></div><div class="dc"><span class="dn">31</span><span class="ev c">Balancete</span></div><div class="dc out"><span class="dn">1</span></div><div class="dc out"><span class="dn">2</span></div><div class="dc out"><span class="dn">3</span></div><div class="dc out"><span class="dn">4</span></div><div class="dc out"><span class="dn">5</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Pendências</h3><span class="hint">ordenadas por urgência</span></div>
+            <div class="alert bad"><div class="ic">!</div><div><b>DCTF Junho — Transportes Alvorada</b><small>atrasada desde 14/08 · multa estimada R$ 165,74</small><br><button class="lk" onclick="toast('Tarefa de regularização criada e atribuída a Bruno Lima')">Criar tarefa de regularização →</button></div></div>
+            <div class="alert bad"><div class="ic">!</div><div><b>EFD ICMS/IPI Julho — Auto Peças Cruzeiro</b><small>atrasada desde 15/08</small></div></div>
+            <div class="alert warn"><div class="ic">−</div><div><b>DAS Julho — 26 empresas do Simples</b><small>vence em 20/08 · 24 guias geradas, 2 pendentes</small><br><button class="lk" onclick="nav('gui')">Ver guias →</button></div></div>
+            <div class="alert info"><div class="ic">⧗</div><div><b>EFD Contribuições Julho — 15 empresas</b><small>entrega até 25/08 · 9 já transmitidas</small></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Obrigações do mês</h3>
+            <div class="end">
+              <div class="tabs" id="obrtabs">
+                <button data-f="all" onclick="filtra('obrtabs','obrtb','all',this)">Todas · 14</button>
+                <button data-f="pend" class="on" onclick="filtra('obrtabs','obrtb','pend',this)">Pendentes · 3</button>
+                <button data-f="ok" onclick="filtra('obrtabs','obrtb','ok',this)">Concluídas · 8</button>
+                <button data-f="venc" class="vencd" onclick="filtra('obrtabs','obrtb','venc',this)">Atrasadas · 3</button>
+              </div>
+            </div>
+          </div>
+          <div class="tbwrap stack" id="obrtb">
+            <table class="tb">
+              <thead><tr><th>Obrigação</th><th>Competência</th><th>Abrangência</th><th>Prazo</th><th>Responsável</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr data-st="venc"><td class="main-cell" data-l="Obrigação">DCTF Mensal</td><td data-l="Competência">Jun/2026</td><td class="desc" data-l="Abrangência">Transportes Alvorada</td><td data-l="Prazo">14/08</td><td data-l="Responsável">Bruno Lima</td><td data-l="Status"><span class="pill err"><i></i>Atrasada</span></td></tr>
+                <tr data-st="venc"><td class="main-cell" data-l="Obrigação">EFD ICMS/IPI</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">Auto Peças Cruzeiro</td><td data-l="Prazo">15/08</td><td data-l="Responsável">Ana Souza</td><td data-l="Status"><span class="pill err"><i></i>Atrasada</span></td></tr>
+                <tr data-st="venc"><td class="main-cell" data-l="Obrigação">EFD Contribuições</td><td data-l="Competência">Jun/2026</td><td class="desc" data-l="Abrangência">Transportes Alvorada</td><td data-l="Prazo">11/08</td><td data-l="Responsável">Bruno Lima</td><td data-l="Status"><span class="pill err"><i></i>Atrasada</span></td></tr>
+                <tr data-st="pend"><td class="main-cell" data-l="Obrigação">DAS — Simples Nacional</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">26 empresas do Simples</td><td data-l="Prazo">20/08</td><td data-l="Responsável">Ana Souza</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="pend"><td class="main-cell" data-l="Obrigação">FGTS Digital</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">18 empresas com folha</td><td data-l="Prazo">20/08</td><td data-l="Responsável">Carla Nunes</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="pend"><td class="main-cell" data-l="Obrigação">EFD Contribuições</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">15 empresas</td><td data-l="Prazo">25/08</td><td data-l="Responsável">Bruno Lima</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="ok"><td class="main-cell" data-l="Obrigação">GPS — INSS</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">18 empresas com folha</td><td data-l="Prazo">05/08</td><td data-l="Responsável">Carla Nunes</td><td data-l="Status"><span class="pill ok"><i></i>Concluída</span></td></tr>
+                <tr data-st="ok"><td class="main-cell" data-l="Obrigação">ISS Municipal</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">14 prestadores de serviço</td><td data-l="Prazo">10/08</td><td data-l="Responsável">Ana Souza</td><td data-l="Status"><span class="pill ok"><i></i>Concluída</span></td></tr>
+                <tr data-st="ok"><td class="main-cell" data-l="Obrigação">Folha de pagamento</td><td data-l="Competência">Jul/2026</td><td class="desc" data-l="Abrangência">18 empresas · 214 colaboradores</td><td data-l="Prazo">07/08</td><td data-l="Responsável">Carla Nunes</td><td data-l="Status"><span class="pill ok"><i></i>Concluída</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TAREFAS ===== -->
+    <section class="view" id="v-tar">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar tarefa…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Templates: fechamento mensal, admissão de funcionário, abertura de empresa, troca de regime…')">Aplicar template</button>
+        <button class="btn pri" onclick="openTarefa()">+ Nova tarefa</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Tarefas</h2><span class="sub">quadro da equipe · agosto/2026</span></div>
+        <div class="fchips">
+          <div class="fchip" onclick="toast('Filtro por responsável (protótipo)')"><span>Responsável:</span> Todos ▾</div>
+          <div class="fchip" onclick="toast('Filtro por cliente (protótipo)')"><span>Cliente:</span> Todos ▾</div>
+          <div class="fchip" onclick="toast('Filtro por prioridade (protótipo)')"><span>Prioridade:</span> Todas ▾</div>
+        </div>
+        <div class="kanban">
+          <div class="kcol">
+            <h4>A fazer <span>5</span></h4>
+            <div class="kcard" onclick="toast('Detalhe da tarefa com checklist, comentários e apontamento de horas (protótipo)')"><b>Regularizar DCTF Jun — multa</b><span class="pill err"><i></i>Urgente</span><div class="meta"><span class="avx">BL</span>Transportes Alvorada · vence 19/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Conferir guias DAS pendentes (2)</b><span class="pill pend"><i></i>Alta</span><div class="meta"><span class="avx">AS</span>Simples Nacional · vence 19/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Solicitar docs da folha ao Studio Fit</b><div class="meta"><span class="avx">CN</span>Studio Fit · vence 21/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Renovação contrato Pet Shop Amigo Fiel</b><div class="meta"><span class="avx">RC</span>vence 29/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Parametrizar NFS-e novo cliente</b><div class="meta"><span class="avx">DA</span>Barbearia Estilo · vence 26/08</div></div>
+          </div>
+          <div class="kcol">
+            <h4>Em andamento <span>4</span></h4>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Fechamento contábil Jul — Padaria São José</b><span class="pill inf"><i></i>Fechamento</span><div class="meta"><span class="avx">AS</span>checklist 6/9 · vence 31/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>EFD Contribuições Jul — lote 2 (6 emp.)</b><div class="meta"><span class="avx">BL</span>vence 25/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Conciliação bancária Ago — Clínica Vida</b><div class="meta"><span class="avx">DA</span>78% conciliado</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Admissão 2 funcionários — Mercado Central</b><span class="pill pur"><i></i>Folha</span><div class="meta"><span class="avx">CN</span>eSocial S-2200 · vence 20/08</div></div>
+          </div>
+          <div class="kcol">
+            <h4>Em revisão <span>3</span></h4>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Balancete Jul — Auto Peças Cruzeiro</b><div class="meta"><span class="avx">RC</span>aguardando revisão do contador</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Apuração PIS/COFINS Jul — Alvorada</b><div class="meta"><span class="avx">RC</span>divergência de R$ 112,40</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Rescisão — colaborador J. Pereira</b><span class="pill pur"><i></i>Folha</span><div class="meta"><span class="avx">CN</span>homologação 22/08</div></div>
+          </div>
+          <div class="kcol">
+            <h4>Concluídas <span>146</span></h4>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Folha Jul — 18 empresas</b><div class="meta"><span class="avx">CN</span>concluída 07/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>ISS Jul — 14 prestadores</b><div class="meta"><span class="avx">AS</span>concluída 10/08</div></div>
+            <div class="kcard" onclick="toast('Detalhe da tarefa (protótipo)')"><b>Honorários Ago gerados em lote</b><div class="meta"><span class="avx">RC</span>concluída 15/08</div></div>
+            <button class="lk" style="padding:4px 2px" onclick="toast('Histórico completo de tarefas (protótipo)')">Ver todas →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DOCUMENTOS & MENSAGENS ===== -->
+    <section class="view" id="v-doc">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar documento…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Solicitação de documento enviada ao cliente com lembrete automático')">Solicitar documento</button>
+        <button class="btn pri" onclick="toast('Upload e compartilhamento com o cliente no portal (protótipo)')">↑ Enviar documento</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Documentos &amp; Mensagens</h2><span class="sub">troca de arquivos e comunicação com clientes</span></div>
+        <div class="tabs">
+          <button class="on" onclick="aba('doc','docs',this)">Documentos · 8</button>
+          <button onclick="aba('doc','msgs',this)">Mensagens · 5</button>
+          <button onclick="aba('doc','sol',this)">Solicitações · 3</button>
+        </div>
+        <div class="card" data-group="doc" data-pane="docs">
+          <div class="ct"><h3>Documentos compartilhados</h3><span class="hint">últimos 30 dias</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Documento</th><th>Cliente</th><th>Enviado por</th><th>Data</th><th>Status</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Documento">📄 Balancete Jul/2026.pdf</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Enviado por">Escritório</td><td data-l="Data">15/08</td><td data-l="Status"><span class="pill ok"><i></i>Visualizado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Download (protótipo)')">Baixar</button></td></tr>
+                <tr><td class="main-cell" data-l="Documento">📄 DAS Jul/2026 — guia.pdf</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Enviado por">Escritório</td><td data-l="Data">15/08</td><td data-l="Status"><span class="pill pend"><i></i>Não visto</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Lembrete enviado por e-mail e WhatsApp')">Lembrar</button></td></tr>
+                <tr><td class="main-cell" data-l="Documento">📎 Extrato Jul — Sicoob.ofx</td><td data-l="Cliente">Clínica Vida</td><td data-l="Enviado por">Cliente</td><td data-l="Data">14/08</td><td data-l="Status"><span class="pill inf"><i></i>Novo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="nav('conc')">Conciliar</button></td></tr>
+                <tr><td class="main-cell" data-l="Documento">📎 Notas de serviço tomado (12).zip</td><td data-l="Cliente">Auto Peças Cruzeiro</td><td data-l="Enviado por">Cliente</td><td data-l="Data">13/08</td><td data-l="Status"><span class="pill inf"><i></i>Novo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="nav('nf')">Importar</button></td></tr>
+                <tr><td class="main-cell" data-l="Documento">📄 Contrato social — alteração.pdf</td><td data-l="Cliente">Barbearia Estilo</td><td data-l="Enviado por">Cliente</td><td data-l="Data">11/08</td><td data-l="Status"><span class="pill ok"><i></i>Arquivado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Download (protótipo)')">Baixar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" data-group="doc" data-pane="msgs" style="display:none">
+          <div class="ct"><h3>Mensagens</h3><span class="hint">canal seguro com o cliente — registrado para auditoria</span></div>
+          <div class="duelist">
+            <div class="row"><span class="avx">PS</span><div><div class="who">Padaria São José ME</div><div class="cat">“Recebi o balancete, podem fechar o mês. Obrigado!”</div></div><span class="d">17/08</span><span class="pill ok"><i></i>Respondida</span></div>
+            <div class="row"><span class="avx" style="background:#F3D2D0;color:#8E2B25">TA</span><div><div class="who">Transportes Alvorada</div><div class="cat">“Sobre os honorários em aberto, podemos parcelar?”</div></div><span class="d">17/08</span><span class="pill pend"><i></i>Aguardando</span></div>
+            <div class="row"><span class="avx" style="background:#D3E4F0;color:#1E4B6E">CV</span><div><div class="who">Clínica Vida</div><div class="cat">“Enviei o extrato de julho pelo portal.”</div></div><span class="d">14/08</span><span class="pill ok"><i></i>Respondida</span></div>
+            <div class="row"><span class="avx" style="background:#F1E0BE;color:#6E4A10">SF</span><div><div class="who">Studio Fit Academia</div><div class="cat">“Semana que vem mando os documentos da folha.”</div></div><span class="d">12/08</span><span class="pill pend"><i></i>Aguardando</span></div>
+          </div>
+        </div>
+        <div class="card" data-group="doc" data-pane="sol" style="display:none">
+          <div class="ct"><h3>Solicitações pendentes</h3><span class="hint">com lembrete automático por e-mail/WhatsApp</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Solicitação</th><th>Cliente</th><th>Solicitado em</th><th>Lembretes</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Solicitação">Documentos da folha Ago (ponto, atestados)</td><td data-l="Cliente">Studio Fit Academia</td><td data-l="Solicitado em">05/08</td><td data-l="Lembretes">2 enviados</td><td data-l="Status"><span class="pill pend"><i></i>Aguardando</span></td></tr>
+                <tr><td class="main-cell" data-l="Solicitação">Extratos bancários Jul (2 contas)</td><td data-l="Cliente">Mercado Central</td><td data-l="Solicitado em">08/08</td><td data-l="Lembretes">1 enviado</td><td data-l="Status"><span class="pill pend"><i></i>Aguardando</span></td></tr>
+                <tr><td class="main-cell" data-l="Solicitação">Comprovante endereço novo sócio</td><td data-l="Cliente">Barbearia Estilo</td><td data-l="Solicitado em">11/08</td><td data-l="Lembretes">—</td><td data-l="Status"><span class="pill ok"><i></i>Recebido</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTRATOS & HONORÁRIOS ===== -->
+    <section class="view" id="v-hon">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar contrato…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('42 faturas de honorários geradas com boleto + PIX e enviadas ao portal de cada cliente')">Faturar honorários do mês</button>
+        <button class="btn pri" onclick="toast('Novo contrato com serviços, valores e reajuste anual (protótipo)')">+ Novo contrato</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Contratos &amp; Honorários</h2><span class="sub">receita recorrente do escritório</span></div>
+        <div class="cards4">
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>MRR</div><div class="val">R$ 38.140,00</div><div class="sub">42 contratos ativos</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Recebido · Ago</div><div class="val">R$ 29.860,00</div><div class="sub">78% do previsto</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Vencidos</div><div class="val">R$ 4.310,00</div><div class="sub">5 clientes inadimplentes</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Contratos a renovar</div><div class="val">3</div><div class="sub">nos próximos 60 dias</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Honorários · agosto/2026</h3>
+            <div class="end">
+              <div class="tabs" id="hontabs">
+                <button data-f="all" class="on" onclick="filtra('hontabs','hontb','all',this)">Todos · 42</button>
+                <button data-f="ok" onclick="filtra('hontabs','hontb','ok',this)">Pagos · 33</button>
+                <button data-f="pend" onclick="filtra('hontabs','hontb','pend',this)">Pendentes · 4</button>
+                <button data-f="venc" class="vencd" onclick="filtra('hontabs','hontb','venc',this)">Vencidos · 5</button>
+              </div>
+            </div>
+          </div>
+          <div class="tbwrap stack" id="hontb" data-bulk="honbulk">
+            <table class="tb">
+              <thead><tr><th style="width:34px"></th><th>Cliente</th><th>Serviços contratados</th><th>Vencimento</th><th class="num">Valor</th><th>Cobrança</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr data-st="venc" data-val="1180"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Transportes Alvorada</td><td class="desc" data-l="Serviços">contábil + fiscal + folha (12 func.)</td><td data-l="Vencimento">15/07</td><td class="num" data-l="Valor">R$ 1.180,00</td><td data-l="Cobrança"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill err"><i></i>34 dias</span></td></tr>
+                <tr data-st="venc" data-val="890"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Mercado Central</td><td class="desc" data-l="Serviços">contábil + fiscal</td><td data-l="Vencimento">31/07</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Cobrança"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill err"><i></i>18 dias</span></td></tr>
+                <tr data-st="pend" data-val="890"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Padaria São José ME</td><td class="desc" data-l="Serviços">contábil + fiscal + folha (8 func.)</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Cobrança"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="pend" data-val="1150"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Auto Peças Cruzeiro</td><td class="desc" data-l="Serviços">contábil + fiscal + folha (22 func.)</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 1.150,00</td><td data-l="Cobrança"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="ok" data-val="640"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Clínica Vida</td><td class="desc" data-l="Serviços">contábil + folha (15 func.)</td><td data-l="Vencimento">10/08</td><td class="num" data-l="Valor">R$ 640,00</td><td data-l="Cobrança"><span class="tag">PIX</span></td><td data-l="Status"><span class="pill ok"><i></i>Pago 10/08</span></td></tr>
+                <tr data-st="ok" data-val="420"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Barbearia Estilo</td><td class="desc" data-l="Serviços">contábil MEI→ME + fiscal</td><td data-l="Vencimento">10/08</td><td class="num" data-l="Valor">R$ 420,00</td><td data-l="Cobrança"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill ok"><i></i>Pago 09/08</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bulk" id="honbulk"><span class="bulktxt b"></span><button onclick="toast('Cobrança reenviada com boleto atualizado + link PIX')">Reenviar cobrança</button><button onclick="toast('Baixa manual registrada (protótipo)')">Registrar recebimento</button><button onclick="toast('Negociação/parcelamento (protótipo)')">Negociar</button></div>
+          <div class="pgn"><span>1–6 de 42</span><button class="pg on">1</button><button class="pg" onclick="toast('Paginação (protótipo)')">2</button><button class="pg" onclick="toast('Paginação (protótipo)')">3</button><button class="pg" onclick="toast('Paginação (protótipo)')">›</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CLIENTES ===== -->
+    <section class="view" id="v-cli">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar por nome, CNPJ…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Importação de clientes por planilha ou pelo CNPJ (consulta cadastral)')">Importar</button>
+        <button class="btn pri" onclick="toast('Cadastro completo: dados, regime, sócios, certificado, serviços contratados (protótipo)')">+ Novo cliente</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Clientes</h2><span class="sub">42 empresas ativas · 3 em onboarding</span></div>
+        <div class="fchips">
+          <div class="fchip" onclick="toast('Filtro por regime (protótipo)')"><span>Regime:</span> Todos ▾</div>
+          <div class="fchip" onclick="toast('Filtro por responsável (protótipo)')"><span>Responsável:</span> Todos ▾</div>
+          <div class="fchip" onclick="toast('Filtro por situação (protótipo)')"><span>Situação:</span> Ativos ▾</div>
+        </div>
+        <div class="card">
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Empresa</th><th>CNPJ</th><th>Regime</th><th>Responsável</th><th class="num">Honorário</th><th>Situação</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Empresa">Padaria São José ME</td><td data-l="CNPJ">12.345.678/0001-90</td><td data-l="Regime"><span class="tag">Simples Nacional</span></td><td data-l="Responsável">Ana Souza</td><td class="num" data-l="Honorário">R$ 890,00</td><td data-l="Situação"><span class="pill ok"><i></i>Em dia</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente: dados, sócios, contratos, histórico (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Auto Peças Cruzeiro LTDA</td><td data-l="CNPJ">98.765.432/0001-10</td><td data-l="Regime"><span class="tag">Lucro Presumido</span></td><td data-l="Responsável">Ana Souza</td><td class="num" data-l="Honorário">R$ 1.150,00</td><td data-l="Situação"><span class="pill ok"><i></i>Em dia</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Clínica Vida</td><td data-l="CNPJ">45.678.912/0001-55</td><td data-l="Regime"><span class="tag">Lucro Presumido</span></td><td data-l="Responsável">Carla Nunes</td><td class="num" data-l="Honorário">R$ 640,00</td><td data-l="Situação"><span class="pill ok"><i></i>Em dia</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Transportes Alvorada</td><td data-l="CNPJ">33.222.111/0001-77</td><td data-l="Regime"><span class="tag">Lucro Real</span></td><td data-l="Responsável">Bruno Lima</td><td class="num" data-l="Honorário">R$ 1.180,00</td><td data-l="Situação"><span class="pill err"><i></i>Inadimplente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Mercado Central</td><td data-l="CNPJ">22.333.444/0001-21</td><td data-l="Regime"><span class="tag">Simples Nacional</span></td><td data-l="Responsável">Ana Souza</td><td class="num" data-l="Honorário">R$ 890,00</td><td data-l="Situação"><span class="pill err"><i></i>Inadimplente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Studio Fit Academia</td><td data-l="CNPJ">55.666.777/0001-33</td><td data-l="Regime"><span class="tag">Simples Nacional</span></td><td data-l="Responsável">Carla Nunes</td><td class="num" data-l="Honorário">R$ 520,00</td><td data-l="Situação"><span class="pill pend"><i></i>Docs pendentes</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Barbearia Estilo</td><td data-l="CNPJ">77.888.999/0001-44</td><td data-l="Regime"><span class="tag">Simples Nacional</span></td><td data-l="Responsável">Diego Alves</td><td class="num" data-l="Honorário">R$ 420,00</td><td data-l="Situação"><span class="pill inf"><i></i>Onboarding</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Pet Shop Amigo Fiel</td><td data-l="CNPJ">11.222.333/0001-88</td><td data-l="Regime"><span class="tag">Simples Nacional</span></td><td data-l="Responsável">Rafael C.</td><td class="num" data-l="Honorário">R$ 480,00</td><td data-l="Situação"><span class="pill pend"><i></i>Renovar contrato</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do cliente (protótipo)')">Abrir</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pgn"><span>1–8 de 42</span><button class="pg on">1</button><button class="pg" onclick="toast('Paginação (protótipo)')">2</button><button class="pg" onclick="toast('Paginação (protótipo)')">3</button><button class="pg" onclick="toast('Paginação (protótipo)')">›</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PLANO DE CONTAS ===== -->
+    <section class="view" id="v-pla">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar conta…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Modelos de plano de contas por regime (Simples, Presumido, Real) prontos para aplicar')">Aplicar modelo</button>
+        <button class="btn pri" onclick="toast('Nova conta analítica/sintética (protótipo)')">+ Nova conta</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Plano de Contas</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · saldos de julho/2026</span></div>
+        <div class="card" style="padding:6px 8px">
+          <div class="tree">
+            <div class="tr l1"><span class="cod">1</span><span class="nm">ATIVO</span><span class="sal">R$ 214.320,45</span></div>
+            <div class="tr l2"><span class="cod">1.1</span><span class="nm">Ativo Circulante</span><span class="sal">R$ 96.410,45</span></div>
+            <div class="tr l3"><span class="cod">1.1.01</span><span class="nm">Caixa e Equivalentes</span><span class="sal">R$ 48.230,45</span></div>
+            <div class="tr l4"><span class="cod">1.1.01.001</span><span class="nm muted">Caixa Geral</span><span class="sal">R$ 1.890,00</span></div>
+            <div class="tr l4"><span class="cod">1.1.01.002</span><span class="nm muted">Banco do Brasil c/c 4.812-6</span><span class="sal">R$ 28.410,15</span></div>
+            <div class="tr l4"><span class="cod">1.1.01.003</span><span class="nm muted">Sicoob c/c 11.207-3</span><span class="sal">R$ 17.930,30</span></div>
+            <div class="tr l3"><span class="cod">1.1.02</span><span class="nm">Clientes a Receber</span><span class="sal">R$ 32.180,00</span></div>
+            <div class="tr l3"><span class="cod">1.1.03</span><span class="nm">Estoques</span><span class="sal">R$ 16.000,00</span></div>
+            <div class="tr l2"><span class="cod">1.2</span><span class="nm">Ativo Não Circulante</span><span class="sal">R$ 117.910,00</span></div>
+            <div class="tr l3"><span class="cod">1.2.01</span><span class="nm">Imobilizado</span><span class="sal">R$ 132.400,00</span></div>
+            <div class="tr l3"><span class="cod">1.2.02</span><span class="nm">(−) Depreciação Acumulada</span><span class="sal" style="color:var(--bad)">−R$ 14.490,00</span></div>
+            <div class="tr l1"><span class="cod">2</span><span class="nm">PASSIVO</span><span class="sal">R$ 214.320,45</span></div>
+            <div class="tr l2"><span class="cod">2.1</span><span class="nm">Passivo Circulante</span><span class="sal">R$ 41.560,45</span></div>
+            <div class="tr l3"><span class="cod">2.1.01</span><span class="nm">Fornecedores</span><span class="sal">R$ 18.340,00</span></div>
+            <div class="tr l3"><span class="cod">2.1.02</span><span class="nm">Obrigações Tributárias</span><span class="sal">R$ 9.870,45</span></div>
+            <div class="tr l3"><span class="cod">2.1.03</span><span class="nm">Obrigações Trabalhistas</span><span class="sal">R$ 13.350,00</span></div>
+            <div class="tr l2"><span class="cod">2.3</span><span class="nm">Patrimônio Líquido</span><span class="sal">R$ 172.760,00</span></div>
+            <div class="tr l1"><span class="cod">3</span><span class="nm">RECEITAS</span><span class="sal">R$ 86.410,00</span></div>
+            <div class="tr l1"><span class="cod">4</span><span class="nm">CUSTOS E DESPESAS</span><span class="sal">R$ 64.526,00</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LANÇAMENTOS CONTÁBEIS ===== -->
+    <section class="view" id="v-lan">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar lançamento…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Contabilização automática: notas, folha e extratos viram lançamentos pelas regras de parametrização')">⚙ Contabilizar pendentes (23)</button>
+        <button class="btn pri" onclick="openLanc()">+ Lançamento manual</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Lançamentos Contábeis</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · agosto/2026 · partida dobrada</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Lançamentos no mês</div><div class="val">312</div><div class="sub">289 automáticos · 23 manuais</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Débitos = Créditos</div><div class="val">R$ 148.216,90</div><div class="sub">balanceamento OK</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Aguardando revisão</div><div class="val">23</div><div class="sub">sugeridos pela contabilização</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Última contabilização</div><div class="val">hoje 07:40</div><div class="sub">rotina automática diária</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Diário</h3>
+            <div class="end">
+              <div class="fchip" onclick="toast('Filtro de período (protótipo)')"><span>Período:</span> Ago/2026 ▾</div>
+              <div class="fchip" onclick="toast('Filtro de origem (protótipo)')"><span>Origem:</span> Todas ▾</div>
+            </div>
+          </div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Nº</th><th>Data</th><th>Histórico</th><th>Débito</th><th>Crédito</th><th class="num">Valor</th><th>Origem</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Nº">2841</td><td data-l="Data">17/08</td><td class="main-cell" data-l="Histórico">Venda de mercadorias NF-e 4471</td><td class="desc" data-l="Débito">1.1.02 Clientes</td><td class="desc" data-l="Crédito">3.1.01 Receita de Vendas</td><td class="num" data-l="Valor">R$ 2.412,00</td><td data-l="Origem"><span class="tag pri">NF-e</span></td></tr>
+                <tr><td data-l="Nº">2840</td><td data-l="Data">17/08</td><td class="main-cell" data-l="Histórico">Recebimento boleto — Mercado Bom Preço</td><td class="desc" data-l="Débito">1.1.01.002 Banco BB</td><td class="desc" data-l="Crédito">1.1.02 Clientes</td><td class="num" data-l="Valor">R$ 1.890,00</td><td data-l="Origem"><span class="tag pri">Extrato</span></td></tr>
+                <tr><td data-l="Nº">2839</td><td data-l="Data">16/08</td><td class="main-cell" data-l="Histórico">Compra de insumos NF-e 18.220 — Moinho Sul</td><td class="desc" data-l="Débito">1.1.03 Estoques</td><td class="desc" data-l="Crédito">2.1.01 Fornecedores</td><td class="num" data-l="Valor">R$ 3.120,00</td><td data-l="Origem"><span class="tag pri">NF-e</span></td></tr>
+                <tr><td data-l="Nº">2838</td><td data-l="Data">15/08</td><td class="main-cell" data-l="Histórico">Tarifa manutenção conta — Banco do Brasil</td><td class="desc" data-l="Débito">4.2.05 Despesas Bancárias</td><td class="desc" data-l="Crédito">1.1.01.002 Banco BB</td><td class="num" data-l="Valor">R$ 24,90</td><td data-l="Origem"><span class="tag pri">Extrato</span></td></tr>
+                <tr><td data-l="Nº">2837</td><td data-l="Data">15/08</td><td class="main-cell" data-l="Histórico">Provisão folha de pagamento Ago/2026</td><td class="desc" data-l="Débito">4.1.01 Salários e Ordenados</td><td class="desc" data-l="Crédito">2.1.03 Salários a Pagar</td><td class="num" data-l="Valor">R$ 11.240,00</td><td data-l="Origem"><span class="tag">Folha</span></td></tr>
+                <tr><td data-l="Nº">2836</td><td data-l="Data">14/08</td><td class="main-cell" data-l="Histórico">Depreciação mensal — forno industrial</td><td class="desc" data-l="Débito">4.2.08 Depreciação</td><td class="desc" data-l="Crédito">1.2.02 Depreciação Acumulada</td><td class="num" data-l="Valor">R$ 483,00</td><td data-l="Origem"><span class="tag">Patrimônio</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pgn"><span>1–6 de 312</span><button class="pg on">1</button><button class="pg" onclick="toast('Paginação (protótipo)')">2</button><button class="pg" onclick="toast('Paginação (protótipo)')">3</button><button class="pg" onclick="toast('Paginação (protótipo)')">›</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DEMONSTRAÇÕES (DRE/BALANÇO) ===== -->
+    <section class="view" id="v-dre">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Exportação em PDF assinado digitalmente e Excel (protótipo)')">Exportar PDF</button>
+        <button class="btn pri" onclick="toast('Balancete, Razão, Diário, Balanço Patrimonial e DRE gerados do mesmo motor (protótipo)')">Gerar demonstração</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Demonstrações Contábeis</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · julho/2026</span></div>
+        <div class="tabs">
+          <button class="on" onclick="aba('dre','dre',this)">DRE</button>
+          <button onclick="aba('dre','bal',this)">Balancete</button>
+          <button onclick="toast('Balanço Patrimonial — mesmo padrão do DRE (protótipo)')">Balanço</button>
+          <button onclick="toast('Razão analítico por conta (protótipo)')">Razão</button>
+        </div>
+        <div class="card" data-group="dre" data-pane="dre">
+          <div class="ct"><h3>DRE — Demonstração do Resultado</h3><span class="hint">comparativo com junho</span></div>
+          <div class="tbwrap">
+            <table class="dre">
+              <thead><tr><th>Conta</th><th>Jul/2026</th><th>Jun/2026</th><th>Δ</th></tr></thead>
+              <tbody>
+                <tr><td>Receita Bruta de Vendas</td><td>R$ 92.140,00</td><td>R$ 85.320,00</td><td><span class="var up">+8,0%</span></td></tr>
+                <tr class="neg"><td>(−) Impostos sobre Vendas</td><td>−R$ 7.943,12</td><td>−R$ 7.310,90</td><td><span class="var dn">+8,6%</span></td></tr>
+                <tr class="sub"><td>= Receita Líquida</td><td>R$ 84.196,88</td><td>R$ 78.009,10</td><td><span class="var up">+7,9%</span></td></tr>
+                <tr class="neg"><td>(−) Custo das Mercadorias (CMV)</td><td>−R$ 38.410,00</td><td>−R$ 36.120,00</td><td><span class="var dn">+6,3%</span></td></tr>
+                <tr class="sub"><td>= Lucro Bruto</td><td>R$ 45.786,88</td><td>R$ 41.889,10</td><td><span class="var up">+9,3%</span></td></tr>
+                <tr class="neg ind1"><td>(−) Despesas com Pessoal</td><td>−R$ 15.420,00</td><td>−R$ 15.180,00</td><td><span class="var dn">+1,6%</span></td></tr>
+                <tr class="neg ind1"><td>(−) Despesas Administrativas</td><td>−R$ 6.212,88</td><td>−R$ 6.480,00</td><td><span class="var up">−4,1%</span></td></tr>
+                <tr class="neg ind1"><td>(−) Despesas Financeiras</td><td>−R$ 2.270,00</td><td>−R$ 1.940,00</td><td><span class="var dn">+17,0%</span></td></tr>
+                <tr class="tot"><td>= Resultado Líquido</td><td><b>R$ 21.884,00</b></td><td>R$ 18.289,10</td><td><span class="var up">+19,7%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" data-group="dre" data-pane="bal" style="display:none">
+          <div class="ct"><h3>Balancete de Verificação</h3><span class="hint">julho/2026 · contas sintéticas</span></div>
+          <div class="tbwrap">
+            <table class="dre">
+              <thead><tr><th>Conta</th><th>Saldo anterior</th><th>Débitos</th><th>Créditos</th><th>Saldo atual</th></tr></thead>
+              <tbody>
+                <tr><td>1. Ativo</td><td>R$ 205.110,45</td><td>R$ 118.340,00</td><td>R$ 109.130,00</td><td>R$ 214.320,45</td></tr>
+                <tr><td>2. Passivo</td><td>R$ 205.110,45</td><td>R$ 96.210,00</td><td>R$ 105.420,00</td><td>R$ 214.320,45</td></tr>
+                <tr><td>3. Receitas</td><td>—</td><td>—</td><td>R$ 92.140,00</td><td>R$ 92.140,00</td></tr>
+                <tr><td>4. Custos e Despesas</td><td>—</td><td>R$ 70.256,00</td><td>—</td><td>R$ 70.256,00</td></tr>
+                <tr class="tot"><td>Totais</td><td>R$ 410.220,90</td><td>R$ 284.806,00</td><td>R$ 306.690,00</td><td><b>balanceado ✓</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FECHAMENTO CONTÁBIL ===== -->
+    <section class="view" id="v-fec">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn pri" onclick="toast('Período jul/2026 bloqueado para novos lançamentos após concluir o checklist')">🔒 Fechar competência Jul/2026</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Fechamento Contábil</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · competência julho/2026</span></div>
+        <div class="grid2">
+          <div class="card">
+            <div class="ct"><h3>Checklist de fechamento</h3><span class="hint">6 de 9 etapas concluídas</span></div>
+            <div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Importação de notas fiscais do mês <span class="v">37 NF</span></div><div class="l2">concluída 05/08 · Ana Souza</div></div>
+            <div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Conciliação bancária completa <span class="v">3 contas</span></div><div class="l2">concluída 08/08 · Diego Alves</div></div>
+            <div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Folha contabilizada + provisões <span class="v">8 func.</span></div><div class="l2">concluída 07/08 · Carla Nunes</div></div>
+            <div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Depreciações do imobilizado <span class="v">R$ 483,00</span></div><div class="l2">rotina automática 31/07</div></div>
+            <div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Apuração de impostos (DAS) <span class="v">R$ 7.943,12</span></div><div class="l2">concluída 12/08 · Ana Souza</div></div>
+            <div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Revisão de lançamentos sugeridos <span class="v">312 lçtos</span></div><div class="l2">concluída 14/08 · Rafael C.</div></div>
+            <div class="mitem hl" id="fec1"><div class="l1"><button class="mlink" onclick="fecStep(document.getElementById('fec1'),'Balancete revisado e marcado como aprovado')">›</button> Revisar e aprovar balancete</div><div class="l2">divergência zero · pronto para aprovação</div></div>
+            <div class="mitem" id="fec2"><div class="l1"><button class="mlink q" onclick="fecStep(document.getElementById('fec2'),'Balancete publicado no Portal do Cliente para aprovação')">›</button> Publicar balancete no portal do cliente</div><div class="l2">o cliente aprova digitalmente no portal</div></div>
+            <div class="mitem" id="fec3"><div class="l1"><button class="mlink q" onclick="fecStep(document.getElementById('fec3'),'Competência bloqueada — lançamentos retroativos exigem reabertura com trilha de auditoria')">›</button> Bloquear competência</div><div class="l2">impede lançamentos retroativos sem reabertura auditada</div></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Situação por competência</h3></div>
+            <div class="tbwrap stack">
+              <table class="tb">
+                <thead><tr><th>Competência</th><th>Status</th><th>Fechada em</th><th>Por</th></tr></thead>
+                <tbody>
+                  <tr><td class="main-cell" data-l="Competência">Ago/2026</td><td data-l="Status"><span class="pill inf"><i></i>Em movimento</span></td><td data-l="Fechada em">—</td><td data-l="Por">—</td></tr>
+                  <tr><td class="main-cell" data-l="Competência">Jul/2026</td><td data-l="Status"><span class="pill pend"><i></i>Em fechamento</span></td><td data-l="Fechada em">—</td><td data-l="Por">—</td></tr>
+                  <tr><td class="main-cell" data-l="Competência">Jun/2026</td><td data-l="Status"><span class="pill ok"><i></i>Fechada</span></td><td data-l="Fechada em">15/07</td><td data-l="Por">Rafael C.</td></tr>
+                  <tr><td class="main-cell" data-l="Competência">Mai/2026</td><td data-l="Status"><span class="pill ok"><i></i>Fechada</span></td><td data-l="Fechada em">13/06</td><td data-l="Por">Rafael C.</td></tr>
+                  <tr><td class="main-cell" data-l="Competência">Abr/2026</td><td data-l="Status"><span class="pill ok"><i></i>Fechada</span></td><td data-l="Fechada em">14/05</td><td data-l="Por">Ana Souza</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Reabertura auditada</b><small>reabrir uma competência fechada exige justificativa e fica registrado na trilha de auditoria</small></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NOTAS FISCAIS ===== -->
+    <section class="view" id="v-nf">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar por número, chave, emitente…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Upload de XML avulso ou lote ZIP (protótipo)')">↑ Importar XML</button>
+        <button class="btn pri" onclick="toast('Emissor de NFS-e integrado à prefeitura (protótipo)')">+ Emitir NFS-e</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Notas Fiscais</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · agosto/2026</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Saídas · Ago</div><div class="val">37 notas</div><div class="sub">R$ 86.410,00</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Entradas · Ago</div><div class="val">54 notas</div><div class="sub">R$ 41.230,00</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Capturadas automático</div><div class="val">96%</div><div class="sub">monitor de novas notas ativo</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Pendentes de classificação</div><div class="val">5</div><div class="sub">aguardando regra de contabilização</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Notas do período</h3>
+            <div class="end">
+              <div class="tabs" id="nftabs">
+                <button data-f="all" class="on" onclick="filtra('nftabs','nftb','all',this)">Todas · 91</button>
+                <button data-f="sai" onclick="filtra('nftabs','nftb','sai',this)">Saídas · 37</button>
+                <button data-f="ent" onclick="filtra('nftabs','nftb','ent',this)">Entradas · 54</button>
+                <button data-f="pend" class="vencd" onclick="filtra('nftabs','nftb','pend',this)">Pendentes · 5</button>
+              </div>
+            </div>
+          </div>
+          <div class="tbwrap stack" id="nftb">
+            <table class="tb">
+              <thead><tr><th>Nota</th><th>Tipo</th><th>Emitente / Destinatário</th><th>Emissão</th><th class="num">Valor</th><th>Situação</th></tr></thead>
+              <tbody>
+                <tr data-st="sai"><td class="main-cell" data-l="Nota">NF-e 4471</td><td data-l="Tipo"><span class="pill ok"><i></i>Saída</span></td><td class="desc" data-l="Destinatário">Mercado Bom Preço LTDA</td><td data-l="Emissão">17/08</td><td class="num" data-l="Valor">R$ 2.412,00</td><td data-l="Situação"><span class="tag pri">Contabilizada</span></td></tr>
+                <tr data-st="ent"><td class="main-cell" data-l="Nota">NF-e 18.220</td><td data-l="Tipo"><span class="pill inf"><i></i>Entrada</span></td><td class="desc" data-l="Emitente">Moinho Sul Alimentos SA</td><td data-l="Emissão">16/08</td><td class="num" data-l="Valor">R$ 3.120,00</td><td data-l="Situação"><span class="tag pri">Contabilizada</span></td></tr>
+                <tr data-st="pend"><td class="main-cell" data-l="Nota">NF-e 9.114</td><td data-l="Tipo"><span class="pill inf"><i></i>Entrada</span></td><td class="desc" data-l="Emitente">Distribuidora Frios do Vale</td><td data-l="Emissão">16/08</td><td class="num" data-l="Valor">R$ 890,40</td><td data-l="Situação"><span class="pill pend"><i></i>Classificar</span></td></tr>
+                <tr data-st="sai"><td class="main-cell" data-l="Nota">NFC-e 12.882</td><td data-l="Tipo"><span class="pill ok"><i></i>Saída</span></td><td class="desc" data-l="Destinatário">Consumidor final (venda balcão)</td><td data-l="Emissão">16/08</td><td class="num" data-l="Valor">R$ 1.184,90</td><td data-l="Situação"><span class="tag pri">Contabilizada</span></td></tr>
+                <tr data-st="ent"><td class="main-cell" data-l="Nota">NFS-e 442</td><td data-l="Tipo"><span class="pill inf"><i></i>Entrada</span></td><td class="desc" data-l="Emitente">TecFrio Refrigeração ME (manutenção)</td><td data-l="Emissão">15/08</td><td class="num" data-l="Valor">R$ 450,00</td><td data-l="Situação"><span class="tag pri">Contabilizada</span></td></tr>
+                <tr data-st="pend"><td class="main-cell" data-l="Nota">NF-e 77.031</td><td data-l="Tipo"><span class="pill inf"><i></i>Entrada</span></td><td class="desc" data-l="Emitente">Embalagens Pardal LTDA</td><td data-l="Emissão">14/08</td><td class="num" data-l="Valor">R$ 612,00</td><td data-l="Situação"><span class="pill pend"><i></i>Classificar</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pgn"><span>1–6 de 91</span><button class="pg on">1</button><button class="pg" onclick="toast('Paginação (protótipo)')">2</button><button class="pg" onclick="toast('Paginação (protótipo)')">3</button><button class="pg" onclick="toast('Paginação (protótipo)')">›</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== APURAÇÃO DE IMPOSTOS ===== -->
+    <section class="view" id="v-apu">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn pri" onclick="toast('Apuração recalculada a partir das notas do período — memória de cálculo disponível')">↻ Recalcular Ago/2026</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Apuração de Impostos</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · Simples Nacional · julho/2026</span></div>
+        <div class="cards3">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Receita bruta · 12 meses</div><div class="val">R$ 986.210,00</div><div class="sub">Anexo I · faixa 3 · alíquota efetiva 8,62%</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>DAS apurado · Jul</div><div class="val">R$ 7.943,12</div><div class="sub">vencimento 20/08 · guia gerada</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Economia identificada</div><div class="val">R$ 312,40</div><div class="sub">Fator R e segregação de receitas aplicados</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="ct"><h3>Memória de cálculo — DAS Jul/2026</h3></div>
+            <div class="tbwrap">
+              <table class="dre">
+                <thead><tr><th>Componente</th><th>Base</th><th>Alíquota</th><th>Valor</th></tr></thead>
+                <tbody>
+                  <tr><td>Receita de revenda (Anexo I)</td><td>R$ 78.410,00</td><td>8,54%</td><td>R$ 6.696,21</td></tr>
+                  <tr><td>Receita de serviços (Anexo III)</td><td>R$ 13.730,00</td><td>9,08%</td><td>R$ 1.246,91</td></tr>
+                  <tr class="tot"><td>DAS total</td><td>R$ 92.140,00</td><td>8,62% ef.</td><td><b>R$ 7.943,12</b></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:10px"><button class="lk" onclick="nav('gui')">Ver guia gerada →</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Apurações por cliente</h3><span class="hint">competência Jul/2026 · todas as empresas</span></div>
+            <div class="tbwrap stack">
+              <table class="tb">
+                <thead><tr><th>Cliente</th><th>Regime</th><th class="num">Apurado</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="main-cell" data-l="Cliente">Padaria São José ME</td><td data-l="Regime"><span class="tag">Simples</span></td><td class="num" data-l="Apurado">R$ 7.943,12</td><td data-l="Status"><span class="pill ok"><i></i>Apurado</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Auto Peças Cruzeiro</td><td data-l="Regime"><span class="tag">Presumido</span></td><td class="num" data-l="Apurado">R$ 18.212,45</td><td data-l="Status"><span class="pill ok"><i></i>Apurado</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Clínica Vida</td><td data-l="Regime"><span class="tag">Presumido</span></td><td class="num" data-l="Apurado">R$ 9.870,00</td><td data-l="Status"><span class="pill ok"><i></i>Apurado</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Transportes Alvorada</td><td data-l="Regime"><span class="tag">Lucro Real</span></td><td class="num" data-l="Apurado">R$ 31.440,18</td><td data-l="Status"><span class="pill pend"><i></i>Divergência</span></td></tr>
+                  <tr><td class="main-cell" data-l="Cliente">Mercado Central</td><td data-l="Regime"><span class="tag">Simples</span></td><td class="num" data-l="Apurado">R$ 4.112,60</td><td data-l="Status"><span class="pill ok"><i></i>Apurado</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GUIAS ===== -->
+    <section class="view" id="v-gui">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar guia…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Guias enviadas em lote para o portal + e-mail/WhatsApp de cada cliente')">Enviar aos clientes</button>
+        <button class="btn pri" onclick="toast('Geração de guia manual DARF/DAS/GPS/FGTS (protótipo)')">+ Gerar guia</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Guias de Recolhimento</h2><span class="sub">DARF · DAS · GPS · FGTS · ISS — competência Jul/2026</span></div>
+        <div class="card">
+          <div class="ct"><h3>Guias do período</h3>
+            <div class="end">
+              <div class="tabs" id="guitabs">
+                <button data-f="all" class="on" onclick="filtra('guitabs','guitb','all',this)">Todas · 64</button>
+                <button data-f="pend" onclick="filtra('guitabs','guitb','pend',this)">A vencer · 5</button>
+                <button data-f="ok" onclick="filtra('guitabs','guitb','ok',this)">Pagas · 57</button>
+                <button data-f="venc" class="vencd" onclick="filtra('guitabs','guitb','venc',this)">Vencidas · 2</button>
+              </div>
+            </div>
+          </div>
+          <div class="tbwrap stack" id="guitb" data-bulk="guibulk">
+            <table class="tb">
+              <thead><tr><th style="width:34px"></th><th>Guia</th><th>Cliente</th><th>Competência</th><th>Vencimento</th><th class="num">Valor</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr data-st="venc" data-val="1412.3"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">DARF IRPJ</td><td data-l="Cliente">Transportes Alvorada</td><td data-l="Competência">Jun/2026</td><td data-l="Vencimento">31/07</td><td class="num" data-l="Valor">R$ 1.412,30</td><td data-l="Status"><span class="pill err"><i></i>Vencida</span></td></tr>
+                <tr data-st="venc" data-val="988.4"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">DARF CSLL</td><td data-l="Cliente">Transportes Alvorada</td><td data-l="Competência">Jun/2026</td><td data-l="Vencimento">31/07</td><td class="num" data-l="Valor">R$ 988,40</td><td data-l="Status"><span class="pill err"><i></i>Vencida</span></td></tr>
+                <tr data-st="pend" data-val="7943.12"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">DAS Simples</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Competência">Jul/2026</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 7.943,12</td><td data-l="Status"><span class="pill pend"><i></i>A vencer</span></td></tr>
+                <tr data-st="pend" data-val="2212.5"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">FGTS Digital</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Competência">Jul/2026</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 2.212,50</td><td data-l="Status"><span class="pill pend"><i></i>A vencer</span></td></tr>
+                <tr data-st="pend" data-val="4112.6"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">DAS Simples</td><td data-l="Cliente">Mercado Central</td><td data-l="Competência">Jul/2026</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 4.112,60</td><td data-l="Status"><span class="pill pend"><i></i>A vencer</span></td></tr>
+                <tr data-st="ok" data-val="1840"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">GPS INSS</td><td data-l="Cliente">Clínica Vida</td><td data-l="Competência">Jul/2026</td><td data-l="Vencimento">05/08</td><td class="num" data-l="Valor">R$ 1.840,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga</span></td></tr>
+                <tr data-st="ok" data-val="962.2"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Guia">ISS Municipal</td><td data-l="Cliente">Clínica Vida</td><td data-l="Competência">Jul/2026</td><td data-l="Vencimento">10/08</td><td class="num" data-l="Valor">R$ 962,20</td><td data-l="Status"><span class="pill ok"><i></i>Paga</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bulk" id="guibulk"><span class="bulktxt b"></span><button onclick="toast('Guias enviadas ao portal dos clientes selecionados')">Enviar ao cliente</button><button onclick="toast('Download em lote (protótipo)')">Baixar PDFs</button><button onclick="toast('Baixa de pagamento registrada (protótipo)')">Registrar pagamento</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SPED & DECLARAÇÕES ===== -->
+    <section class="view" id="v-sped">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn pri" onclick="toast('Arquivo gerado e validado no PVA antes da transmissão (protótipo)')">⬇ Gerar arquivo</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>SPED &amp; Declarações</h2><span class="sub">geração, validação e histórico de entregas</span></div>
+        <div class="cards4">
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>EFD ICMS/IPI</h3><span class="pill err" style="margin-left:auto"><i></i>1 atrasada</span></div><div class="tiny muted">mensal · 15 empresas obrigadas</div><div style="margin-top:8px"><button class="lk" onclick="toast('Gerar EFD ICMS/IPI (protótipo)')">Gerar Jul/2026 →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>EFD Contribuições</h3><span class="pill pend" style="margin-left:auto"><i></i>6 pendentes</span></div><div class="tiny muted">mensal · até 25/08 · 9 de 15 entregues</div><div style="margin-top:8px"><button class="lk" onclick="toast('Gerar EFD Contribuições (protótipo)')">Gerar lote →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>SPED ECD</h3><span class="pill ok" style="margin-left:auto"><i></i>Em dia</span></div><div class="tiny muted">anual · ano-base 2025 entregue em Mai/2026</div><div style="margin-top:8px"><button class="lk" onclick="toast('Recibos de entrega ECD (protótipo)')">Ver recibos →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>SPED ECF</h3><span class="pill ok" style="margin-left:auto"><i></i>Em dia</span></div><div class="tiny muted">anual · ano-base 2025 entregue em Jul/2026</div><div style="margin-top:8px"><button class="lk" onclick="toast('Recibos de entrega ECF (protótipo)')">Ver recibos →</button></div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Histórico de entregas</h3><span class="hint">últimas transmissões</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Declaração</th><th>Cliente</th><th>Período</th><th>Transmitida em</th><th>Recibo</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Declaração">EFD Contribuições</td><td data-l="Cliente">Auto Peças Cruzeiro</td><td data-l="Período">Jul/2026</td><td data-l="Transmitida">14/08 16:20</td><td data-l="Recibo" class="desc">29.44.71.88.0012</td><td data-l="Status"><span class="pill ok"><i></i>Aceita</span></td></tr>
+                <tr><td class="main-cell" data-l="Declaração">EFD ICMS/IPI</td><td data-l="Cliente">Mercado Central</td><td data-l="Período">Jul/2026</td><td data-l="Transmitida">12/08 10:05</td><td data-l="Recibo" class="desc">18.90.31.02.4471</td><td data-l="Status"><span class="pill ok"><i></i>Aceita</span></td></tr>
+                <tr><td class="main-cell" data-l="Declaração">DCTFWeb</td><td data-l="Cliente">Clínica Vida</td><td data-l="Período">Jul/2026</td><td data-l="Transmitida">11/08 09:12</td><td data-l="Recibo" class="desc">77.02.56.19.8830</td><td data-l="Status"><span class="pill ok"><i></i>Aceita</span></td></tr>
+                <tr><td class="main-cell" data-l="Declaração">EFD Contribuições</td><td data-l="Cliente">Transportes Alvorada</td><td data-l="Período">Jun/2026</td><td data-l="Transmitida">—</td><td data-l="Recibo" class="desc">—</td><td data-l="Status"><span class="pill err"><i></i>Atrasada</span></td></tr>
+                <tr><td class="main-cell" data-l="Declaração">DEFIS</td><td data-l="Cliente">26 empresas Simples</td><td data-l="Período">ano 2025</td><td data-l="Transmitida">28/03 (lote)</td><td data-l="Recibo" class="desc">lote #442</td><td data-l="Status"><span class="pill ok"><i></i>Aceita</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FUNCIONÁRIOS ===== -->
+    <section class="view" id="v-fun">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar funcionário…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Importação por planilha modelo (protótipo)')">Importar planilha</button>
+        <button class="btn pri" onclick="toast('Admissão com envio automático do S-2200 ao eSocial (protótipo)')">+ Admissão</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Funcionários</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · 8 ativos</span></div>
+        <div class="card">
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Nome</th><th>Cargo</th><th>Admissão</th><th class="num">Salário</th><th>Situação</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Nome">Maria Aparecida Santos</td><td data-l="Cargo">Padeira chefe</td><td data-l="Admissão">03/02/2020</td><td class="num" data-l="Salário">R$ 3.240,00</td><td data-l="Situação"><span class="pill ok"><i></i>Ativo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do funcionário: dados, dependentes, histórico, férias (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Nome">João Pedro Oliveira</td><td data-l="Cargo">Atendente</td><td data-l="Admissão">15/07/2023</td><td class="num" data-l="Salário">R$ 1.720,00</td><td data-l="Situação"><span class="pill ok"><i></i>Ativo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do funcionário (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Nome">Fernanda Costa Lima</td><td data-l="Cargo">Confeiteira</td><td data-l="Admissão">01/03/2022</td><td class="num" data-l="Salário">R$ 2.480,00</td><td data-l="Situação"><span class="pill pend"><i></i>Férias 01–30/09</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do funcionário (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Nome">Carlos Eduardo Ramos</td><td data-l="Cargo">Auxiliar de produção</td><td data-l="Admissão">10/01/2024</td><td class="num" data-l="Salário">R$ 1.640,00</td><td data-l="Situação"><span class="pill ok"><i></i>Ativo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Ficha do funcionário (protótipo)')">Abrir</button></td></tr>
+                <tr><td class="main-cell" data-l="Nome">José Pereira Filho</td><td data-l="Cargo">Entregador</td><td data-l="Admissão">05/05/2021</td><td class="num" data-l="Salário">R$ 1.880,00</td><td data-l="Situação"><span class="pill err"><i></i>Rescisão em curso</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Rescisão: TRCT, homologação 22/08, S-2299 (protótipo)')">Rescisão</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pgn"><span>1–5 de 8</span><button class="pg on">1</button><button class="pg" onclick="toast('Paginação (protótipo)')">2</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOLHA DE PAGAMENTO ===== -->
+    <section class="view" id="v-fol">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Holerites publicados no portal com aviso por e-mail/WhatsApp aos colaboradores')">Publicar holerites</button>
+        <button class="btn pri" onclick="toast('Cálculo da folha Ago/2026 com prévia de conferência (protótipo)')">▶ Calcular folha Ago</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Folha de Pagamento</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · competência agosto/2026</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Total bruto · Jul</div><div class="val">R$ 14.980,00</div><div class="sub">8 colaboradores</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Encargos · Jul</div><div class="val">R$ 4.052,50</div><div class="sub">INSS + FGTS + provisões</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Líquido pago</div><div class="val">R$ 12.610,40</div><div class="sub">crédito em 05/08</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Folha Ago</div><div class="val">35%</div><div class="sub">variáveis pendentes (2 empresas)</div></div>
+        </div>
+        <div class="tabs">
+          <button class="on" onclick="aba('fol','comp',this)">Competências</button>
+          <button onclick="aba('fol','fer',this)">Férias · 2</button>
+          <button onclick="aba('fol','res',this)">Rescisões · 1</button>
+          <button onclick="toast('13º salário: provisão mensal e cálculo das parcelas de Nov/Dez (protótipo)')">13º Salário</button>
+          <button onclick="toast('Pró-labore dos sócios com INSS e IRRF (protótipo)')">Pró-Labore</button>
+        </div>
+        <div class="card" data-group="fol" data-pane="comp">
+          <div class="ct"><h3>Competências</h3></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Competência</th><th>Colaboradores</th><th class="num">Bruto</th><th class="num">Encargos</th><th class="num">Líquido</th><th>Status</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Competência">Ago/2026</td><td data-l="Colaboradores">8</td><td class="num" data-l="Bruto">—</td><td class="num" data-l="Encargos">—</td><td class="num" data-l="Líquido">—</td><td data-l="Status"><span class="pill pend"><i></i>Em cálculo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Prévia da folha (protótipo)')">Prévia</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Jul/2026</td><td data-l="Colaboradores">8</td><td class="num" data-l="Bruto">R$ 14.980,00</td><td class="num" data-l="Encargos">R$ 4.052,50</td><td class="num" data-l="Líquido">R$ 12.610,40</td><td data-l="Status"><span class="pill ok"><i></i>Fechada</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Detalhe por colaborador: proventos, descontos, bases (protótipo)')">Detalhar</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Jun/2026</td><td data-l="Colaboradores">8</td><td class="num" data-l="Bruto">R$ 14.980,00</td><td class="num" data-l="Encargos">R$ 4.052,50</td><td class="num" data-l="Líquido">R$ 12.590,10</td><td data-l="Status"><span class="pill ok"><i></i>Fechada</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Detalhe (protótipo)')">Detalhar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" data-group="fol" data-pane="fer" style="display:none">
+          <div class="ct"><h3>Férias programadas</h3></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Colaborador</th><th>Período aquisitivo</th><th>Gozo</th><th class="num">Valor + 1/3</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Colaborador">Fernanda Costa Lima</td><td data-l="Aquisitivo">2025/2026</td><td data-l="Gozo">01/09 – 30/09</td><td class="num" data-l="Valor">R$ 3.306,67</td><td data-l="Status"><span class="pill pend"><i></i>Aviso enviado</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">Maria Aparecida Santos</td><td data-l="Aquisitivo">2025/2026</td><td data-l="Gozo">01/12 – 20/12</td><td class="num" data-l="Valor">R$ 2.880,00</td><td data-l="Status"><span class="pill inf"><i></i>Programada</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert warn" style="margin-top:10px"><div class="ic">−</div><div><b>Alerta de vencimento de período</b><small>João Pedro Oliveira: período 2023/2024 vence em 14/10 — programar gozo para evitar férias em dobro</small></div></div>
+        </div>
+        <div class="card" data-group="fol" data-pane="res" style="display:none">
+          <div class="ct"><h3>Rescisões em andamento</h3></div>
+          <div class="mitem"><div class="l1">José Pereira Filho — dispensa sem justa causa<span class="v out">R$ 6.412,80</span></div><div class="l2">aviso indenizado · TRCT emitido · homologação 22/08 · S-2299 pendente de transmissão</div></div>
+          <div style="margin-top:6px"><button class="lk" onclick="toast('Checklist da rescisão: TRCT, guia FGTS rescisório, S-2299 (protótipo)')">Abrir checklist da rescisão →</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ESOCIAL & EFD-REINF ===== -->
+    <section class="view" id="v-eso">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar evento…</div>
+        <div class="grow"></div>
+        <button class="btn pri" onclick="toast('Fila processada — eventos pendentes transmitidos com certificado digital A1 (protótipo)')">⇪ Transmitir pendentes (3)</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>eSocial &amp; EFD-Reinf</h2><span class="sub">fila de eventos · todas as empresas</span></div>
+        <div class="cards4">
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Aceitos · Ago</div><div class="val">126</div><div class="sub">S-1200, S-1210, S-2200…</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Pendentes</div><div class="val">3</div><div class="sub">aguardando transmissão</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Com erro</div><div class="val">1</div><div class="sub">retorno com pendência de cadastro</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Certificados</div><div class="val">40/42</div><div class="sub">2 vencem em 30 dias</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Fila de eventos</h3></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Evento</th><th>Descrição</th><th>Empresa</th><th>Gerado em</th><th>Status</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Evento">S-2299</td><td class="desc" data-l="Descrição">Desligamento — José Pereira Filho</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">17/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Evento transmitido (protótipo)')">Transmitir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-2200</td><td class="desc" data-l="Descrição">Admissão — 2 colaboradores</td><td data-l="Empresa">Mercado Central</td><td data-l="Gerado em">17/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Evento transmitido (protótipo)')">Transmitir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">R-2010</td><td class="desc" data-l="Descrição">Reinf — serviços tomados c/ retenção INSS</td><td data-l="Empresa">Clínica Vida</td><td data-l="Gerado em">16/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Evento transmitido (protótipo)')">Transmitir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-1200</td><td class="desc" data-l="Descrição">Remuneração Jul/2026 — 8 colaboradores</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">07/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Recibo do evento (protótipo)')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-2206</td><td class="desc" data-l="Descrição">Alteração contratual — reajuste salarial</td><td data-l="Empresa">Studio Fit Academia</td><td data-l="Gerado em">12/08</td><td data-l="Status"><span class="pill err"><i></i>Erro 301</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Detalhe do erro: CPF divergente no cadastro — corrigir e reenviar (protótipo)')">Corrigir</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTAS A RECEBER ===== -->
+    <section class="view" id="v-rec">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="nav('bol')">Emitir boletos em lote</button>
+        <button class="btn pri" onclick="openModal('in')">+ Novo título</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Contas a Receber</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · agosto/2026</span></div>
+        <div class="fchips">
+          <div class="tabs" id="rectabs">
+            <button data-f="all" onclick="filtra('rectabs','rectb','all',this)">Todos · 152</button>
+            <button data-f="pend" class="on" onclick="filtra('rectabs','rectb','pend',this)">Pendentes · 37</button>
+            <button data-f="ok" onclick="filtra('rectabs','rectb','ok',this)">Pagos · 98</button>
+            <button data-f="venc" class="vencd" onclick="filtra('rectabs','rectb','venc',this)">Vencidos · 17</button>
+          </div>
+          <div class="fchip" onclick="toast('Filtro de período (protótipo)')"><span>Período:</span> Ago/2026 ▾</div>
+          <div class="fchip" onclick="toast('Filtro de categoria (protótipo)')"><span>Categoria:</span> Todas ▾</div>
+        </div>
+        <div class="card">
+          <div class="tbwrap stack" id="rectb" data-bulk="recbulk">
+            <table class="tb">
+              <thead><tr><th style="width:34px"></th><th>Cliente</th><th>Descrição</th><th>Vencimento</th><th class="num">Valor</th><th>Forma</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr data-st="venc" data-val="1240"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Mercado Bom Preço</td><td class="desc" data-l="Descrição">Fornecimento pães — NF 4412</td><td data-l="Vencimento">28/07</td><td class="num" data-l="Valor">R$ 1.240,00</td><td data-l="Forma"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill err"><i></i>21 dias</span></td></tr>
+                <tr data-st="venc" data-val="890"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Restaurante Sabor Caseiro</td><td class="desc" data-l="Descrição">Fornecimento semanal — contrato</td><td data-l="Vencimento">05/08</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Forma"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill err"><i></i>13 dias</span></td></tr>
+                <tr data-st="pend" data-val="2412"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Mercado Bom Preço</td><td class="desc" data-l="Descrição">Fornecimento pães — NF 4471</td><td data-l="Vencimento">27/08</td><td class="num" data-l="Valor">R$ 2.412,00</td><td data-l="Forma"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="pend" data-val="1560"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Hotel Jardim Real</td><td class="desc" data-l="Descrição">Café da manhã — quinzena 2</td><td data-l="Vencimento">30/08</td><td class="num" data-l="Valor">R$ 1.560,00</td><td data-l="Forma"><span class="tag">PIX</span></td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="ok" data-val="1890"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Mercado Bom Preço</td><td class="desc" data-l="Descrição">Fornecimento pães — NF 4433</td><td data-l="Vencimento">15/08</td><td class="num" data-l="Valor">R$ 1.890,00</td><td data-l="Forma"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill ok"><i></i>Pago 17/08</span></td></tr>
+                <tr data-st="ok" data-val="960"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Cliente">Restaurante Sabor Caseiro</td><td class="desc" data-l="Descrição">Fornecimento semanal</td><td data-l="Vencimento">12/08</td><td class="num" data-l="Valor">R$ 960,00</td><td data-l="Forma"><span class="tag">PIX</span></td><td data-l="Status"><span class="pill ok"><i></i>Pago 12/08</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bulk" id="recbulk"><span class="bulktxt b"></span><button onclick="toast('Baixa em lote registrada (protótipo)')">Registrar recebimento</button><button onclick="toast('Cobranças reenviadas (protótipo)')">Reenviar cobrança</button><button onclick="toast('2ª via de boletos gerada (protótipo)')">2ª via boleto</button></div>
+          <div class="pgn"><span>1–6 de 152</span><button class="pg on">1</button><button class="pg" onclick="toast('Paginação (protótipo)')">2</button><button class="pg" onclick="toast('Paginação (protótipo)')">3</button><button class="pg" onclick="toast('Paginação (protótipo)')">›</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTAS A PAGAR ===== -->
+    <section class="view" id="v-pag">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Arquivo de remessa de pagamentos CNAB gerado para o banco (protótipo)')">Gerar remessa CNAB</button>
+        <button class="btn pri" onclick="openModal('out')">+ Novo título</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Contas a Pagar</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · agosto/2026</span></div>
+        <div class="cards3">
+          <div class="card kpi"><div class="lbl"><span class="kdot w"></span>A pagar · 30 dias</div><div class="val">R$ 18.470,30</div><div class="sub">12 títulos previstos</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Vencidos</div><div class="val">R$ 486,20</div><div class="sub">1 título (energia elétrica)</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Pagos no mês</div><div class="val">R$ 22.318,00</div><div class="sub">28 títulos liquidados</div></div>
+        </div>
+        <div class="card">
+          <div class="tbwrap stack" id="pagtb" data-bulk="pagbulk">
+            <table class="tb">
+              <thead><tr><th style="width:34px"></th><th>Fornecedor</th><th>Descrição</th><th>Vencimento</th><th class="num">Valor</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr data-st="venc" data-val="486.2"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Fornecedor">Companhia de Energia</td><td class="desc" data-l="Descrição">Fatura ref. Jul/2026</td><td data-l="Vencimento">18/08</td><td class="num" data-l="Valor">R$ 486,20</td><td data-l="Status"><span class="pill err"><i></i>Vence hoje</span></td></tr>
+                <tr data-st="pend" data-val="7943.12"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Fornecedor">DAS — Simples Nacional</td><td class="desc" data-l="Descrição">Guia Jul/2026 (integração c/ Guias)</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 7.943,12</td><td data-l="Status"><span class="pill pend"><i></i>Agendado</span></td></tr>
+                <tr data-st="pend" data-val="3120"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Fornecedor">Moinho Sul Alimentos</td><td class="desc" data-l="Descrição">Duplicata 4412/2 — NF 18.220</td><td data-l="Vencimento">22/08</td><td class="num" data-l="Valor">R$ 3.120,00</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="pend" data-val="2800"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Fornecedor">Imobiliária Central</td><td class="desc" data-l="Descrição">Aluguel do ponto — Set/2026</td><td data-l="Vencimento">05/09</td><td class="num" data-l="Valor">R$ 2.800,00</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td></tr>
+                <tr data-st="ok" data-val="1120"><td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td><td class="main-cell" data-l="Fornecedor">Distribuidora Frios do Vale</td><td class="desc" data-l="Descrição">Duplicata 8901/1</td><td data-l="Vencimento">12/08</td><td class="num" data-l="Valor">R$ 1.120,00</td><td data-l="Status"><span class="pill ok"><i></i>Pago 12/08</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="bulk" id="pagbulk"><span class="bulktxt b"></span><button onclick="toast('Pagamentos agendados no banco (protótipo)')">Agendar pagamento</button><button onclick="toast('Baixa registrada (protótipo)')">Registrar pagamento</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONCILIAÇÃO BANCÁRIA ===== -->
+    <section class="view" id="v-conc">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar movimento…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Importação de extrato OFX/CSV (protótipo)')">↑ Importar OFX</button>
+        <button class="btn pri" id="concall" onclick="concAll()">Conciliar sugeridos (1)</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Conciliação Bancária</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · agosto/2026 · 78% conciliado</span></div>
+        <div class="bankchips">
+          <div class="bankchip"><span class="st"></span>Banco do Brasil · CC 4.812-6 <small>Open Finance · sincronizado há 5 min</small></div>
+          <div class="bankchip"><span class="st"></span>Sicoob · CC 11.207-3 <small>importação OFX · ontem</small></div>
+          <div class="bankchip"><span class="st off"></span>Caixa interno <small>lançamento manual</small></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Sugestões de conciliação</h3><span class="hint">o motor sugere pares por valor, data e histórico</span></div>
+          <div class="match">
+            <div class="mcol">
+              <h4>Extrato bancário</h4>
+              <div class="mitem hl" id="ex1"><div class="l1">PIX recebido — MERCADO BOM PRECO LTDA<span class="v in">+R$ 1.890,00</span></div><div class="l2">17/08 09:42 · Banco do Brasil</div></div>
+              <div class="mitem"><div class="l1">TARIFA PACOTE SERVICOS<span class="v out">−R$ 24,90</span></div><div class="l2">15/08 · Banco do Brasil</div></div>
+            </div>
+            <div class="mmid">
+              <button class="mlink" id="mid1" onclick="conc1()">⇄</button>
+              <span class="conf" id="conf1">98%</span>
+            </div>
+            <div class="mcol">
+              <h4>Título no sistema</h4>
+              <div class="mitem hl" id="ln1"><div class="l1">Mercado Bom Preço — NF 4433<span class="v in">R$ 1.890,00</span></div><div class="l2" id="ln1l2">contas a receber · venc. 15/08 · boleto + PIX</div></div>
+              <div class="mitem"><div class="l1">— sem correspondência —<span class="v"></span></div><div class="l2">sugerir lançamento: Despesas Bancárias<br><button class="lk" onclick="toast('Lançamento criado e conciliado: débito 4.2.05 Despesas Bancárias, crédito Banco BB')">Criar lançamento e conciliar →</button></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FLUXO DE CAIXA ===== -->
+    <section class="view" id="v-flu">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Exportação Excel/PDF (protótipo)')">Exportar</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Fluxo de Caixa</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · realizado + projetado</span></div>
+        <div class="cards3">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Saldo hoje</div><div class="val">R$ 48.230,45</div><div class="sub">3 contas + caixa</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Projeção 30 dias</div><div class="val">R$ 52.910,15</div><div class="sub">considerando títulos em aberto</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Menor saldo projetado</div><div class="val">R$ 31.404,63</div><div class="sub">em 20/08, após DAS + FGTS</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Projeção diária</h3><span class="hint">próximos 30 dias</span>
+            <div class="end legend"><span><i style="background:var(--pri)"></i>saldo projetado</span><span><i style="background:#D98B85"></i>saídas</span><span><i style="background:#7FC7AF"></i>entradas</span></div></div>
+          <svg viewBox="0 0 560 210" width="100%" role="img" aria-label="Fluxo de caixa projetado">
+            <line x1="16" y1="176" x2="552" y2="176" stroke="#E2E9EC"/><line x1="16" y1="106" x2="552" y2="106" stroke="#EEF3F5"/><line x1="16" y1="36" x2="552" y2="36" stroke="#EEF3F5"/>
+            <text x="552" y="102" font-size="9" fill="#8AA0A7" text-anchor="end">R$ 40 mil</text>
+            <text x="552" y="32" font-size="9" fill="#8AA0A7" text-anchor="end">R$ 80 mil</text>
+            <path d="M20 92 L86 88 L152 96 L218 128 L284 122 L350 108 L416 92 L482 84 L548 76" fill="none" stroke="#0E6E5C" stroke-width="2.5"/>
+            <circle cx="218" cy="128" r="4" fill="#B97514"/>
+            <text x="218" y="146" font-size="9" fill="#B97514" text-anchor="middle" font-weight="700">20/08 · DAS+FGTS</text>
+            <rect x="40" y="150" width="8" height="26" rx="2" fill="#7FC7AF"/><rect x="52" y="160" width="8" height="16" rx="2" fill="#D98B85"/>
+            <rect x="106" y="154" width="8" height="22" rx="2" fill="#7FC7AF"/><rect x="118" y="164" width="8" height="12" rx="2" fill="#D98B85"/>
+            <rect x="172" y="158" width="8" height="18" rx="2" fill="#7FC7AF"/><rect x="184" y="136" width="8" height="40" rx="2" fill="#D98B85"/>
+            <rect x="238" y="148" width="8" height="28" rx="2" fill="#7FC7AF"/><rect x="250" y="166" width="8" height="10" rx="2" fill="#D98B85"/>
+            <rect x="304" y="152" width="8" height="24" rx="2" fill="#7FC7AF"/><rect x="316" y="162" width="8" height="14" rx="2" fill="#D98B85"/>
+            <rect x="370" y="146" width="8" height="30" rx="2" fill="#7FC7AF"/><rect x="382" y="160" width="8" height="16" rx="2" fill="#D98B85"/>
+            <rect x="436" y="150" width="8" height="26" rx="2" fill="#7FC7AF"/><rect x="448" y="164" width="8" height="12" rx="2" fill="#D98B85"/>
+            <text x="44" y="192" font-size="9" fill="#5E7178">18/08</text>
+            <text x="176" y="192" font-size="9" fill="#5E7178">20/08</text>
+            <text x="308" y="192" font-size="9" fill="#5E7178">28/08</text>
+            <text x="440" y="192" font-size="9" fill="#5E7178">08/09</text>
+          </svg>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Movimentos previstos</h3><span class="hint">próximos 10 dias</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th class="num">Valor</th><th class="num">Saldo projetado</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Data">18/08</td><td class="main-cell" data-l="Descrição">Energia elétrica Jul</td><td data-l="Tipo"><span class="pill err"><i></i>Saída</span></td><td class="num" data-l="Valor">−R$ 486,20</td><td class="num" data-l="Saldo">R$ 47.744,25</td></tr>
+                <tr><td data-l="Data">20/08</td><td class="main-cell" data-l="Descrição">DAS Jul + FGTS Jul</td><td data-l="Tipo"><span class="pill err"><i></i>Saída</span></td><td class="num" data-l="Valor">−R$ 10.155,62</td><td class="num" data-l="Saldo">R$ 37.588,63</td></tr>
+                <tr><td data-l="Data">20/08</td><td class="main-cell" data-l="Descrição">Recebimentos previstos (4 títulos)</td><td data-l="Tipo"><span class="pill ok"><i></i>Entrada</span></td><td class="num" data-l="Valor">+R$ 3.104,00</td><td class="num" data-l="Saldo">R$ 40.692,63</td></tr>
+                <tr><td data-l="Data">22/08</td><td class="main-cell" data-l="Descrição">Moinho Sul — duplicata 4412/2</td><td data-l="Tipo"><span class="pill err"><i></i>Saída</span></td><td class="num" data-l="Valor">−R$ 3.120,00</td><td class="num" data-l="Saldo">R$ 37.572,63</td></tr>
+                <tr><td data-l="Data">27/08</td><td class="main-cell" data-l="Descrição">Mercado Bom Preço — NF 4471</td><td data-l="Tipo"><span class="pill ok"><i></i>Entrada</span></td><td class="num" data-l="Valor">+R$ 2.412,00</td><td class="num" data-l="Saldo">R$ 39.984,63</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COBRANÇA · BOLETOS & PIX ===== -->
+    <section class="view" id="v-bol">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar cobrança…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Retorno CNAB processado: 12 liquidações baixadas automaticamente')">Processar retorno</button>
+        <button class="btn pri" onclick="toast('Emissão em lote: um boleto com PIX por título em aberto (protótipo)')">+ Emitir cobranças</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Cobrança — Boletos &amp; PIX</h2><span class="sub">emissão, registro e liquidação automática</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Emitidos · Ago</div><div class="val">67</div><div class="sub">R$ 41.212,00 em cobranças</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Liquidados</div><div class="val">51</div><div class="sub">76% de conversão</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Registrados a vencer</div><div class="val">12</div><div class="sub">R$ 9.870,00</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Vencidos</div><div class="val">4</div><div class="sub">réguas de cobrança ativas</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Cobranças recentes</h3><span class="hint">boleto registrado com QR Code PIX</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Sacado</th><th>Referência</th><th>Vencimento</th><th class="num">Valor</th><th>Meio</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Sacado">Mercado Bom Preço</td><td class="desc" data-l="Referência">NF 4433</td><td data-l="Vencimento">15/08</td><td class="num" data-l="Valor">R$ 1.890,00</td><td data-l="Meio"><span class="tag pri">PIX</span></td><td data-l="Status"><span class="pill ok"><i></i>Liquidado 17/08</span></td></tr>
+                <tr><td class="main-cell" data-l="Sacado">Hotel Jardim Real</td><td class="desc" data-l="Referência">Contrato quinzena 2</td><td data-l="Vencimento">30/08</td><td class="num" data-l="Valor">R$ 1.560,00</td><td data-l="Meio"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill inf"><i></i>Registrado</span></td></tr>
+                <tr><td class="main-cell" data-l="Sacado">Restaurante Sabor Caseiro</td><td class="desc" data-l="Referência">Contrato semanal</td><td data-l="Vencimento">05/08</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Meio"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill err"><i></i>Vencido · régua 2/3</span></td></tr>
+                <tr><td class="main-cell" data-l="Sacado">Mercado Bom Preço</td><td class="desc" data-l="Referência">NF 4471</td><td data-l="Vencimento">27/08</td><td class="num" data-l="Valor">R$ 2.412,00</td><td data-l="Meio"><span class="tag pri">Boleto + PIX</span></td><td data-l="Status"><span class="pill inf"><i></i>Registrado</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Régua de cobrança automática</b><small>lembrete 3 dias antes · no vencimento · 5 e 15 dias após, por e-mail e WhatsApp — com 2ª via e QR PIX</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== USUÁRIOS & PERMISSÕES ===== -->
+    <section class="view" id="v-usu">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar usuário…</div>
+        <div class="grow"></div>
+        <button class="btn pri" onclick="toast('Convite enviado por e-mail com definição de perfil e empresas visíveis (protótipo)')">+ Convidar usuário</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Usuários &amp; Permissões</h2><span class="sub">controle de acesso por perfil e por empresa</span></div>
+        <div class="cards4">
+          <div class="card"><div class="ct" style="margin-bottom:4px"><h3>Administrador</h3></div><div class="tiny muted">acesso total + configurações e usuários</div><div style="margin-top:8px"><span class="pill pur"><i></i>1 usuário</span></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:4px"><h3>Contador</h3></div><div class="tiny muted">tudo, exceto configurações do sistema</div><div style="margin-top:8px"><span class="pill inf"><i></i>2 usuários</span></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:4px"><h3>Colaborador</h3></div><div class="tiny muted">operação limitada às empresas atribuídas</div><div style="margin-top:8px"><span class="pill ok"><i></i>2 usuários</span></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:4px"><h3>Cliente</h3></div><div class="tiny muted">apenas o Portal do Cliente da própria empresa</div><div style="margin-top:8px"><span class="pill neu"><i></i>42 usuários</span></div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Equipe do escritório</h3></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Usuário</th><th>E-mail</th><th>Perfil</th><th>2FA</th><th>Último acesso</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Usuário">Rafael Contador</td><td class="desc" data-l="E-mail">rafael@ledware.com.br</td><td data-l="Perfil"><span class="pill pur"><i></i>Administrador</span></td><td data-l="2FA"><span class="pill ok"><i></i>Ativo</span></td><td data-l="Último acesso">hoje 08:02</td><td data-l="Status"><span class="pill ok"><i></i>Ativo</span></td></tr>
+                <tr><td class="main-cell" data-l="Usuário">Ana Souza</td><td class="desc" data-l="E-mail">ana@ledware.com.br</td><td data-l="Perfil"><span class="pill inf"><i></i>Contador</span></td><td data-l="2FA"><span class="pill ok"><i></i>Ativo</span></td><td data-l="Último acesso">hoje 07:45</td><td data-l="Status"><span class="pill ok"><i></i>Ativo</span></td></tr>
+                <tr><td class="main-cell" data-l="Usuário">Bruno Lima</td><td class="desc" data-l="E-mail">bruno@ledware.com.br</td><td data-l="Perfil"><span class="pill inf"><i></i>Contador</span></td><td data-l="2FA"><span class="pill ok"><i></i>Ativo</span></td><td data-l="Último acesso">ontem 18:20</td><td data-l="Status"><span class="pill ok"><i></i>Ativo</span></td></tr>
+                <tr><td class="main-cell" data-l="Usuário">Carla Nunes</td><td class="desc" data-l="E-mail">carla@ledware.com.br</td><td data-l="Perfil"><span class="pill ok"><i></i>Colaborador</span></td><td data-l="2FA"><span class="pill ok"><i></i>Ativo</span></td><td data-l="Último acesso">hoje 08:10</td><td data-l="Status"><span class="pill ok"><i></i>Ativo</span></td></tr>
+                <tr><td class="main-cell" data-l="Usuário">Diego Alves</td><td class="desc" data-l="E-mail">diego@ledware.com.br</td><td data-l="Perfil"><span class="pill ok"><i></i>Colaborador</span></td><td data-l="2FA"><span class="pill pend"><i></i>Pendente</span></td><td data-l="Último acesso">hoje 07:58</td><td data-l="Status"><span class="pill ok"><i></i>Ativo</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== AUDITORIA & LGPD ===== -->
+    <section class="view" id="v-aud">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar na trilha…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="toast('Relatório LGPD: acessos a dados pessoais por titular (protótipo)')">Relatório LGPD</button>
+        <button class="btn" onclick="toast('Exportação da trilha em CSV (protótipo)')">Exportar</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Auditoria &amp; LGPD</h2><span class="sub">trilha imutável de ações no sistema</span></div>
+        <div class="fchips">
+          <div class="fchip" onclick="toast('Filtro por usuário (protótipo)')"><span>Usuário:</span> Todos ▾</div>
+          <div class="fchip" onclick="toast('Filtro por módulo (protótipo)')"><span>Módulo:</span> Todos ▾</div>
+          <div class="fchip" onclick="toast('Filtro por período (protótipo)')"><span>Período:</span> Últimos 7 dias ▾</div>
+        </div>
+        <div class="card">
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Data/hora</th><th>Usuário</th><th>Ação</th><th>Módulo</th><th>Detalhe</th></tr></thead>
+              <tbody>
+                <tr><td data-l="Data/hora">18/08 08:44</td><td data-l="Usuário">Rafael Contador</td><td data-l="Ação"><span class="pill inf"><i></i>Edição</span></td><td data-l="Módulo">Lançamentos</td><td class="desc" data-l="Detalhe">lçto 2836 — histórico alterado (depreciação forno)</td></tr>
+                <tr><td data-l="Data/hora">18/08 07:40</td><td data-l="Usuário">sistema</td><td data-l="Ação"><span class="pill ok"><i></i>Rotina</span></td><td data-l="Módulo">Contabilização</td><td class="desc" data-l="Detalhe">289 lançamentos automáticos — Padaria São José</td></tr>
+                <tr><td data-l="Data/hora">17/08 16:20</td><td data-l="Usuário">Bruno Lima</td><td data-l="Ação"><span class="pill ok"><i></i>Transmissão</span></td><td data-l="Módulo">SPED</td><td class="desc" data-l="Detalhe">EFD Contribuições Jul — Auto Peças Cruzeiro · recibo 29.44…</td></tr>
+                <tr><td data-l="Data/hora">17/08 14:02</td><td data-l="Usuário">Carla Nunes</td><td data-l="Ação"><span class="pill pur"><i></i>Acesso a dado pessoal</span></td><td data-l="Módulo">Folha</td><td class="desc" data-l="Detalhe">consulta CPF/salário — José Pereira Filho (rescisão) · registrado p/ LGPD</td></tr>
+                <tr><td data-l="Data/hora">17/08 09:12</td><td data-l="Usuário">Ana Souza</td><td data-l="Ação"><span class="pill err"><i></i>Exclusão</span></td><td data-l="Módulo">Contas a Pagar</td><td class="desc" data-l="Detalhe">título duplicado #8812 removido — justificativa registrada</td></tr>
+                <tr><td data-l="Data/hora">16/08 11:30</td><td data-l="Usuário">Rafael Contador</td><td data-l="Ação"><span class="pill inf"><i></i>Permissão</span></td><td data-l="Módulo">Usuários</td><td class="desc" data-l="Detalhe">Diego Alves — adicionado às empresas Barbearia Estilo, Pet Shop</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+</div><!-- /stage app -->
+
+<!-- ===== PORTAL DO CLIENTE ===== -->
+<div id="portal" class="stage">
+  <div class="ptop">
+    <div class="brand" style="padding:0"><div class="mark">L</div><div><div class="t" style="color:var(--ink)">Portal do Cliente</div><div class="s" style="color:var(--mut)">Ledware Contabilidade</div></div></div>
+    <div class="who"><span class="av">PS</span><span>Padaria São José ME</span></div>
+  </div>
+  <div class="pshell">
+    <div class="pbody">
+      <div class="pnav">
+        <button class="on" onclick="pgo('inicio',this)">Início</button>
+        <button onclick="pgo('docs',this)">Meus Documentos</button>
+        <button onclick="pgo('msgs',this)">Mensagens</button>
+        <button onclick="pgo('fat',this)">Minhas Faturas</button>
+        <button onclick="pgo('folha',this)">Folha &amp; Holerites</button>
+      </div>
+
+      <div class="pview on" id="p-inicio">
+        <div class="paycard">
+          <div><div class="lbl">Honorários · agosto/2026</div><div class="v">R$ 890,00</div><div class="d">vencimento 20/08 · boleto com PIX</div></div>
+          <div class="acts"><button class="btn wht" onclick="toast('QR Code PIX copia-e-cola exibido (protótipo)')">Pagar com PIX</button><button class="btn ghost-w" onclick="toast('Download do boleto em PDF (protótipo)')">2ª via do boleto</button></div>
+        </div>
+        <div class="cards3">
+          <div class="card kpi"><div class="lbl"><span class="kdot w"></span>Impostos a pagar</div><div class="val">R$ 10.155,62</div><div class="sub">DAS + FGTS · vencem 20/08</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Resultado · Jul</div><div class="val">R$ 21.884,00</div><div class="sub">margem 25,3% · ver DRE</div></div>
+          <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Documentos novos</div><div class="val">2</div><div class="sub">balancete e guia DAS</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Avisos do seu contador</h3></div>
+          <div class="alert warn"><div class="ic">−</div><div><b>Aprove o balancete de julho</b><small>sua aprovação libera o fechamento do mês</small><br><button class="lk" onclick="toast('Balancete aprovado digitalmente — o escritório foi notificado ✓')">Revisar e aprovar →</button></div></div>
+          <div class="alert info"><div class="ic">⧗</div><div><b>Guia DAS de julho disponível</b><small>R$ 7.943,12 · vencimento 20/08 · pague pelo app do seu banco</small></div></div>
+        </div>
+      </div>
+
+      <div class="pview" id="p-docs">
+        <div class="card">
+          <div class="ct"><h3>Meus Documentos</h3><div class="end"><button class="btn sm pri" onclick="toast('Upload de documento para o escritório (protótipo)')">↑ Enviar arquivo</button></div></div>
+          <div class="duelist">
+            <div class="row"><div><div class="who">📄 Balancete Jul/2026.pdf</div><div class="cat">enviado pelo escritório · 15/08</div></div><button class="btn sm" onclick="toast('Download (protótipo)')">Baixar</button></div>
+            <div class="row"><div><div class="who">📄 DAS Jul/2026 — guia.pdf</div><div class="cat">enviado pelo escritório · 15/08 · <b style="color:var(--warn)">novo</b></div></div><button class="btn sm" onclick="toast('Download (protótipo)')">Baixar</button></div>
+            <div class="row"><div><div class="who">📄 Holerites Jul/2026 (8).zip</div><div class="cat">enviado pelo escritório · 05/08</div></div><button class="btn sm" onclick="toast('Download (protótipo)')">Baixar</button></div>
+            <div class="row"><div><div class="who">📎 Extrato BB Jul.ofx</div><div class="cat">você enviou · 04/08 · recebido ✓</div></div><button class="btn sm" onclick="toast('Download (protótipo)')">Baixar</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pview" id="p-msgs">
+        <div class="card">
+          <div class="ct"><h3>Mensagens</h3><span class="hint">canal direto com o escritório</span></div>
+          <div class="duelist">
+            <div class="row"><span class="avx">LC</span><div><div class="who">Ledware Contabilidade</div><div class="cat">“Balancete de julho publicado. Podem revisar e aprovar pelo portal.”</div></div><span class="d">15/08</span></div>
+            <div class="row"><span class="avx" style="background:#E8B03A;color:#3A2B00">PS</span><div><div class="who">Você</div><div class="cat">“Recebi o balancete, podem fechar o mês. Obrigado!”</div></div><span class="d">17/08</span></div>
+          </div>
+          <div class="inp area" style="margin-top:10px">Escreva uma mensagem para o escritório…</div>
+          <div style="margin-top:9px; display:flex; justify-content:flex-end"><button class="btn pri sm" onclick="toast('Mensagem enviada — o escritório recebe notificação')">Enviar</button></div>
+        </div>
+      </div>
+
+      <div class="pview" id="p-fat">
+        <div class="card">
+          <div class="ct"><h3>Minhas Faturas</h3><span class="hint">honorários do escritório</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Competência</th><th>Vencimento</th><th class="num">Valor</th><th>Status</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Competência">Ago/2026</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill pend"><i></i>Em aberto</span></td><td class="acts" data-l=""><button class="btn sm pri" onclick="toast('QR Code PIX (protótipo)')">Pagar</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Jul/2026</td><td data-l="Vencimento">20/07</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga 18/07</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Recibo (protótipo)')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Jun/2026</td><td data-l="Vencimento">20/06</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga 19/06</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Recibo (protótipo)')">Recibo</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="pview" id="p-folha">
+        <div class="card">
+          <div class="ct"><h3>Folha &amp; Holerites</h3><span class="hint">competência julho/2026</span></div>
+          <div class="cards3">
+            <div class="card kpi" style="border:1px solid var(--line)"><div class="lbl">Total líquido</div><div class="val">R$ 12.610,40</div><div class="sub">8 colaboradores</div></div>
+            <div class="card kpi" style="border:1px solid var(--line)"><div class="lbl">Encargos</div><div class="val">R$ 4.052,50</div><div class="sub">INSS + FGTS</div></div>
+            <div class="card kpi" style="border:1px solid var(--line)"><div class="lbl">Guias</div><div class="val">2</div><div class="sub">FGTS e INSS disponíveis</div></div>
+          </div>
+          <div style="margin-top:12px"><button class="lk" onclick="toast('Holerites individuais em PDF (protótipo)')">Baixar holerites (8) →</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TÍTULO FINANCEIRO ===== -->
+<div class="mback" id="mback" onclick="if(event.target===this)closeModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+    <div class="mh"><h3 id="mtitle">Novo título</h3><button class="x" onclick="closeModal()" aria-label="fechar">✕</button></div>
+    <div class="mb">
+      <div class="seg"><button id="seg-in" class="on-in" onclick="segTipo('in')">↑ A receber</button><button id="seg-out" onclick="segTipo('out')">↓ A pagar</button></div>
+      <div class="frow">
+        <div class="fld"><label>Descrição</label><div class="inp" id="m-desc">Honorários contábeis · Set/2026</div></div>
+        <div class="fld"><label>Cliente / fornecedor</label><div class="inp sel" id="m-who">Padaria São José ME</div></div>
+      </div>
+      <div class="frow3">
+        <div class="fld"><label>Valor</label><div class="inp"><b id="m-val">R$ 890,00</b></div></div>
+        <div class="fld"><label>Vencimento</label><div class="inp">15/09/2026 <span style="margin-left:auto">📅</span></div></div>
+        <div class="fld"><label>Status</label><div class="inp sel">Pendente</div></div>
+      </div>
+      <div class="frow3">
+        <div class="fld"><label>Categoria</label><div class="inp sel" id="m-cat">Honorários</div></div>
+        <div class="fld"><label>Centro de custo</label><div class="inp sel">Administrativo</div></div>
+        <div class="fld"><label>Conta bancária</label><div class="inp sel">Banco do Brasil</div></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Repetição</label><div class="seg" style="width:100%"><button class="on-pri" style="flex:1">Mensal</button><button style="flex:1">Único</button><button style="flex:1">Parcelado</button></div></div>
+        <div class="fld"><label>Forma de pagamento</label><div class="inp sel">Boleto</div></div>
+      </div>
+      <div class="fld"><label>Anexo</label><div class="drop">Arraste a nota fiscal ou o comprovante aqui, ou <b>clique para selecionar</b> · PDF, JPG ou PNG até 10 MB</div></div>
+      <div class="ckrow" id="m-bol"><button class="chk on" onclick="ck(this)" aria-label="emitir boleto"></button> Emitir boleto com PIX ao salvar <span class="tag pri" style="margin-left:2px">◇ registro automático</span></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeModal()">Cancelar</button><span class="sp"></span><button class="btn" onclick="toast('Título salvo — formulário pronto para o próximo (protótipo)')">Salvar e novo</button><button class="btn pri" onclick="closeModal();toast('Título salvo com sucesso (protótipo)')">Salvar e voltar</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: LANÇAMENTO CONTÁBIL ===== -->
+<div class="mback" id="lback" onclick="if(event.target===this)closeLanc()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ltitle">
+    <div class="mh"><h3 id="ltitle">Novo lançamento contábil</h3><button class="x" onclick="closeLanc()" aria-label="fechar">✕</button></div>
+    <div class="mb">
+      <div class="frow">
+        <div class="fld"><label>Data</label><div class="inp">18/08/2026 <span style="margin-left:auto">📅</span></div></div>
+        <div class="fld"><label>Histórico padrão</label><div class="inp sel">Pagamento de fornecedor</div></div>
+      </div>
+      <div class="fld"><label>Complemento do histórico</label><div class="inp">Moinho Sul Alimentos — duplicata 4412/2</div></div>
+      <div class="frow3">
+        <div class="fld"><label>Conta débito</label><div class="inp sel">2.1.01 Fornecedores</div></div>
+        <div class="fld"><label>Conta crédito</label><div class="inp sel">1.1.01.002 Banco BB</div></div>
+        <div class="fld"><label>Valor</label><div class="inp"><b>R$ 3.120,00</b></div></div>
+      </div>
+      <div class="alert good" style="margin:0"><div class="ic">✓</div><div><b>Partidas balanceadas</b><small>débito = crédito · lançamento pronto para gravar</small></div></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeLanc()">Cancelar</button><span class="sp"></span><button class="btn" onclick="toast('Lançamento gravado — próximo (protótipo)')">Gravar e novo</button><button class="btn pri" onclick="closeLanc();toast('Lançamento nº 2842 gravado no diário (protótipo)')">Gravar</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: NOVA TAREFA ===== -->
+<div class="mback" id="tback" onclick="if(event.target===this)closeTarefa()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ttitle">
+    <div class="mh"><h3 id="ttitle">Nova tarefa</h3><button class="x" onclick="closeTarefa()" aria-label="fechar">✕</button></div>
+    <div class="mb">
+      <div class="fld"><label>Título</label><div class="inp">Conferir variáveis da folha de agosto</div></div>
+      <div class="frow3">
+        <div class="fld"><label>Cliente</label><div class="inp sel">Padaria São José ME</div></div>
+        <div class="fld"><label>Responsável</label><div class="inp sel">Carla Nunes</div></div>
+        <div class="fld"><label>Prazo</label><div class="inp">25/08/2026 <span style="margin-left:auto">📅</span></div></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Prioridade</label><div class="seg" style="width:100%"><button style="flex:1">Baixa</button><button class="on-pri" style="flex:1">Normal</button><button style="flex:1">Urgente</button></div></div>
+        <div class="fld"><label>Recorrência</label><div class="inp sel">Mensal (todo dia 25)</div></div>
+      </div>
+      <div class="fld"><label>Checklist</label><div class="inp area">1. Solicitar espelho de ponto · 2. Conferir horas extras · 3. Validar descontos…</div></div>
+    </div>
+    <div class="mf"><button class="btn" onclick="closeTarefa()">Cancelar</button><span class="sp"></span><button class="btn pri" onclick="closeTarefa();toast('Tarefa criada e atribuída — notificação enviada (protótipo)')">Criar tarefa</button></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
