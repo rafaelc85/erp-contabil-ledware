@@ -992,3 +992,163 @@ FF.negociar = { t: 'Negociar títulos vencidos', save: 'Enviar proposta', ok: 'P
     '<div class="frow">' + fsel('Parcelamento', 'ng-parc', ['3× sem juros', '2× sem juros', '4× com juros de 1% a.m.']) +
     fsel('Primeira parcela', 'ng-ini', ['25/08/2026', '01/09/2026', '10/09/2026']) + '</div>' +
     '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Emitir boletos com PIX para cada parcela</div>' };
+
+/* =========================================================================
+   Extensões 3: WhatsApp API, Integra Contador, calendário editável,
+   Cofre Seguro, checklist do portal, Growth e Central de Ajuda
+   ========================================================================= */
+
+/* ---------- cobrar por WhatsApp ---------- */
+function wppCobrar(btn){
+  var cli = 'Clientes selecionados';
+  var tr = btn && btn.closest ? btn.closest('tr') : null;
+  if(tr){ var mc = tr.querySelector('.main-cell'); if(mc) cli = mc.textContent.trim(); }
+  var tbody = document.querySelector('#wpptb tbody');
+  if(tbody){
+    var row = document.createElement('tr');
+    row.dataset.st = 'cob';
+    row.innerHTML = '<td data-l="Horário">Agora</td><td class="main-cell" data-l="Cliente"></td>' +
+      '<td data-l="Tipo"><span class="pill pend"><i></i>Cobrança</span></td>' +
+      '<td class="desc" data-l="Mensagem">Olá! Segue a 2ª via do boleto com QR Code PIX. Qualquer dúvida, estamos à disposição.</td>' +
+      '<td data-l="Status"><span class="pill ok"><i></i>Enviada ✓</span></td>';
+    row.querySelector('.main-cell').textContent = cli;
+    tbody.insertBefore(row, tbody.firstChild);
+  }
+  toast('Cobrança enviada por WhatsApp — 2ª via + QR PIX · ' + cli);
+}
+function wppIA(el){
+  var al = el.closest('.alert');
+  if(al){
+    al.className = 'alert good';
+    al.innerHTML = '<div class="ic">✓</div><div><b>Lembrete enviado à Padaria São José</b><small>agora · com link direto para o portal — a IA monitora a resposta</small></div>';
+  }
+  wppCobrar(null);
+}
+
+/* ---------- captura de notas: aplicar CFOP sugerido ---------- */
+function aplicarCfop(btn){
+  var tr = btn.closest('tr');
+  if(tr){
+    var td = btn.closest('td');
+    td.innerHTML = '<span class="pill ok"><i></i>Corrigida ✓</span>';
+  }
+  toast('CFOP corrigido e lançamento contábil reprocessado');
+}
+
+/* ---------- cofre seguro ---------- */
+function aprovaDoc(btn){
+  var tr = btn.closest('tr');
+  if(tr){
+    var pill = tr.querySelector('.pill');
+    if(pill) pill.outerHTML = '<span class="pill ok"><i></i>Aprovado — no cofre</span>';
+    btn.closest('td').innerHTML = '';
+  }
+  toast('Documento aprovado — disponível no fluxo contábil');
+}
+
+/* ---------- portal: checklist do mês ---------- */
+function enviarDoc(btn){
+  var row = btn.closest('.row');
+  if(row){
+    var cat = row.querySelector('.cat');
+    if(cat) cat.innerHTML = 'enviado agora · em validação no Cofre Seguro';
+    btn.outerHTML = '<span class="pill inf"><i></i>Em validação</span>';
+  }
+  var pend = document.querySelectorAll('#chk-pend .btn').length;
+  var done = 5 - pend;
+  var pct = Math.round(done / 5 * 100);
+  var bar = document.getElementById('chk-bar'), pctEl = document.getElementById('chk-pct'), hint = document.getElementById('chk-hint');
+  if(bar) bar.style.width = pct + '%';
+  if(pctEl) pctEl.textContent = pct + '%';
+  if(hint) hint.textContent = done + ' de 5 entregues' + (pend ? ' · faltam ' + pend + ' para fechar o mês' : ' · tudo entregue 🎉');
+  toast('Arquivo enviado — passa pela quarentena do Cofre Seguro antes de liberar');
+}
+function resposta(btn, txt){
+  var wrap = btn.parentElement;
+  wrap.innerHTML = '<span class="pill ok"><i></i>' + txt + '</span>';
+  toast('Resposta registrada — o escritório foi notificado');
+}
+
+/* ---------- central de ajuda: player de tutorial ---------- */
+function vidOpen(title, meta, desc){
+  document.getElementById('g-title').textContent = title;
+  document.getElementById('g-body').innerHTML =
+    '<div style="aspect-ratio:16/9;background:linear-gradient(135deg,#0B3630,#14795F);border-radius:12px;display:grid;place-items:center;color:#fff">' +
+      '<div style="text-align:center"><div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.92);color:#0B3630;display:grid;place-items:center;font-size:22px;margin:0 auto 10px">▶</div>' +
+      '<b>' + title + '</b><div style="opacity:.8;font-size:12px;margin-top:4px">' + meta + ' · player incorporado no produto final</div></div></div>' +
+    '<p class="tiny muted">' + desc + '</p>' +
+    '<div class="fld"><label>Capítulos</label><div class="duelist">' +
+      '<div class="row"><span class="d">0:00</span><div class="who">Introdução</div></div>' +
+      '<div class="row"><span class="d">1:40</span><div class="who">Passo a passo na tela</div></div>' +
+      '<div class="row"><span class="d">' + meta.split(' ')[0] + '</span><div class="who">Dicas e erros comuns</div></div></div></div>';
+  document.getElementById('gback').classList.add('open');
+}
+
+/* ---------- detalhe de bloqueio do cofre ---------- */
+GDET.bloqueio = function(){
+  return { title: 'Arquivo bloqueado — Contrato.exe', html:
+    '<div class="alert bad"><div class="ic">🛡️</div><div><b>Executável disfarçado de PDF</b><small>a extensão declarada era .pdf, mas a assinatura de bytes identifica um executável Windows (MZ)</small></div></div>' +
+    '<div class="frow">' + fldRow('Cliente', 'Barbearia Estilo') + fldRow('Recebido em', '18/08 08:12') + '</div>' +
+    '<div class="frow">' + fldRow('Hash SHA-256', 'a3f1…9c22 (isolado)') + fldRow('Destino', 'Quarentena permanente') + '</div>' +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Cliente orientado automaticamente</b><small>mensagem enviada pelo portal e WhatsApp pedindo o reenvio do documento correto em PDF</small></div></div>' };
+};
+
+/* ---------- calendário fiscal editável ---------- */
+function addCalEvent(dia, titulo, cls){
+  var cells = document.querySelectorAll('#v-obr .cal .dc:not(.out)');
+  for(var i = 0; i < cells.length; i++){
+    var dn = cells[i].querySelector('.dn');
+    if(dn && dn.textContent.trim() === String(dia)){
+      var ev = document.createElement('span');
+      ev.className = 'ev ' + (cls || 'c');
+      ev.textContent = titulo;
+      cells[i].appendChild(ev);
+      return true;
+    }
+  }
+  return false;
+}
+
+/* ---------- novos formulários ---------- */
+FF.wppmanual = { t: 'Enviar notificação por WhatsApp', save: 'Enviar agora', ok: 'Notificação enviada pelo WhatsApp do escritório',
+  body: '<div class="frow">' + fsel('Cliente', 'wm-cli', ['Padaria São José', 'Mercado Central', 'Transportes Alvorada', 'Todos os inadimplentes']) +
+    fsel('Modelo', 'wm-mod', ['Cobrança de documento', 'Alerta de vencimento', 'Cobrança de honorários (2ª via + PIX)', 'Mensagem livre']) + '</div>' +
+    '<div class="fld"><label>Mensagem</label><div class="inp area">Bom dia! Ainda aguardamos os documentos de julho. Segue o link do portal para envio…</div></div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Incluir link direto do portal do cliente</div>',
+  apply: function(){
+    var tbody = document.querySelector('#wpptb tbody');
+    if(!tbody) return;
+    var tr = document.createElement('tr');
+    tr.dataset.st = 'cob';
+    tr.innerHTML = '<td data-l="Horário">Agora</td><td class="main-cell" data-l="Cliente">' + document.getElementById('wm-cli').value + '</td>' +
+      '<td data-l="Tipo"><span class="pill pend"><i></i>Manual</span></td>' +
+      '<td class="desc" data-l="Mensagem">Bom dia! Ainda aguardamos os documentos de julho. Segue o link do portal…</td>' +
+      '<td data-l="Status"><span class="pill ok"><i></i>Enviada ✓</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  } };
+FF.wppregra = { t: 'Regra de disparo automático', save: 'Salvar regra', ok: 'Regra salva e ativa — próxima janela de disparo às 08:30',
+  body: '<div class="frow">' + fsel('Gatilho', 'wr-gat', ['Documento pendente com prazo próximo', 'Título de honorário vencido', 'Certificado digital a vencer', 'Documento validado pela IA', 'Guia disponível para pagamento']) +
+    fsel('Quando', 'wr-qdo', ['Todos os dias às 08:30', 'No evento, imediatamente', '3 dias antes do prazo']) + '</div>' +
+    '<div class="fld"><label>Mensagem (variáveis: {cliente}, {documento}, {prazo}, {link})</label><div class="inp area">Bom dia {cliente}! O documento {documento} vence em {prazo}. Envie pelo portal: {link}</div></div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Escalar para o responsável se não houver resposta em 24 h</div>' };
+FF.evento = { t: 'Novo evento no calendário fiscal', save: 'Adicionar ao calendário', ok: 'Evento adicionado — o calendário padrão continua gerado por regime',
+  body: fld('Título', 'Honorários — geração e envio') +
+    '<div class="frow">' + fsel('Dia (agosto/2026)', 'ev-dia', ['26', '19', '21', '27', '28']) +
+    fsel('Tipo', 'ev-tipo', ['Evento do escritório', 'Prazo de cliente', 'Obrigação extra']) + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Repetir todo mês</div>' +
+    '<div class="ckrow"><button class="chk" onclick="ck(this)" aria-label="opção"></button> Notificar a equipe por WhatsApp na véspera</div>',
+  apply: function(){
+    addCalEvent(document.getElementById('ev-dia').value, 'Honorários', 'c');
+  } };
+FF.repasse = { t: 'Política de repasse — Integra Contador', save: 'Salvar política', ok: 'Política de repasse atualizada — vale para as próximas faturas',
+  body: fsel('Modo de repasse', 'rp-modo', ['Repassar integral ao cliente', 'Repassar com margem de 20%', 'Absorver pelo escritório']) +
+    '<div class="frow">' + fld('Teto mensal por cliente', 'R$ 25,00') + fsel('Acima do teto', 'rp-teto', ['Exigir aprovação', 'Bloquear consultas', 'Repassar mesmo assim']) + '</div>' +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Lançamento automático</b><small>o repasse entra como item destacado na fatura mensal de honorários de cada cliente</small></div></div>' };
+FF.growth1 = { t: 'Contratar — Presença nas Redes Sociais', save: 'Contratar por R$ 497/mês', ok: 'Contratação registrada — o time Growth agenda o onboarding em até 1 dia útil',
+  body: '<div class="alert good"><div class="ic">✓</div><div><b>12 posts/mês na identidade do seu escritório</b><small>Instagram, LinkedIn e Facebook · calendário editorial fiscal · aprovação antes de publicar</small></div></div>' +
+    '<div class="frow">' + fld('Escritório', 'Ledware Contabilidade LTDA') + fld('Início', '01/09/2026') + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="aceite"></button> Li e aceito o contrato do módulo Growth (cancele quando quiser)</div>' };
+FF.growth2 = { t: 'Contratar — Tráfego Pago para Captação', save: 'Contratar por R$ 897/mês', ok: 'Contratação registrada — briefing de campanha enviado ao seu e-mail',
+  body: '<div class="alert good"><div class="ic">✓</div><div><b>Google Ads + Meta Ads segmentados no seu município</b><small>landing page inclusa · relatório mensal de leads · verba de mídia definida por você</small></div></div>' +
+    '<div class="frow">' + fld('Município-alvo', 'São Paulo — zona oeste') + fld('Verba de mídia mensal', 'R$ 1.500,00') + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="aceite"></button> Li e aceito o contrato do módulo Growth</div>' };
