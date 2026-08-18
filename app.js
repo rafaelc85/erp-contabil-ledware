@@ -1208,7 +1208,7 @@ FF.rpa = { t: 'Novo RPA — Recibo de Pagamento a Autônomo', save: 'Emitir RPA'
     tbody.insertBefore(tr, tbody.firstChild);
   } };
 FF.novaclp = { t: 'Nova CLP — Lançamento Padrão', save: 'Criar CLP', ok: 'CLP criada — as próximas notas desta origem contabilizam sozinhas',
-  body: '<div class="frow">' + fsel('Origem do movimento', 'cl-ori', ['NF-e entrada', 'NF-e / NFC-e saída', 'NFS-e entrada', 'NFS-e saída', 'Extrato bancário', 'Folha de pagamento', 'PDV Ledware (cupons)']) +
+  body: '<div class="frow">' + fsel('Origem do movimento', 'cl-ori', ['NF-e entrada', 'NF-e / NFC-e saída', 'NFS-e entrada', 'NFS-e saída', 'Extrato bancário', 'Folha de pagamento']) +
     fsel('Abrangência', 'cl-abr', ['Geral (todas as empresas)', 'Somente esta empresa']) + '</div>' +
     '<div class="frow">' + fsel('Conta débito', 'cl-deb', ['1.1.03 Estoques', '1.1.02 Clientes', '4.2.11 Serviços de Terceiros', '4.2.05 Despesas Bancárias']) +
     fsel('Conta crédito', 'cl-cre', ['2.1.01 Fornecedores', '3.1.01 Receita de Vendas', '1.1.01 Bancos', '2.1.03 Salários a Pagar']) + '</div>' +
@@ -1241,8 +1241,106 @@ FF.restaurar = { t: 'Restaurar backup', save: 'Iniciar restauração', ok: 'Rest
   body: fsel('Ponto de restauração', 'rs-pto', ['Hoje 03:00 (automático)', 'Ontem 03:00 (automático)', '16/08 03:00 (automático)', '15/08 22:14 (manual — antes do fechamento)']) +
     fsel('Destino', 'rs-dst', ['Ambiente de homologação (recomendado)', 'Produção — substituir dados atuais']) +
     '<div class="alert warn" style="margin:0"><div class="ic">−</div><div><b>Restauração em produção exige dupla confirmação</b><small>um segundo administrador precisa aprovar · a base atual é preservada por 30 dias</small></div></div>' };
-FF.ecoconn = { t: 'Conectar sistema Ledware do cliente', save: 'Enviar convite de conexão', ok: 'Convite enviado — a sincronização começa após o aceite no sistema do cliente',
-  body: '<div class="frow">' + fsel('Sistema', 'ec-sis', ['LedGME (gestão + OS)', 'LedClinic', 'LedHotel', 'Leducation', 'LedCommerce', 'LedChef']) +
-    fsel('Cliente', 'ec-cli', ['Auto Peças Cruzeiro', 'Clínica Vida', 'Hotel Jardim Real', 'Barbearia Estilo']) + '</div>' +
-    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Contabilizar movimentos automaticamente pelas CLPs</div>' +
-    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Sincronizar cadastro de produtos/serviços</div>' };
+
+/* =========================================================================
+   Extensões 5: Monitor Integra Contador (por situação / por pagamento)
+   e parametrização do eConsignado automático
+   ========================================================================= */
+
+var IC_EMP = {
+  PS: 'Padaria São José ME', AC: 'Auto Peças Cruzeiro', CV: 'Clínica Vida',
+  TA: 'Transportes Alvorada', MC: 'Mercado Central', SF: 'Studio Fit Academia',
+  BE: 'Barbearia Estilo', PF: 'Pet Shop Amigo Fiel'
+};
+/* [serviço, referência, {empresa: 'classe Rótulo'}] — g ok · n neutro · i info · r erro · w atenção */
+var IC_SIT = [
+  ['DCTFWeb', 'Ref. 07/2026', {PS: 'g Gerado', AC: 'g Gerado', CV: 'g Gerado', TA: 'n Não gerado', MC: 'g Gerado', SF: 'g Gerado', BE: 'g Gerado', PF: 'g Gerado'}],
+  ['MIT', 'Ref. 07/2026', {PS: 'g Entregue', AC: 'g Entregue', CV: 'i Retificada', TA: 'n Não entregue', MC: 'g Entregue', SF: 'g Entregue', BE: 'g Entregue', PF: 'g Entregue'}],
+  ['FGTS Digital', 'Ref. 07/2026', {PS: 'g Gerado', AC: 'g Gerado', CV: 'g Gerado', TA: 'g Gerado', MC: 'g Gerado', SF: 'n Não gerado', BE: 'g Gerado', PF: 'g Gerado'}],
+  ['eConsignado', 'Ref. 08/2026', {PS: 'g Gerado', AC: 'g Gerado', CV: 'g Gerado', TA: 'n Não gerado', MC: 'n Não gerado'}],
+  ['PGDAS', 'Ref. 07/2026', {PS: 'g Entregue', MC: 'g Entregue', SF: 'i Retificada', BE: 'r MAED', PF: 'g Entregue'}],
+  ['DEFIS', 'Ano 2025', {PS: 'g Entregue', MC: 'g Entregue', SF: 'g Entregue', BE: 'g Entregue', PF: 'g Entregue'}],
+  ['PGMEI', 'Ref. 07/2026', {PF: 'g Gerado'}],
+  ['CCMEI', '', {PF: 'g Ativa'}],
+  ['SITFIS', '', {PS: 'g Em dia', AC: 'g Em dia', CV: 'g Em dia', TA: 'w Pendências', MC: 'w Pendências', SF: 'g Em dia', BE: 'g Em dia', PF: 'g Em dia'}],
+  ['CND', '', {PS: 'g Válida', AC: 'g Válida', CV: 'g Válida', TA: 'r Vencida', MC: 'w Vence em 12 dias', SF: 'g Válida', BE: 'g Válida', PF: 'g Válida'}],
+  ['Procurações', '', {PS: 'g Ativa', AC: 'g Ativa', CV: 'g Ativa', TA: 'g Ativa', MC: 'g Ativa', SF: 'g Ativa', BE: 'w Pendente', PF: 'w Pendente'}],
+  ['Caixa Postal', '', {PS: 'n Sem novidades', AC: 'n Sem novidades', CV: 'n Sem novidades', TA: 'i 2 novas', MC: 'n Sem novidades', SF: 'n Sem novidades', BE: 'n Sem novidades', PF: 'n Sem novidades'}]
+];
+var IC_PAG = [
+  ['DCTFWeb — DARF previdenciário', 'Ref. 07/2026', {PS: 'g Pago', AC: 'g Pago', CV: 'g Pago', TA: 'w Em aberto', MC: 'g Pago', SF: 'g Pago', BE: 'g Pago', PF: 'g Pago'}],
+  ['FGTS Digital — guia', 'Ref. 07/2026', {PS: 'w Em aberto', AC: 'w Em aberto', CV: 'g Paga', TA: 'g Paga', MC: 'w Em aberto', SF: 'n Não gerada', BE: 'g Paga', PF: 'g Paga'}],
+  ['PGDAS — DAS', 'Ref. 07/2026', {PS: 'w Em aberto', MC: 'w Em aberto', SF: 'g Pago', BE: 'r Em atraso', PF: 'g Pago'}],
+  ['PGMEI — DAS-MEI', 'Ref. 07/2026', {PF: 'g Pago'}],
+  ['eConsignado — descontos', 'Ref. 08/2026', {PS: 'g Na folha', AC: 'g Na folha', CV: 'g Na folha'}]
+];
+var IC_LEG = {
+  sit: [['g', 'Gerado / Entregue / Em dia / Válida'], ['n', 'Não gerado / Sem novidades'], ['i', 'Retificada / Mensagens novas'], ['w', 'Pendências / A vencer'], ['r', 'MAED / Vencida']],
+  pag: [['g', 'Pago / Na folha'], ['w', 'Em aberto'], ['n', 'Não gerada'], ['r', 'Em atraso']]
+};
+function icRender(mode){
+  var box = document.getElementById('icmon');
+  if(!box) return;
+  var data = mode === 'pag' ? IC_PAG : IC_SIT;
+  var h = '';
+  data.forEach(function(row){
+    h += '<div class="icrow"><div class="iclbl">' + row[0] + (row[1] ? '<small>' + row[1] + '</small>' : '') + '</div><div class="icchips">';
+    for(var k in IC_EMP){
+      var st = row[2][k];
+      if(!st) continue;
+      var cls = st.split(' ')[0], lbl = st.slice(2);
+      h += '<button class="icc ' + cls + '" data-sv="' + row[0] + '" data-emp="' + k + '" data-lbl="' + lbl + '" title="' + IC_EMP[k] + ' — ' + lbl + '" onclick="icDet(this)">' + k + '</button>';
+    }
+    h += '</div></div>';
+  });
+  box.innerHTML = h;
+  var leg = document.getElementById('icleg');
+  if(leg) leg.innerHTML = IC_LEG[mode === 'pag' ? 'pag' : 'sit'].map(function(l){
+    return '<span><span class="icc ' + l[0] + '">⬤</span> ' + l[1] + '</span>';
+  }).join('');
+}
+function icMode(mode, btn){
+  btn.parentElement.querySelectorAll('button').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  icRender(mode);
+}
+function icDet(el){
+  var emp = IC_EMP[el.dataset.emp] || el.dataset.emp;
+  document.getElementById('g-title').textContent = el.dataset.sv + ' — ' + emp;
+  document.getElementById('g-body').innerHTML =
+    '<div class="frow3">' + fldRow('Situação', el.dataset.lbl) + fldRow('Fonte', 'Integra Contador · Serpro') + fldRow('Custo da consulta', 'R$ 0,24 (repassado)') + '</div>' +
+    '<div class="fld"><label>Ações</label><div style="display:flex; gap:8px; flex-wrap:wrap">' +
+      '<button class="btn sm pri" onclick="closeG();toast(\'Consulta executada via Integra Contador — situação atualizada (1 consulta · R$ 0,24)\')">Consultar agora</button>' +
+      '<button class="btn sm" onclick="pdfDemo(\'comprovante-integra-contador.pdf\',\'Comprovante - Integra Contador\')">Baixar comprovante</button>' +
+      '<button class="btn sm" onclick="closeG();fOpen(\'repasse\')">Política de repasse</button></div></div>' +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Monitoramento automático</b><small>este serviço é verificado pelo robô diariamente — a consulta manual só é cobrada quando você força a atualização</small></div></div>';
+  document.getElementById('gback').classList.add('open');
+}
+GDET.serprocob = function(){
+  return { title: 'Como funciona a cobrança — Serpro', html:
+    '<div class="tline" style="margin-top:2px">' +
+      '<div class="ti"><b>Cada consulta ao gov.br é tarifada pelo Serpro</b><small>valores por serviço (ex.: PGDAS R$ 0,24 · DCTFWeb R$ 0,28 · SITFIS R$ 0,11)</small></div>' +
+      '<div class="ti"><b>O painel soma tudo em tempo real</b><small>“Será pago ao Serpro (aprox.)” é a estimativa do fechamento do mês</small></div>' +
+      '<div class="ti g"><b>O custo é gerado para o cliente</b><small>lançado como item destacado na fatura de honorários, conforme a política de repasse (integral, com margem ou absorvido)</small></div>' +
+      '<div class="ti w"><b>Teto mensal por cliente</b><small>consultas acima do teto exigem aprovação — sem custo surpresa</small></div></div>' +
+    '<div style="margin-top:4px"><button class="btn sm pri" onclick="closeG();fOpen(\'repasse\')">Configurar repasse</button></div>' };
+};
+FF.econsig = { t: 'Parametrização — eConsignado automático', save: 'Salvar e ativar busca', ok: 'Parametrização salva — o robô busca as informações e lança os descontos na folha automaticamente',
+  body: '<div class="frow">' + fsel('Periodicidade da busca', 'ec-per', ['Diária — 06:00', 'Semanal — segunda-feira', 'No fechamento da folha', 'Sob demanda']) +
+    fsel('Abrangência', 'ec-abr', ['Todas as empresas com folha (18)', 'Somente empresas com consignado ativo (3)', 'Selecionar…']) + '</div>' +
+    '<div class="fld"><label>O que buscar automaticamente</label>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Margem consignável dos colaboradores</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Contratos averbados e alterações</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Parcelas do mês para desconto em folha</div></div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Lançar desconto na folha automaticamente (rubrica 9214 — empréstimo consignado)</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Avisar o colaborador por WhatsApp quando um novo contrato for averbado</div>' +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Custo estimado</b><small>~R$ 0,19 por colaborador consultado · repassado conforme a política do Integra Contador</small></div></div>',
+  apply: function(){
+    document.querySelectorAll('#v-int .mitem').forEach(function(m){
+      if(m.textContent.indexOf('e-Consignado') >= 0){
+        var l2 = m.querySelector('.l2');
+        if(l2) l2.innerHTML = 'busca diária 06:00 ativa · margens, averbações e parcelas atualizadas e lançadas na folha — <button class="lk" onclick="fOpen(\'econsig\')">parametrizar →</button>';
+      }
+    });
+  } };
+icRender('sit');

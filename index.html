@@ -92,7 +92,6 @@
       <li><button data-v="aud" onclick="go('aud',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Auditoria &amp; LGPD</button></li>
       <li><button data-v="int" onclick="go('int',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6M15 2v6M9 22v-6M15 22v-6M2 9h6M2 15h6M22 9h-6M22 15h-6"/><rect x="8" y="8" width="8" height="8" rx="2"/></svg>Integrações &amp; Automações</button></li>
       <li><button data-v="gro" onclick="go('gro',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>Ledware Growth<span class="badge">novo</span></button></li>
-      <li><button data-v="eco" onclick="go('eco',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M6.5 6.5l3.5 3.5M17.5 6.5L14 10M6.5 17.5L10 14M17.5 17.5L14 14"/></svg>Ecossistema Ledware</button></li>
       <li><button data-v="cfg" onclick="go('cfg',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 0-14 0 7 7 0 0 0 14 0z"/></svg>Configurações</button></li>
       <li><button data-v="ajd" onclick="go('ajd',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Central de Ajuda</button></li>
       <li><button onclick="restart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</button></li>
@@ -626,7 +625,7 @@
               </tbody>
             </table>
           </div>
-          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Integração fiscal → contábil</b><small>notas, cupons dos PDVs Ledware, extratos e folha passam pelas CLPs — o que não casa com nenhuma regra cai em “aguardando revisão”</small></div></div>
+          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Integração fiscal → contábil</b><small>notas fiscais, extratos e folha passam pelas CLPs — o que não casa com nenhuma regra cai em “aguardando revisão”</small></div></div>
         </div>
       </div>
     </section>
@@ -1663,6 +1662,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar integração…</div>
         <div class="grow"></div>
+        <button class="btn" onclick="fOpen('econsig')">Parametrizar eConsignado</button>
         <button class="btn" onclick="csvView(this,'integra-contador-consumo.csv')">Extrato de consumo</button>
         <button class="btn pri" onclick="fOpen('repasse')">Configurar repasse</button>
       </header>
@@ -1670,9 +1670,32 @@
         <div class="ph"><h2>Integrações &amp; Automações</h2><span class="sub">Integra Contador (Serpro) · robôs de captura · WhatsApp API</span></div>
         <div class="cards4">
           <div class="card kpi"><div class="lbl"><span class="kdot"></span>Consultas Serpro · Ago</div><div class="val">412</div><div class="sub">Integra Contador · 6 serviços ativos</div></div>
-          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Custo do mês</div><div class="val">R$ 98,47</div><div class="sub">tarifado por consulta pelo Serpro</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Será pago ao Serpro</div><div class="val">R$ 98,47</div><div class="sub">aproximado · tarifado por consulta</div></div>
           <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Repassado aos clientes</div><div class="val">R$ 61,20</div><div class="sub">conforme política de repasse</div></div>
           <div class="card kpi"><div class="lbl"><span class="kdot i"></span>Automações ativas</div><div class="val">7</div><div class="sub">rodando sem intervenção</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Monitor Integra Contador</h3><span class="hint">situação por empresa · dados do gov.br via Serpro</span>
+            <div class="end">
+              <div class="fchip" onclick="fcycle(this,['Ref. 07/2026','Ref. 06/2026','Ref. 05/2026'])"><span>Referência:</span> Ref. 07/2026 ▾</div>
+              <div class="tabs">
+                <button class="on" onclick="icMode('sit',this)">Por situação</button>
+                <button onclick="icMode('pag',this)">Por pagamento</button>
+              </div>
+            </div>
+          </div>
+          <div id="icmon"></div>
+          <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-top:14px; padding-top:12px; border-top:1px solid var(--soft)">
+            <div style="flex:1; min-width:240px">
+              <div class="duehead" style="padding-top:0">Legenda</div>
+              <div class="icleg" id="icleg"></div>
+            </div>
+            <div style="background:var(--soft); border:1px solid var(--line); border-radius:12px; padding:12px 16px; display:flex; gap:18px; align-items:center; flex-wrap:wrap">
+              <div><div class="tiny muted" style="font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:10px">Total de consultas</div><div style="font-size:20px; font-weight:800; font-variant-numeric:tabular-nums">412</div></div>
+              <div><div class="tiny muted" style="font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:10px">Será pago ao Serpro (aprox.)</div><div style="font-size:20px; font-weight:800; color:var(--pri); font-variant-numeric:tabular-nums">R$ 98,47</div></div>
+              <div style="flex-basis:100%; margin-top:-4px"><button class="lk" onclick="gOpen('serprocob',null)">Como funciona a cobrança? →</button> <span class="tiny muted">· repasse por cliente configurado</span></div>
+            </div>
+          </div>
         </div>
         <div class="card">
           <div class="ct"><h3>Integra Contador — Serpro</h3><span class="hint">consumo por serviço · agosto/2026</span><div class="end"><span class="pill ok"><i></i>Conectado · procuração eletrônica ativa</span></div></div>
@@ -1698,7 +1721,7 @@
             <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> Buscador de NFS-e municipais<span class="v tiny muted">04:00 diário</span></div><div class="l2">varre os portais das prefeituras conveniadas — 23 notas de serviço hoje</div></div>
             <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> eSocial automático<span class="v tiny muted">contínuo</span></div><div class="l2">gera e transmite S-1200/S-1210 no fechamento da folha — 126 eventos aceitos em agosto</div></div>
             <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> Puxar boletos e guias (DAS/DARF)<span class="v tiny muted">dia 15 e 18</span></div><div class="l2">emite via Integra Contador e publica no portal + WhatsApp de cada cliente</div></div>
-            <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> e-Consignado — consulta de margem<span class="v tiny muted">sob demanda</span></div><div class="l2">consulta margem consignável dos colaboradores e trata averbações na folha</div></div>
+            <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> e-Consignado — consulta de margem<span class="v tiny muted">sob demanda</span></div><div class="l2">consulta margem consignável, averbações e parcelas — <button class="lk" onclick="fOpen('econsig')">parametrizar busca automática →</button></div></div>
             <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> Emissão recorrente de NFS-e<span class="v tiny muted">dia 1º</span></div><div class="l2">emite automaticamente as notas de honorários dos 42 contratos</div></div>
             <div class="mitem"><div class="l1"><button class="chk on" onclick="ck(this)" aria-label="robô"></button> Régua WhatsApp<span class="v tiny muted">08:30 diário</span></div><div class="l2">cobranças e lembretes automáticos — <button class="lk" onclick="nav('wpp')">ver painel →</button></div></div>
           </div>
@@ -1783,7 +1806,7 @@
             <div class="row"><span class="tag pri">novo</span><div><div class="who">FGTS Digital completo</div><div class="cat">gestão de guias, parametrizada, procurações, consulta de empregador e recomposição</div></div><button class="lk" onclick="nav('fgts')">abrir →</button></div>
             <div class="row"><span class="tag pri">novo</span><div><div class="who">PLR, adiantamentos e Autônomos/RPA</div><div class="cat">novas abas na Folha de Pagamento — inclui transportador autônomo</div></div><button class="lk" onclick="nav('fol')">abrir →</button></div>
             <div class="row"><span class="tag pri">novo</span><div><div class="who">CLP — Lançamentos Padrões</div><div class="cat">regras de integração fiscal → contábil, agora editáveis na tela de Lançamentos</div></div><button class="lk" onclick="nav('lan')">abrir →</button></div>
-            <div class="row"><span class="tag pri">novo</span><div><div class="who">Ecossistema Ledware</div><div class="cat">LedCommerce, LedChef, LedGME e mais — vendas dos PDVs contabilizadas sozinhas</div></div><button class="lk" onclick="nav('eco')">abrir →</button></div>
+            <div class="row"><span class="tag pri">novo</span><div><div class="who">Monitor Integra Contador</div><div class="cat">situação e pagamentos por empresa — DCTFWeb, MIT, FGTS, eConsignado, PGDAS, CND… com custo Serpro</div></div><button class="lk" onclick="nav('int')">abrir →</button></div>
             <div class="row"><span class="tag">melhoria</span><div><div class="who">Livros fiscais com observações · retificação de DCTFWeb · restauração de backup</div><div class="cat">pedidos frequentes dos tutoriais do canal</div></div></div>
           </div>
         </div>
@@ -1868,64 +1891,6 @@
       </div>
     </section>
 
-    <!-- ===== ECOSSISTEMA LEDWARE ===== -->
-    <section class="view" id="v-eco">
-      <header class="top">
-        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar produto…</div>
-        <div class="grow"></div>
-        <button class="btn pri" onclick="fOpen('ecoconn')">+ Conectar sistema</button>
-      </header>
-      <div class="content">
-        <div class="ph"><h2>Ecossistema Ledware</h2><span class="sub">os sistemas de gestão dos seus clientes alimentam a contabilidade automaticamente</span></div>
-        <div class="alert good"><div class="ic">⚡</div><div><b>2 sistemas conectados enviando dados agora</b><small>vendas, cupons e comandas viram lançamentos contábeis pelas regras de CLP — sem digitação</small></div></div>
-        <div class="cards3">
-          <div class="card">
-            <div class="ct"><h3>LedCommerce</h3><span class="pill ok" style="margin-left:auto"><i></i>Conectado</span></div>
-            <div class="tiny muted" style="margin-bottom:8px">Padaria São José · Mercado Central</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">PDV touch</span><span class="tag">NFC-e / SAT</span><span class="tag">NF-e</span><span class="tag">DAV / orçamento</span><span class="tag">Pré-venda / comanda</span><span class="tag">Estoque por grade</span><span class="tag">MDF-e</span></div>
-            <div class="duelist"><div class="row"><div><div class="who">Vendas de hoje</div><div class="cat">184 cupons · contabilizados via CLP</div></div><span class="amt in">R$ 12.480,60</span></div></div>
-            <div style="margin-top:8px"><button class="lk" onclick="nav('lan')">Ver lançamentos gerados →</button></div>
-          </div>
-          <div class="card">
-            <div class="ct"><h3>LedChef</h3><span class="pill ok" style="margin-left:auto"><i></i>Conectado</span></div>
-            <div class="tiny muted" style="margin-bottom:8px">Restaurante Sabor Caseiro</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Controle de mesas</span><span class="tag">Comandas</span><span class="tag">Cardápio</span><span class="tag">NFC-e</span></div>
-            <div class="duelist"><div class="row"><div><div class="who">Movimento de hoje</div><div class="cat">62 comandas fechadas</div></div><span class="amt in">R$ 4.212,00</span></div></div>
-            <div style="margin-top:8px"><button class="lk" onclick="nav('lan')">Ver lançamentos gerados →</button></div>
-          </div>
-          <div class="card">
-            <div class="ct"><h3>LedGME</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
-            <div class="tiny muted" style="margin-bottom:8px">Gestão empresarial + Ordem de Serviço</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Ordem de Serviço</span><span class="tag">Faturamento</span><span class="tag">Compras</span><span class="tag">Estoque</span></div>
-            <div class="tiny muted">Ideal para Auto Peças Cruzeiro (oficina/OS) — os faturamentos de OS entram direto no fiscal.</div>
-            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
-          </div>
-          <div class="card">
-            <div class="ct"><h3>LedClinic</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
-            <div class="tiny muted" style="margin-bottom:8px">Clínicas e consultórios</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Agenda</span><span class="tag">Prontuário</span><span class="tag">Convênios</span><span class="tag">NFS-e</span></div>
-            <div class="tiny muted">Sugerido para a Clínica Vida — recebimentos de convênio conciliados automaticamente.</div>
-            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
-          </div>
-          <div class="card">
-            <div class="ct"><h3>LedHotel</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
-            <div class="tiny muted" style="margin-bottom:8px">Hotelaria e pousadas</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Reservas</span><span class="tag">Governança</span><span class="tag">Diárias</span><span class="tag">NFS-e</span></div>
-            <div class="tiny muted">Sugerido para o Hotel Jardim Real — diárias e consumos direto no faturamento.</div>
-            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
-          </div>
-          <div class="card">
-            <div class="ct"><h3>Leducation</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
-            <div class="tiny muted" style="margin-bottom:8px">Escolas e cursos</div>
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Matrículas</span><span class="tag">Mensalidades</span><span class="tag">Boletos + PIX</span></div>
-            <div class="tiny muted">Mensalidades escolares com régua de cobrança integrada ao financeiro.</div>
-            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
-          </div>
-        </div>
-        <div class="alert info"><div class="ic">i</div><div><b>Como funciona a integração</b><small>cada venda/cupom/comanda chega como movimento fiscal e passa pelas regras de CLP (Configuração de Lançamentos Padrões) — <button class="lk" onclick="nav('lan')">ver CLPs em Lançamentos →</button></small></div></div>
-      </div>
-    </section>
   </div><!-- /main -->
 </div><!-- /app -->
 </div><!-- /stage app -->
