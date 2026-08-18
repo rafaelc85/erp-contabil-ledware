@@ -1344,3 +1344,18 @@ FF.econsig = { t: 'Parametrização — eConsignado automático', save: 'Salvar 
     });
   } };
 icRender('sit');
+
+/* ---------- modelos de mensagem do WhatsApp ---------- */
+FF.wppmodelos = { t: 'Modelos de mensagem — WhatsApp', save: '+ Novo modelo', ok: 'Novo modelo enviado para aprovação da Meta — retorno em até 24 h',
+  body: '<div class="duelist">' +
+      '<div class="row"><div><div class="who">Cobrança de documento</div><div class="cat">“Bom dia {cliente}! Ainda aguardamos {documento}. Prazo: {prazo}. Envie pelo portal: {link}”</div></div><span class="pill ok"><i></i>Aprovado</span><button class="btn sm" onclick="closeF();fOpen(\x27wppmodelo\x27)">Editar</button></div>' +
+      '<div class="row"><div><div class="who">Alerta de vencimento</div><div class="cat">“⚠️ {obrigacao} vence em {prazo}. A guia já está no seu portal: {link}”</div></div><span class="pill ok"><i></i>Aprovado</span><button class="btn sm" onclick="closeF();fOpen(\x27wppmodelo\x27)">Editar</button></div>' +
+      '<div class="row"><div><div class="who">Confirmação de recebimento</div><div class="cat">“✅ Recebemos {documento}! Restam {faltam} documentos para concluir o fechamento.”</div></div><span class="pill ok"><i></i>Aprovado</span><button class="btn sm" onclick="closeF();fOpen(\x27wppmodelo\x27)">Editar</button></div>' +
+      '<div class="row"><div><div class="who">Cobrança de honorários (2ª via + PIX)</div><div class="cat">“Olá {cliente}! Segue a 2ª via do boleto com QR PIX: {link}”</div></div><span class="pill pend"><i></i>Em aprovação</span><button class="btn sm" onclick="closeF();fOpen(\x27wppmodelo\x27)">Editar</button></div></div>' +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Aprovação da Meta (WhatsApp Business)</b><small>mensagens ativas (fora da janela de 24 h) só podem usar modelos aprovados — qualquer alteração passa por nova aprovação</small></div></div>' };
+FF.wppmodelo = { t: 'Editar modelo de mensagem', save: 'Salvar e enviar para aprovação', ok: 'Modelo atualizado — enviado para aprovação da Meta (o anterior segue ativo até aprovar)',
+  body: '<div class="frow">' + fsel('Modelo', 'wmd-sel', ['Cobrança de documento', 'Alerta de vencimento', 'Confirmação de recebimento', 'Cobrança de honorários (2ª via + PIX)']) +
+    fsel('Idioma', 'wmd-idi', ['Português (BR)']) + '</div>' +
+    '<div class="fld"><label>Mensagem (variáveis: {cliente}, {documento}, {obrigacao}, {prazo}, {faltam}, {link})</label><div class="inp area" style="color:var(--ink)">Bom dia {cliente}! Ainda aguardamos {documento}. Prazo: {prazo}. Envie pelo portal: {link}</div></div>' +
+    '<div class="fld"><label>Pré-visualização</label><div class="inp" style="white-space:normal">Bom dia Padaria São José! Ainda aguardamos o extrato BB de julho. Prazo: amanhã. Envie pelo portal: led.wr/p7x2</div></div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Incluir botão “Abrir portal” na mensagem</div>' };
