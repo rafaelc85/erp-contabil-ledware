@@ -1152,3 +1152,97 @@ FF.growth2 = { t: 'Contratar — Tráfego Pago para Captação', save: 'Contrata
   body: '<div class="alert good"><div class="ic">✓</div><div><b>Google Ads + Meta Ads segmentados no seu município</b><small>landing page inclusa · relatório mensal de leads · verba de mídia definida por você</small></div></div>' +
     '<div class="frow">' + fld('Município-alvo', 'São Paulo — zona oeste') + fld('Verba de mídia mensal', 'R$ 1.500,00') + '</div>' +
     '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="aceite"></button> Li e aceito o contrato do módulo Growth</div>' };
+
+/* =========================================================================
+   Extensões 4: FGTS Digital, PLR/adiantamentos/RPA, CLP, livros fiscais,
+   ecossistema Ledware, retificação e restauração de backup
+   ========================================================================= */
+
+GDET.fgtsemp = function(t){
+  t = t || 'Padaria São José ME';
+  return { title: 'FGTS Digital — consulta de empregador', html:
+    '<div class="frow">' + fldRow('Empregador', t) + fldRow('Situação', 'Regular — sem débitos') + '</div>' +
+    '<div class="frow3">' + fldRow('Vínculos ativos', '8') + fldRow('Última guia', 'Jul/2026 · paga') + fldRow('Procuração', 'Ativa até 10/2027') + '</div>' +
+    '<div class="fld"><label>Últimas competências</label><div class="duelist">' +
+      '<div class="row"><div><div class="who">Jul/2026</div><div class="cat">guia mensal</div></div><span class="d">R$ 2.212,50</span><span class="pill pend"><i></i>A vencer 20/08</span></div>' +
+      '<div class="row"><div><div class="who">Jun/2026</div><div class="cat">guia mensal</div></div><span class="d">R$ 2.212,50</span><span class="pill ok"><i></i>Paga</span></div>' +
+      '<div class="row"><div><div class="who">Mai/2026</div><div class="cat">guia mensal</div></div><span class="d">R$ 2.180,10</span><span class="pill ok"><i></i>Paga</span></div></div></div>' };
+};
+
+FF.fgtsguia = { t: 'Gerar guia FGTS parametrizada', save: 'Gerar guia', ok: 'Guia parametrizada gerada — primeira linha da lista',
+  body: '<div class="frow">' + fsel('Tipo', 'fg-tipo', ['Parametrizada — por tomador/obra', 'Mensal', 'Rescisória']) +
+    fsel('Empresa', 'fg-emp', ['Auto Peças Cruzeiro', 'Padaria São José ME', 'Transportes Alvorada', 'Clínica Vida']) + '</div>' +
+    '<div class="frow">' + fld('Competência', 'Ago/2026') + fld('Vencimento', '20/09/2026 📅') + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Enviar ao cliente pelo portal + WhatsApp</div>',
+  apply: function(){
+    var tbody = document.querySelector('#v-fgts table.tb tbody');
+    if(!tbody) return;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="main-cell" data-l="Empresa">' + document.getElementById('fg-emp').value + '</td>' +
+      '<td data-l="Competência">Ago/2026</td><td data-l="Tipo"><span class="tag pri">' + document.getElementById('fg-tipo').value.split(' — ')[0] + '</span></td>' +
+      '<td class="num" data-l="Valor">R$ 3.418,00</td><td data-l="Vencimento">20/09</td>' +
+      '<td data-l="Status"><span class="pill pend"><i></i>Gerada</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  } };
+FF.fgtsrecomp = { t: 'Gerador de recomposição — FGTS Digital', save: 'Gerar e transmitir', ok: 'Recomposição transmitida — remuneração faltante regularizada',
+  body: '<div class="alert warn"><div class="ic">−</div><div><b>1 remuneração faltante detectada</b><small>C. E. Ramos (Padaria São José) — competência Jul/2026 não consta no FGTS Digital</small></div></div>' +
+    '<div class="frow">' + fsel('Colaborador', 'fr-col', ['C. E. Ramos — Padaria São José', 'A. Prado — Transportes Alvorada']) + fld('Competências', 'Jul/2026') + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Recalcular a guia após a recomposição</div>',
+  apply: function(){
+    var p = document.querySelector('#v-fgts .pill.err');
+    if(p && p.closest('tr')) p.outerHTML = '<span class="pill ok"><i></i>Recomposto ✓</span>';
+  } };
+FF.rpa = { t: 'Novo RPA — Recibo de Pagamento a Autônomo', save: 'Emitir RPA', ok: 'RPA emitido — retenções calculadas e refletidas no eSocial (S-1200)',
+  body: '<div class="frow">' + fld('Autônomo', 'Sílvio Andrade') + fsel('Tipo', 'rp-tipo', ['Serviço comum', 'Transportador autônomo (frete)']) + '</div>' +
+    '<div class="frow">' + fld('Serviço prestado', 'Frete intermunicipal — rota Campinas') + fld('Valor bruto', 'R$ 1.600,00') + '</div>' +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Retenções automáticas</b><small>INSS 11% (base reduzida p/ frete) · IRRF pela tabela · SEST/SENAT 2,5% quando transportador</small></div></div>',
+  apply: function(){
+    var tbody = document.querySelector('#auttb tbody');
+    if(!tbody) return;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="main-cell" data-l="Autônomo">Sílvio Andrade — transportador autônomo</td>' +
+      '<td class="desc" data-l="Serviço">Frete intermunicipal — rota Campinas</td>' +
+      '<td class="num" data-l="Bruto">R$ 1.600,00</td><td class="num" data-l="INSS">R$ 176,00</td>' +
+      '<td class="num" data-l="IRRF/ISS">R$ 40,00</td><td class="num" data-l="Líquido">R$ 1.344,00</td>' +
+      '<td data-l="Status"><span class="pill pend"><i></i>RPA emitido</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  } };
+FF.novaclp = { t: 'Nova CLP — Lançamento Padrão', save: 'Criar CLP', ok: 'CLP criada — as próximas notas desta origem contabilizam sozinhas',
+  body: '<div class="frow">' + fsel('Origem do movimento', 'cl-ori', ['NF-e entrada', 'NF-e / NFC-e saída', 'NFS-e entrada', 'NFS-e saída', 'Extrato bancário', 'Folha de pagamento', 'PDV Ledware (cupons)']) +
+    fsel('Abrangência', 'cl-abr', ['Geral (todas as empresas)', 'Somente esta empresa']) + '</div>' +
+    '<div class="frow">' + fsel('Conta débito', 'cl-deb', ['1.1.03 Estoques', '1.1.02 Clientes', '4.2.11 Serviços de Terceiros', '4.2.05 Despesas Bancárias']) +
+    fsel('Conta crédito', 'cl-cre', ['2.1.01 Fornecedores', '3.1.01 Receita de Vendas', '1.1.01 Bancos', '2.1.03 Salários a Pagar']) + '</div>' +
+    '<div class="fld"><label>Condição (opcional)</label><div class="inp">CFOP começa com 5 e CST 00 · valor &gt; R$ 0,00</div></div>',
+  apply: function(){
+    var tbody = document.querySelector('#clptb tbody');
+    if(!tbody) return;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="main-cell" data-l="CLP">416 — Nova regra</td>' +
+      '<td data-l="Origem"><span class="tag pri">' + document.getElementById('cl-ori').value + '</span></td>' +
+      '<td class="desc" data-l="Débito">' + document.getElementById('cl-deb').value + '</td>' +
+      '<td class="desc" data-l="Crédito">' + document.getElementById('cl-cre').value + '</td>' +
+      '<td data-l="Abrangência">' + (document.getElementById('cl-abr').selectedIndex === 0 ? 'Geral' : 'Empresa atual') + '</td>' +
+      '<td data-l="Status"><span class="pill ok"><i></i>Ativa · nova</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  } };
+FF.obslivro = { t: 'Observações do livro fiscal', save: 'Registrar observação', ok: 'Observação registrada — sai impressa no livro e no SPED',
+  body: '<div class="frow">' + fsel('Livro', 'ob-liv', ['Registro de Entradas', 'Registro de Saídas', 'Apuração de ICMS', 'Apuração de IPI']) + fld('Período', 'Jul/2026') + '</div>' +
+    '<div class="fld"><label>Observação</label><div class="inp area">NF-e 18.220 — mercadoria recebida em desacordo, devolução parcial em 05/08 (NF-e 4.472)…</div></div>' +
+    '<div class="frow">' + fld('Vincular à nota (opcional)', 'NF-e 18.220') + fsel('Código de observação', 'ob-cod', ['Livre', 'Ajuste de apuração', 'Devolução', 'Complemento de imposto']) + '</div>' };
+FF.reabrir = { t: 'Reabrir período do eSocial (S-1298)', save: 'Transmitir reabertura', ok: 'S-1298 aceito — período reaberto · lembre de fechar com S-1299 após os ajustes',
+  body: '<div class="frow">' + fsel('Empresa', 're-emp', ['Padaria São José ME', 'Clínica Vida', 'Mercado Central']) + fld('Competência', 'Jul/2026') + '</div>' +
+    fsel('Motivo', 're-mot', ['Retificar remuneração (S-1200)', 'Incluir desligamento fora do prazo', 'Corrigir rubrica/verba (S-1010)']) +
+    '<div class="alert warn" style="margin:0"><div class="ic">−</div><div><b>Período fechado em 07/08</b><small>a reabertura fica registrada na trilha de auditoria</small></div></div>' };
+FF.retificar = { t: 'Retificar DCTFWeb', save: 'Transmitir retificadora', ok: 'DCTFWeb retificadora aceita — novo DARF previdenciário disponível nas Guias',
+  body: '<div class="frow">' + fsel('Empresa', 'rt-emp', ['Clínica Vida', 'Auto Peças Cruzeiro', 'Transportes Alvorada']) + fld('Período de apuração', 'Jul/2026') + '</div>' +
+    fsel('O que mudou', 'rt-mot', ['Folha reprocessada (eSocial retificado)', 'Reinf retificada (retenções)', 'Exclusão de evento (S-3000)']) +
+    '<div class="alert info" style="margin:0"><div class="ic">i</div><div><b>Sequência correta</b><small>retifique primeiro eSocial/Reinf — a DCTFWeb rebate os novos débitos automaticamente e gera o DARF ajustado</small></div></div>' };
+FF.restaurar = { t: 'Restaurar backup', save: 'Iniciar restauração', ok: 'Restauração iniciada em ambiente de homologação — você recebe aviso ao concluir',
+  body: fsel('Ponto de restauração', 'rs-pto', ['Hoje 03:00 (automático)', 'Ontem 03:00 (automático)', '16/08 03:00 (automático)', '15/08 22:14 (manual — antes do fechamento)']) +
+    fsel('Destino', 'rs-dst', ['Ambiente de homologação (recomendado)', 'Produção — substituir dados atuais']) +
+    '<div class="alert warn" style="margin:0"><div class="ic">−</div><div><b>Restauração em produção exige dupla confirmação</b><small>um segundo administrador precisa aprovar · a base atual é preservada por 30 dias</small></div></div>' };
+FF.ecoconn = { t: 'Conectar sistema Ledware do cliente', save: 'Enviar convite de conexão', ok: 'Convite enviado — a sincronização começa após o aceite no sistema do cliente',
+  body: '<div class="frow">' + fsel('Sistema', 'ec-sis', ['LedGME (gestão + OS)', 'LedClinic', 'LedHotel', 'Leducation', 'LedCommerce', 'LedChef']) +
+    fsel('Cliente', 'ec-cli', ['Auto Peças Cruzeiro', 'Clínica Vida', 'Hotel Jardim Real', 'Barbearia Estilo']) + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Contabilizar movimentos automaticamente pelas CLPs</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Sincronizar cadastro de produtos/serviços</div>' };

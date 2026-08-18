@@ -18,11 +18,11 @@ Mockup completo e navegável do **ERP Contábil da Ledware Tecnologia** (versão
 | **Visão geral** | Dashboard da empresa · Dashboard do Escritório |
 | **Escritório** | Agenda de Obrigações (calendário fiscal editável) · Tarefas (kanban drag & drop) · Documentos & Mensagens (+ Cofre Seguro com quarentena e IA) · Contratos & Honorários · WhatsApp & Comunicação (Evolution API) |
 | **Cadastros** | Clientes · Plano de Contas (árvore) · Cadastros Auxiliares (centros de custo, contas, patrimônio, certificados) |
-| **Contabilidade** | Lançamentos (partida dobrada) · Demonstrações (DRE / Balancete) · Fechamento Contábil (checklist) |
-| **Fiscal** | Notas Fiscais (captura automática DFe + buscador NFS-e + IA de CFOP) · Apuração de Impostos (memória de cálculo) · Guias DARF/DAS/GPS/FGTS · SPED & Declarações |
-| **Folha & Pessoal** | Funcionários · Folha de Pagamento (férias, rescisões, 13º) · eSocial & EFD-Reinf |
+| **Contabilidade** | Lançamentos (partida dobrada + CLPs de contabilização automática) · Demonstrações (DRE / Balancete / Balanço / Razão) · Fechamento Contábil (checklist) |
+| **Fiscal** | Notas Fiscais (captura automática DFe + buscador NFS-e + IA de CFOP) · Apuração de Impostos (memória de cálculo) · Livros Fiscais com observações · Guias DARF/DAS/GPS/FGTS · SPED & Declarações (com retificação de DCTFWeb e nota de legados SEFIP/RAIS) |
+| **Folha & Pessoal** | Funcionários · Folha de Pagamento (férias, rescisões, 13º, PLR, adiantamentos, pró-labore, autônomos/RPA) · FGTS Digital (guias, procurações, consulta de empregador, recomposição, conferência) · eSocial & EFD-Reinf (eventos de tabela, SST, exclusão S-3000, reabertura S-1298/1299) |
 | **Financeiro** | Contas a Receber · Contas a Pagar · Conciliação Bancária · Fluxo de Caixa · Cobrança Boletos & PIX |
-| **Administração** | Usuários & Permissões · Auditoria & LGPD · Integrações & Automações (Integra Contador/Serpro com repasse de custo por consulta, eSocial automático, puxar boletos, e-Consignado) · Configurações · Ledware Growth (módulo opcional) · Central de Ajuda (tutoriais do canal da Ledware) |
+| **Administração** | Usuários & Permissões · Auditoria & LGPD · Integrações & Automações (Integra Contador/Serpro com repasse de custo por consulta, eSocial automático, puxar boletos, e-Consignado) · Configurações · Ledware Growth (módulo opcional) · Ecossistema Ledware (LedCommerce, LedChef, LedGME, LedClinic, LedHotel, Leducation) · Central de Ajuda (tutoriais do canal + changelog de versão) |
 | **Portal do Cliente** | Início · Documentos · Mensagens · Faturas · Folha & Holerites · Checklist do mês (envio de docs + confirmações do período) |
 
 ## Interações demonstradas

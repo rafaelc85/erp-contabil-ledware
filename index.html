@@ -79,6 +79,7 @@
       <li class="sec">Folha &amp; Pessoal</li>
       <li><button data-v="fun" onclick="go('fun',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Funcionários</button></li>
       <li><button data-v="fol" onclick="go('fol',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20M7 15h4"/></svg>Folha de Pagamento</button></li>
+      <li><button data-v="fgts" onclick="go('fgts',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M12 12v4M10 14h4"/></svg>FGTS Digital<span class="badge r">2</span></button></li>
       <li><button data-v="eso" onclick="go('eso',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>eSocial &amp; EFD-Reinf</button></li>
       <li class="sec">Financeiro</li>
       <li><button data-v="rec" onclick="go('rec',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Contas a Receber</button></li>
@@ -91,6 +92,7 @@
       <li><button data-v="aud" onclick="go('aud',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Auditoria &amp; LGPD</button></li>
       <li><button data-v="int" onclick="go('int',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6M15 2v6M9 22v-6M15 22v-6M2 9h6M2 15h6M22 9h-6M22 15h-6"/><rect x="8" y="8" width="8" height="8" rx="2"/></svg>Integrações &amp; Automações</button></li>
       <li><button data-v="gro" onclick="go('gro',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>Ledware Growth<span class="badge">novo</span></button></li>
+      <li><button data-v="eco" onclick="go('eco',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M6.5 6.5l3.5 3.5M17.5 6.5L14 10M6.5 17.5L10 14M17.5 17.5L14 14"/></svg>Ecossistema Ledware</button></li>
       <li><button data-v="cfg" onclick="go('cfg',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 0-14 0 7 7 0 0 0 14 0z"/></svg>Configurações</button></li>
       <li><button data-v="ajd" onclick="go('ajd',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Central de Ajuda</button></li>
       <li><button onclick="restart()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</button></li>
@@ -609,6 +611,23 @@
           </div>
           <div class="pgn"><span>1–6 de 312</span><button class="pg on">1</button><button class="pg" onclick="pgn(this)">2</button><button class="pg" onclick="pgn(this)">3</button><button class="pg" onclick="pgn(this)">›</button></div>
         </div>
+        <div class="card">
+          <div class="ct"><h3>CLP — Configuração de Lançamentos Padrões</h3><span class="hint">regras que transformam movimento fiscal em lançamento contábil</span>
+            <div class="end"><button class="btn sm pri" onclick="fOpen('novaclp')">+ Nova CLP</button></div></div>
+          <div class="tbwrap stack" id="clptb">
+            <table class="tb">
+              <thead><tr><th>CLP</th><th>Origem</th><th>Débito</th><th>Crédito</th><th>Abrangência</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="CLP">101 — Venda de mercadorias</td><td data-l="Origem"><span class="tag pri">NF-e / NFC-e saída</span></td><td class="desc" data-l="Débito">1.1.02 Clientes</td><td class="desc" data-l="Crédito">3.1.01 Receita de Vendas</td><td data-l="Abrangência">Geral</td><td data-l="Status"><span class="pill ok"><i></i>Ativa · 1.842 usos</span></td></tr>
+                <tr><td class="main-cell" data-l="CLP">102 — Compra p/ revenda</td><td data-l="Origem"><span class="tag pri">NF-e entrada</span></td><td class="desc" data-l="Débito">1.1.03 Estoques</td><td class="desc" data-l="Crédito">2.1.01 Fornecedores</td><td data-l="Abrangência">Geral</td><td data-l="Status"><span class="pill ok"><i></i>Ativa · 964 usos</span></td></tr>
+                <tr><td class="main-cell" data-l="CLP">205 — Tarifas bancárias</td><td data-l="Origem"><span class="tag">Extrato (Open Finance/OFX)</span></td><td class="desc" data-l="Débito">4.2.05 Despesas Bancárias</td><td class="desc" data-l="Crédito">1.1.01 Bancos</td><td data-l="Abrangência">Geral</td><td data-l="Status"><span class="pill ok"><i></i>Ativa · 388 usos</span></td></tr>
+                <tr><td class="main-cell" data-l="CLP">310 — Folha e encargos</td><td data-l="Origem"><span class="tag">Folha de pagamento</span></td><td class="desc" data-l="Débito">4.1.01 Salários</td><td class="desc" data-l="Crédito">2.1.03 Salários a Pagar</td><td data-l="Abrangência">Geral</td><td data-l="Status"><span class="pill ok"><i></i>Ativa · 216 usos</span></td></tr>
+                <tr><td class="main-cell" data-l="CLP">415 — Serviço tomado c/ retenção</td><td data-l="Origem"><span class="tag pri">NFS-e entrada</span></td><td class="desc" data-l="Débito">4.2.11 Serviços de Terceiros</td><td class="desc" data-l="Crédito">2.1.01 Fornecedores</td><td data-l="Abrangência">Clínica Vida</td><td data-l="Status"><span class="pill pend"><i></i>Revisar — 5 notas sem regra</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Integração fiscal → contábil</b><small>notas, cupons dos PDVs Ledware, extratos e folha passam pelas CLPs — o que não casa com nenhuma regra cai em “aguardando revisão”</small></div></div>
+        </div>
       </div>
     </section>
 
@@ -815,6 +834,20 @@
           </div>
           <div class="pgn"><span>1–6 de 91</span><button class="pg on">1</button><button class="pg" onclick="pgn(this)">2</button><button class="pg" onclick="pgn(this)">3</button><button class="pg" onclick="pgn(this)">›</button></div>
         </div>
+        <div class="card">
+          <div class="ct"><h3>Livros fiscais</h3><span class="hint">registro de entradas, saídas e apurações — com observações do contador</span></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Livro</th><th>Período</th><th class="num">Registros</th><th>Observações</th><th>Status</th><th class="acts"></th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Livro">Registro de Entradas</td><td data-l="Período">Jul/2026</td><td class="num" data-l="Registros">54</td><td data-l="Observações"><button class="lk" onclick="fOpen('obslivro')">2 notas · editar</button></td><td data-l="Status"><span class="pill ok"><i></i>Fechado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('livro-entradas-jul-2026.pdf','Registro de Entradas - Jul/2026')">PDF</button></td></tr>
+                <tr><td class="main-cell" data-l="Livro">Registro de Saídas</td><td data-l="Período">Jul/2026</td><td class="num" data-l="Registros">37</td><td data-l="Observações"><button class="lk" onclick="fOpen('obslivro')">1 nota · editar</button></td><td data-l="Status"><span class="pill ok"><i></i>Fechado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('livro-saidas-jul-2026.pdf','Registro de Saidas - Jul/2026')">PDF</button></td></tr>
+                <tr><td class="main-cell" data-l="Livro">Apuração de ICMS</td><td data-l="Período">Jul/2026</td><td class="num" data-l="Registros">—</td><td data-l="Observações"><button class="lk" onclick="fOpen('obslivro')">adicionar</button></td><td data-l="Status"><span class="pill ok"><i></i>Fechado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('apuracao-icms-jul-2026.pdf','Livro de Apuracao de ICMS - Jul/2026')">PDF</button></td></tr>
+                <tr><td class="main-cell" data-l="Livro">Registro de Entradas</td><td data-l="Período">Ago/2026</td><td class="num" data-l="Registros">54 (parcial)</td><td data-l="Observações"><button class="lk" onclick="fOpen('obslivro')">adicionar</button></td><td data-l="Status"><span class="pill inf"><i></i>Em movimento</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('livro-entradas-ago-2026-parcial.pdf','Registro de Entradas - Ago/2026 (parcial)')">PDF</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -915,6 +948,7 @@
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
         <button class="btn pri" onclick="fOpen('spedgen')">⬇ Gerar arquivo</button>
+        <button class="btn" onclick="fOpen('retificar')">Retificar DCTFWeb</button>
       </header>
       <div class="content">
         <div class="ph"><h2>SPED &amp; Declarações</h2><span class="sub">geração, validação e histórico de entregas</span></div>
@@ -939,6 +973,7 @@
             </table>
           </div>
         </div>
+        <div class="alert info"><div class="ic">i</div><div><b>Arquivos legados — SEFIP, RAIS e CAGED</b><small>substituídos pelo eSocial/FGTS Digital (Portaria 1.127) — o gerador segue disponível para competências antigas e a DIRF permanece até a extinção prevista</small></div></div>
       </div>
     </section>
 
@@ -994,6 +1029,9 @@
           <button onclick="aba('fol','res',this)">Rescisões · 1</button>
           <button onclick="aba('fol','dec',this)">13º Salário</button>
           <button onclick="aba('fol','pro',this)">Pró-Labore</button>
+          <button onclick="aba('fol','plr',this)">PLR</button>
+          <button onclick="aba('fol','adi',this)">Adiantamentos</button>
+          <button onclick="aba('fol','aut',this)">Autônomos / RPA</button>
         </div>
         <div class="card" data-group="fol" data-pane="comp">
           <div class="ct"><h3>Competências</h3></div>
@@ -1054,6 +1092,53 @@
           </div>
           <div class="alert good" style="margin-top:12px"><div class="ic">✓</div><div><b>DARF de IRRF e GPS gerados automaticamente</b><small>incluídos na competência Jul/2026 do módulo de Guias</small></div></div>
         </div>
+        <div class="card" data-group="fol" data-pane="plr" style="display:none">
+          <div class="ct"><h3>PLR — Participação nos Lucros e Resultados</h3><span class="hint">programa 2026 · acordo coletivo registrado</span>
+            <div class="end"><button class="btn sm pri" onclick="toast('PLR 2026 calculada — 8 colaboradores, tributação exclusiva de IRRF aplicada')">Calcular PLR 2026</button></div></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Colaborador</th><th>Atingimento de metas</th><th class="num">Valor PLR</th><th class="num">IRRF (exclusivo)</th><th class="num">Líquido</th><th>Parcela</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Colaborador">Maria Aparecida Santos</td><td data-l="Metas"><span class="pill ok"><i></i>104%</span></td><td class="num" data-l="Valor">R$ 3.240,00</td><td class="num" data-l="IRRF">R$ 0,00</td><td class="num" data-l="Líquido">R$ 3.240,00</td><td data-l="Parcela"><span class="tag">1ª/2 · 30/08</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">Fernanda Costa Lima</td><td data-l="Metas"><span class="pill ok"><i></i>100%</span></td><td class="num" data-l="Valor">R$ 2.480,00</td><td class="num" data-l="IRRF">R$ 0,00</td><td class="num" data-l="Líquido">R$ 2.480,00</td><td data-l="Parcela"><span class="tag">1ª/2 · 30/08</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">João Pedro Oliveira</td><td data-l="Metas"><span class="pill pend"><i></i>92%</span></td><td class="num" data-l="Valor">R$ 1.582,40</td><td class="num" data-l="IRRF">R$ 0,00</td><td class="num" data-l="Líquido">R$ 1.582,40</td><td data-l="Parcela"><span class="tag">1ª/2 · 30/08</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">Demais colaboradores (5)</td><td data-l="Metas"><span class="pill ok"><i></i>96–102%</span></td><td class="num" data-l="Valor">R$ 7.912,00</td><td class="num" data-l="IRRF">R$ 118,40</td><td class="num" data-l="Líquido">R$ 7.793,60</td><td data-l="Parcela"><span class="tag">1ª/2 · 30/08</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Regras da PLR aplicadas automaticamente</b><small>isenta de INSS/FGTS · IRRF por tabela exclusiva · máximo de 2 parcelas no ano com intervalo mínimo de 90 dias</small></div></div>
+        </div>
+        <div class="card" data-group="fol" data-pane="adi" style="display:none">
+          <div class="ct"><h3>Adiantamentos salariais</h3><span class="hint">quinzenal · crédito dia 20 · desconto na folha do mês</span>
+            <div class="end"><button class="btn sm pri" onclick="toast('Adiantamentos de agosto calculados — arquivo de crédito disponível para o banco')">Calcular adiantamentos</button></div></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Colaborador</th><th class="num">% do salário</th><th class="num">Valor</th><th>Crédito</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Colaborador">Maria Aparecida Santos</td><td class="num" data-l="%">40%</td><td class="num" data-l="Valor">R$ 1.296,00</td><td data-l="Crédito">20/08</td><td data-l="Status"><span class="pill pend"><i></i>Programado</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">Fernanda Costa Lima</td><td class="num" data-l="%">40%</td><td class="num" data-l="Valor">R$ 992,00</td><td data-l="Crédito">20/08</td><td data-l="Status"><span class="pill neu"><i></i>Suspenso — férias em set</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">João Pedro Oliveira</td><td class="num" data-l="%">40%</td><td class="num" data-l="Valor">R$ 688,00</td><td data-l="Crédito">20/08</td><td data-l="Status"><span class="pill pend"><i></i>Programado</span></td></tr>
+                <tr><td class="main-cell" data-l="Colaborador">Carlos Eduardo Ramos</td><td class="num" data-l="%">40%</td><td class="num" data-l="Valor">R$ 656,00</td><td data-l="Crédito">20/08</td><td data-l="Status"><span class="pill pend"><i></i>Programado</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Desconto automático</b><small>o valor adiantado entra como desconto na folha da competência, com o mesmo histórico contábil</small></div></div>
+        </div>
+        <div class="card" data-group="fol" data-pane="aut" style="display:none">
+          <div class="ct"><h3>Autônomos / RPA</h3><span class="hint">recibos de pagamento a autônomo · retenções automáticas</span>
+            <div class="end"><button class="btn sm pri" onclick="fOpen('rpa')">+ Novo RPA</button></div></div>
+          <div class="tbwrap stack" id="auttb">
+            <table class="tb">
+              <thead><tr><th>Autônomo</th><th>Serviço</th><th class="num">Valor bruto</th><th class="num">INSS</th><th class="num">IRRF / ISS</th><th class="num">Líquido</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Autônomo">Marcos Vinícius Prado</td><td class="desc" data-l="Serviço">Manutenção elétrica — Ago</td><td class="num" data-l="Bruto">R$ 1.800,00</td><td class="num" data-l="INSS">R$ 198,00</td><td class="num" data-l="IRRF/ISS">R$ 90,00</td><td class="num" data-l="Líquido">R$ 1.512,00</td><td data-l="Status"><span class="pill ok"><i></i>Pago 12/08</span></td></tr>
+                <tr><td class="main-cell" data-l="Autônomo">Sílvio Andrade — transportador autônomo</td><td class="desc" data-l="Serviço">Frete intermunicipal (SEST/SENAT 2,5%)</td><td class="num" data-l="Bruto">R$ 2.400,00</td><td class="num" data-l="INSS">R$ 264,00</td><td class="num" data-l="IRRF/ISS">R$ 60,00</td><td class="num" data-l="Líquido">R$ 2.016,00</td><td data-l="Status"><span class="pill pend"><i></i>RPA emitido</span></td></tr>
+                <tr><td class="main-cell" data-l="Autônomo">Renata Lopes</td><td class="desc" data-l="Serviço">Consultoria de vitrine — Ago</td><td class="num" data-l="Bruto">R$ 950,00</td><td class="num" data-l="INSS">R$ 104,50</td><td class="num" data-l="IRRF/ISS">R$ 47,50</td><td class="num" data-l="Líquido">R$ 798,00</td><td data-l="Status"><span class="pill pend"><i></i>Aguardando pgto</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert info" style="margin-top:12px"><div class="ic">i</div><div><b>Transportador autônomo configurado</b><small>base de INSS reduzida (20% do frete) + SEST/SENAT retidos e recolhidos na GPS · tudo refletido no eSocial (S-1200 cat. 738)</small></div></div>
+        </div>
       </div>
     </section>
 
@@ -1063,6 +1148,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar evento…</div>
         <div class="grow"></div>
+        <button class="btn" onclick="fOpen('reabrir')">Reabrir período (S-1298)</button>
         <button class="btn pri" onclick="esoAll(this)">⇪ Transmitir pendentes (3)</button>
       </header>
       <div class="content">
@@ -1084,6 +1170,9 @@
                 <tr><td class="main-cell" data-l="Evento">R-2010</td><td class="desc" data-l="Descrição">Reinf — serviços tomados c/ retenção INSS</td><td data-l="Empresa">Clínica Vida</td><td data-l="Gerado em">16/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="esoTransmit(this)">Transmitir</button></td></tr>
                 <tr><td class="main-cell" data-l="Evento">S-1200</td><td class="desc" data-l="Descrição">Remuneração Jul/2026 — 8 colaboradores</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">07/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-esocial-s1200.pdf','Recibo eSocial - S-1200 Jul/2026')">Recibo</button></td></tr>
                 <tr><td class="main-cell" data-l="Evento">S-2206</td><td class="desc" data-l="Descrição">Alteração contratual — reajuste salarial</td><td data-l="Empresa">Studio Fit Academia</td><td data-l="Gerado em">12/08</td><td data-l="Status"><span class="pill err"><i></i>Erro 301</span></td><td class="acts" data-l=""><button class="btn sm" onclick="esoFix(this)">Corrigir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-1010</td><td class="desc" data-l="Descrição">Tabela de rubricas — nova verba “Prêmio assiduidade”</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">14/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-esocial-s1010.pdf','Recibo eSocial - S-1010')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-2220</td><td class="desc" data-l="Descrição">SST — ASO periódico, 3 colaboradores</td><td data-l="Empresa">Clínica Vida</td><td data-l="Gerado em">13/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-esocial-s2220.pdf','Recibo eSocial - S-2220 SST')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-3000</td><td class="desc" data-l="Descrição">Exclusão — S-1200 duplicado de Jun/2026</td><td data-l="Empresa">Mercado Central</td><td data-l="Gerado em">11/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-esocial-s3000.pdf','Recibo eSocial - S-3000')">Recibo</button></td></tr>
               </tbody>
             </table>
           </div>
@@ -1496,7 +1585,7 @@
               <div class="row"><div><div class="who">Backup diário automático</div><div class="cat">último: hoje 03:00 · íntegro ✓</div></div><span class="pill ok"><i></i>Ativo</span></div>
               <div class="row"><div><div class="who">Retenção de documentos</div><div class="cat">5 anos (padrão fiscal)</div></div><span class="pill inf"><i></i>Configurado</span></div>
             </div>
-            <div style="margin-top:10px"><button class="btn sm" onclick="jsonExport()">Exportar todos os dados</button></div>
+            <div style="margin-top:10px"><button class="btn sm" onclick="jsonExport()">Exportar todos os dados</button> <button class="btn sm" onclick="fOpen('restaurar')">Restaurar backup</button></div>
           </div>
           <div class="card">
             <div class="ct"><h3>API &amp; Webhooks</h3></div>
@@ -1688,6 +1777,16 @@
       </header>
       <div class="content">
         <div class="ph"><h2>Central de Ajuda</h2><span class="sub">tutoriais em vídeo do canal da Ledware + base de conhecimento</span></div>
+        <div class="card">
+          <div class="ct"><h3>O que há de novo — versão 2.4</h3><span class="hint">agosto/2026 · no formato dos vídeos “O que há de novo?” do LedContábil</span><div class="end"><button class="lk" onclick="vidOpen('O que há de novo — versão 2.4','6 min · novidades','Resumo em vídeo das novidades da versão, como nas atualizações do LedContábil.')">Ver vídeo →</button></div></div>
+          <div class="duelist">
+            <div class="row"><span class="tag pri">novo</span><div><div class="who">FGTS Digital completo</div><div class="cat">gestão de guias, parametrizada, procurações, consulta de empregador e recomposição</div></div><button class="lk" onclick="nav('fgts')">abrir →</button></div>
+            <div class="row"><span class="tag pri">novo</span><div><div class="who">PLR, adiantamentos e Autônomos/RPA</div><div class="cat">novas abas na Folha de Pagamento — inclui transportador autônomo</div></div><button class="lk" onclick="nav('fol')">abrir →</button></div>
+            <div class="row"><span class="tag pri">novo</span><div><div class="who">CLP — Lançamentos Padrões</div><div class="cat">regras de integração fiscal → contábil, agora editáveis na tela de Lançamentos</div></div><button class="lk" onclick="nav('lan')">abrir →</button></div>
+            <div class="row"><span class="tag pri">novo</span><div><div class="who">Ecossistema Ledware</div><div class="cat">LedCommerce, LedChef, LedGME e mais — vendas dos PDVs contabilizadas sozinhas</div></div><button class="lk" onclick="nav('eco')">abrir →</button></div>
+            <div class="row"><span class="tag">melhoria</span><div><div class="who">Livros fiscais com observações · retificação de DCTFWeb · restauração de backup</div><div class="cat">pedidos frequentes dos tutoriais do canal</div></div></div>
+          </div>
+        </div>
         <div class="cards3">
           <div class="kcard" onclick="vidOpen('Primeiros passos no ERP Contábil','8 min · básico','Tour completo: login, multiempresa, menu e dashboards.')"><b>▶ Primeiros passos no ERP Contábil</b><div class="meta">8 min · básico</div></div>
           <div class="kcard" onclick="vidOpen('Importando XMLs e classificando notas','12 min · fiscal','Captura automática, importação em lote e regras de classificação.')"><b>▶ Importando XMLs e classificando notas</b><div class="meta">12 min · fiscal</div></div>
@@ -1695,8 +1794,136 @@
           <div class="kcard" onclick="vidOpen('Folha de pagamento e eSocial','15 min · pessoal','Cálculo, férias, rescisões e transmissão de eventos.')"><b>▶ Folha de pagamento e eSocial</b><div class="meta">15 min · pessoal</div></div>
           <div class="kcard" onclick="vidOpen('Portal do Cliente na prática','7 min · relacionamento','O que o seu cliente vê: documentos, faturas e aprovações.')"><b>▶ Portal do Cliente na prática</b><div class="meta">7 min · relacionamento</div></div>
           <div class="kcard" onclick="vidOpen('Cobrança automática por WhatsApp','10 min · financeiro','Régua de cobrança, modelos de mensagem e Evolution API.')"><b>▶ Cobrança automática por WhatsApp</b><div class="meta">10 min · financeiro</div></div>
+          <div class="kcard" onclick="vidOpen('Como fazer o cálculo PLR','3 min · folha','Programa de metas, tributação exclusiva e parcelas — como no LedContábil 2026.')"><b>▶ Como fazer o cálculo PLR</b><div class="meta">3 min · folha</div></div>
+          <div class="kcard" onclick="vidOpen('FGTS Digital — do acesso à guia','14 min · folha','Portal, procurações, consulta de empregador, gestão de guias e recomposição.')"><b>▶ FGTS Digital — do acesso à guia</b><div class="meta">14 min · folha</div></div>
+          <div class="kcard" onclick="vidOpen('Backup e restauração','2 min · sistema','Backup automático diário, gerenciador de pontos e restauração segura.')"><b>▶ Backup e restauração</b><div class="meta">2 min · sistema</div></div>
         </div>
         <div class="alert info"><div class="ic">🎬</div><div><b>Conteúdo do canal da Ledware no YouTube</b><small>os tutoriais existentes do canal estão sendo revisados e incorporados aqui, com capítulos e busca — os mais antigos serão regravados na nova interface</small></div></div>
+      </div>
+    </section>
+
+    <!-- ===== FGTS DIGITAL ===== -->
+    <section class="view" id="v-fgts">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar guia, empregador…</div>
+        <div class="grow"></div>
+        <button class="btn" onclick="fOpen('fgtsrecomp')">Gerar recomposição</button>
+        <button class="btn pri" onclick="fOpen('fgtsguia')">+ Guia parametrizada</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>FGTS Digital</h2><span class="sub">gestão de guias, procurações, consulta de empregador e conferência</span></div>
+        <div class="cards4">
+          <div class="card kpi"><div class="lbl"><span class="kdot"></span>Guias do mês</div><div class="val">18</div><div class="sub">mensais + 1 rescisória</div></div>
+          <div class="card kpi wrn"><div class="lbl"><span class="kdot w"></span>Total a recolher · Jul</div><div class="val">R$ 41.320,18</div><div class="sub">vencimento 20/08</div></div>
+          <div class="card kpi pos"><div class="lbl"><span class="kdot g"></span>Procurações ativas</div><div class="val">40/42</div><div class="sub">2 pendentes de outorga</div></div>
+          <div class="card kpi neg"><div class="lbl"><span class="kdot r"></span>Divergências na conferência</div><div class="val">2</div><div class="sub">folha × FGTS Digital</div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Gestão de guias</h3><span class="hint">mensal · rescisória · parametrizada por tomador/obra</span>
+            <div class="end"><button class="btn sm" onclick="pdfDemo('guias-fgts-jul-2026.pdf','Guias FGTS Digital - Jul/2026')">Baixar guias</button></div></div>
+          <div class="tbwrap stack">
+            <table class="tb">
+              <thead><tr><th>Empresa</th><th>Competência</th><th>Tipo</th><th class="num">Valor</th><th>Vencimento</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="main-cell" data-l="Empresa">Padaria São José ME</td><td data-l="Competência">Jul/2026</td><td data-l="Tipo"><span class="tag">Mensal</span></td><td class="num" data-l="Valor">R$ 2.212,50</td><td data-l="Vencimento">20/08</td><td data-l="Status"><span class="pill pend"><i></i>A vencer</span></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Padaria São José ME</td><td data-l="Competência">Ago/2026</td><td data-l="Tipo"><span class="tag pri">Rescisória — J. Pereira</span></td><td class="num" data-l="Valor">R$ 4.184,60</td><td data-l="Vencimento">28/08</td><td data-l="Status"><span class="pill pend"><i></i>Gerada</span></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Auto Peças Cruzeiro</td><td data-l="Competência">Jul/2026</td><td data-l="Tipo"><span class="tag pri">Parametrizada — por filial</span></td><td class="num" data-l="Valor">R$ 6.412,00</td><td data-l="Vencimento">20/08</td><td data-l="Status"><span class="pill pend"><i></i>A vencer</span></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Clínica Vida</td><td data-l="Competência">Jul/2026</td><td data-l="Tipo"><span class="tag">Mensal</span></td><td class="num" data-l="Valor">R$ 3.120,40</td><td data-l="Vencimento">20/08</td><td data-l="Status"><span class="pill ok"><i></i>Paga 15/08</span></td></tr>
+                <tr><td class="main-cell" data-l="Empresa">Transportes Alvorada</td><td data-l="Competência">Jul/2026</td><td data-l="Tipo"><span class="tag">Mensal</span></td><td class="num" data-l="Valor">R$ 5.840,00</td><td data-l="Vencimento">20/08</td><td data-l="Status"><span class="pill ok"><i></i>Paga 14/08</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="grid2e">
+          <div class="card">
+            <div class="ct"><h3>Procurações &amp; consulta de empregador</h3></div>
+            <div class="tbwrap stack">
+              <table class="tb">
+                <thead><tr><th>Empresa</th><th>Procuração</th><th>Validade</th><th class="acts"></th></tr></thead>
+                <tbody>
+                  <tr><td class="main-cell" data-l="Empresa">Padaria São José ME</td><td data-l="Procuração"><span class="pill ok"><i></i>Ativa</span></td><td data-l="Validade">10/2027</td><td class="acts" data-l=""><button class="btn sm" onclick="gOpen('fgtsemp',this)">Consultar</button></td></tr>
+                  <tr><td class="main-cell" data-l="Empresa">Mercado Central</td><td data-l="Procuração"><span class="pill ok"><i></i>Ativa</span></td><td data-l="Validade">03/2027</td><td class="acts" data-l=""><button class="btn sm" onclick="gOpen('fgtsemp',this)">Consultar</button></td></tr>
+                  <tr><td class="main-cell" data-l="Empresa">Barbearia Estilo</td><td data-l="Procuração"><span class="pill pend"><i></i>Aguardando outorga</span></td><td data-l="Validade">—</td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Solicitação de outorga reenviada ao cliente com o passo a passo do portal gov.br')">Reenviar pedido</button></td></tr>
+                  <tr><td class="main-cell" data-l="Empresa">Pet Shop Amigo Fiel</td><td data-l="Procuração"><span class="pill pend"><i></i>Aguardando outorga</span></td><td data-l="Validade">—</td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Solicitação de outorga reenviada ao cliente')">Reenviar pedido</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Conferência FGTS — folha × FGTS Digital</h3><div class="end"><button class="btn sm" onclick="pdfDemo('conferencia-fgts-jul-2026.pdf','Conferencia FGTS - Jul/2026')">Relatório</button></div></div>
+            <div class="barrow"><span class="nm">Remunerações batendo</span><div class="bar"><i class="g" style="width:96%"></i></div><span class="vl">212/214</span></div>
+            <div class="tbwrap stack" style="margin-top:8px">
+              <table class="tb">
+                <thead><tr><th>Colaborador</th><th class="num">Folha</th><th class="num">FGTS Digital</th><th>Divergência</th></tr></thead>
+                <tbody>
+                  <tr><td class="main-cell" data-l="Colaborador">C. E. Ramos — Padaria São José</td><td class="num" data-l="Folha">R$ 1.640,00</td><td class="num" data-l="FGTS">R$ 0,00</td><td data-l="Divergência"><span class="pill err"><i></i>Remuneração faltante</span></td></tr>
+                  <tr><td class="main-cell" data-l="Colaborador">A. Prado — Transportes Alvorada</td><td class="num" data-l="Folha">R$ 2.312,00</td><td class="num" data-l="FGTS">R$ 2.132,00</td><td data-l="Divergência"><span class="pill pend"><i></i>Valor menor</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="alert info" style="margin-top:10px"><div class="ic">i</div><div><b>Gerador de recomposição</b><small>divergências de remuneração faltante são corrigidas pelo gerador — <button class="lk" onclick="fOpen('fgtsrecomp')">gerar agora →</button></small></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ECOSSISTEMA LEDWARE ===== -->
+    <section class="view" id="v-eco">
+      <header class="top">
+        <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+        <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar produto…</div>
+        <div class="grow"></div>
+        <button class="btn pri" onclick="fOpen('ecoconn')">+ Conectar sistema</button>
+      </header>
+      <div class="content">
+        <div class="ph"><h2>Ecossistema Ledware</h2><span class="sub">os sistemas de gestão dos seus clientes alimentam a contabilidade automaticamente</span></div>
+        <div class="alert good"><div class="ic">⚡</div><div><b>2 sistemas conectados enviando dados agora</b><small>vendas, cupons e comandas viram lançamentos contábeis pelas regras de CLP — sem digitação</small></div></div>
+        <div class="cards3">
+          <div class="card">
+            <div class="ct"><h3>LedCommerce</h3><span class="pill ok" style="margin-left:auto"><i></i>Conectado</span></div>
+            <div class="tiny muted" style="margin-bottom:8px">Padaria São José · Mercado Central</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">PDV touch</span><span class="tag">NFC-e / SAT</span><span class="tag">NF-e</span><span class="tag">DAV / orçamento</span><span class="tag">Pré-venda / comanda</span><span class="tag">Estoque por grade</span><span class="tag">MDF-e</span></div>
+            <div class="duelist"><div class="row"><div><div class="who">Vendas de hoje</div><div class="cat">184 cupons · contabilizados via CLP</div></div><span class="amt in">R$ 12.480,60</span></div></div>
+            <div style="margin-top:8px"><button class="lk" onclick="nav('lan')">Ver lançamentos gerados →</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>LedChef</h3><span class="pill ok" style="margin-left:auto"><i></i>Conectado</span></div>
+            <div class="tiny muted" style="margin-bottom:8px">Restaurante Sabor Caseiro</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Controle de mesas</span><span class="tag">Comandas</span><span class="tag">Cardápio</span><span class="tag">NFC-e</span></div>
+            <div class="duelist"><div class="row"><div><div class="who">Movimento de hoje</div><div class="cat">62 comandas fechadas</div></div><span class="amt in">R$ 4.212,00</span></div></div>
+            <div style="margin-top:8px"><button class="lk" onclick="nav('lan')">Ver lançamentos gerados →</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>LedGME</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
+            <div class="tiny muted" style="margin-bottom:8px">Gestão empresarial + Ordem de Serviço</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Ordem de Serviço</span><span class="tag">Faturamento</span><span class="tag">Compras</span><span class="tag">Estoque</span></div>
+            <div class="tiny muted">Ideal para Auto Peças Cruzeiro (oficina/OS) — os faturamentos de OS entram direto no fiscal.</div>
+            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>LedClinic</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
+            <div class="tiny muted" style="margin-bottom:8px">Clínicas e consultórios</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Agenda</span><span class="tag">Prontuário</span><span class="tag">Convênios</span><span class="tag">NFS-e</span></div>
+            <div class="tiny muted">Sugerido para a Clínica Vida — recebimentos de convênio conciliados automaticamente.</div>
+            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>LedHotel</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
+            <div class="tiny muted" style="margin-bottom:8px">Hotelaria e pousadas</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Reservas</span><span class="tag">Governança</span><span class="tag">Diárias</span><span class="tag">NFS-e</span></div>
+            <div class="tiny muted">Sugerido para o Hotel Jardim Real — diárias e consumos direto no faturamento.</div>
+            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><h3>Leducation</h3><span class="pill neu" style="margin-left:auto"><i></i>Disponível</span></div>
+            <div class="tiny muted" style="margin-bottom:8px">Escolas e cursos</div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"><span class="tag">Matrículas</span><span class="tag">Mensalidades</span><span class="tag">Boletos + PIX</span></div>
+            <div class="tiny muted">Mensalidades escolares com régua de cobrança integrada ao financeiro.</div>
+            <div style="margin-top:8px"><button class="lk" onclick="fOpen('ecoconn')">Conectar cliente →</button></div>
+          </div>
+        </div>
+        <div class="alert info"><div class="ic">i</div><div><b>Como funciona a integração</b><small>cada venda/cupom/comanda chega como movimento fiscal e passa pelas regras de CLP (Configuração de Lançamentos Padrões) — <button class="lk" onclick="nav('lan')">ver CLPs em Lançamentos →</button></small></div></div>
       </div>
     </section>
   </div><!-- /main -->
