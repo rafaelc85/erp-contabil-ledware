@@ -105,7 +105,7 @@
         <button class="btn good" onclick="openModal('in')">+ Receita</button>
         <button class="btn bad" onclick="openModal('out')">+ Despesa</button>
         <button class="btn pri" onclick="openLanc()">+ Lançamento contábil</button>
-        <div class="bell" onclick="toast('7 notificações: 3 obrigações desta semana, 2 guias a vencer, 2 mensagens de clientes')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></div>
+        <div class="bell" onclick="fOpen('notif')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></div>
       </header>
       <div class="content">
         <div class="ph"><h2>Visão geral</h2><span class="sub">terça-feira, 18 de agosto de 2026 · <b class="comp-echo">Padaria São José ME</b></span></div>
@@ -181,7 +181,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Exportação do painel em PDF/Excel')">Exportar</button>
+        <button class="btn" onclick="csvView(this,'dashboard-escritorio.csv')">Exportar</button>
         <button class="btn pri" onclick="openTarefa()">+ Nova tarefa</button>
       </header>
       <div class="content">
@@ -243,8 +243,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar obrigação…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Agenda gerada automaticamente a partir do regime tributário de cada cliente')">Gerar agenda do mês</button>
-        <button class="btn pri" onclick="toast('Nova obrigação manual')">+ Obrigação</button>
+        <button class="btn" onclick="fOpen('agenda')">Gerar agenda do mês</button>
+        <button class="btn pri" onclick="fOpen('obrig')">+ Obrigação</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Agenda de Obrigações</h2><span class="sub">agosto/2026 · todas as empresas</span></div>
@@ -270,7 +270,7 @@
           </div>
           <div class="card">
             <div class="ct"><h3>Pendências</h3><span class="hint">ordenadas por urgência</span></div>
-            <div class="alert bad"><div class="ic">!</div><div><b>DCTF Junho — Transportes Alvorada</b><small>atrasada desde 14/08 · multa estimada R$ 165,74</small><br><button class="lk" onclick="toast('Tarefa de regularização criada e atribuída a Bruno Lima')">Criar tarefa de regularização →</button></div></div>
+            <div class="alert bad"><div class="ic">!</div><div><b>DCTF Junho — Transportes Alvorada</b><small>atrasada desde 14/08 · multa estimada R$ 165,74</small><br><button class="lk" onclick="regTask()">Criar tarefa de regularização →</button></div></div>
             <div class="alert bad"><div class="ic">!</div><div><b>EFD ICMS/IPI Julho — Auto Peças Cruzeiro</b><small>atrasada desde 15/08</small></div></div>
             <div class="alert warn"><div class="ic">−</div><div><b>DAS Julho — 26 empresas do Simples</b><small>vence em 20/08 · 24 guias geradas, 2 pendentes</small><br><button class="lk" onclick="nav('gui')">Ver guias →</button></div></div>
             <div class="alert info"><div class="ic">⧗</div><div><b>EFD Contribuições Julho — 15 empresas</b><small>entrega até 25/08 · 9 já transmitidas</small></div></div>
@@ -313,7 +313,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar tarefa…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Templates: fechamento mensal, admissão de funcionário, abertura de empresa, troca de regime…')">Aplicar template</button>
+        <button class="btn" onclick="fOpen('template')">Aplicar template</button>
         <button class="btn pri" onclick="openTarefa()">+ Nova tarefa</button>
       </header>
       <div class="content">
@@ -361,8 +361,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar documento…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Solicitação de documento enviada ao cliente com lembrete automático')">Solicitar documento</button>
-        <button class="btn pri" onclick="toast('Upload e compartilhamento com o cliente no portal')">↑ Enviar documento</button>
+        <button class="btn" onclick="fOpen('soldoc')">Solicitar documento</button>
+        <button class="btn pri" onclick="fOpen('updoc')">↑ Enviar documento</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Documentos &amp; Mensagens</h2><span class="sub">troca de arquivos e comunicação com clientes</span></div>
@@ -377,11 +377,11 @@
             <table class="tb">
               <thead><tr><th>Documento</th><th>Cliente</th><th>Enviado por</th><th>Data</th><th>Status</th><th class="acts"></th></tr></thead>
               <tbody>
-                <tr><td class="main-cell" data-l="Documento">📄 Balancete Jul/2026.pdf</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Enviado por">Escritório</td><td data-l="Data">15/08</td><td data-l="Status"><span class="pill ok"><i></i>Visualizado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Download')">Baixar</button></td></tr>
+                <tr><td class="main-cell" data-l="Documento">📄 Balancete Jul/2026.pdf</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Enviado por">Escritório</td><td data-l="Data">15/08</td><td data-l="Status"><span class="pill ok"><i></i>Visualizado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfRow(this)">Baixar</button></td></tr>
                 <tr><td class="main-cell" data-l="Documento">📄 DAS Jul/2026 — guia.pdf</td><td data-l="Cliente">Padaria São José ME</td><td data-l="Enviado por">Escritório</td><td data-l="Data">15/08</td><td data-l="Status"><span class="pill pend"><i></i>Não visto</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Lembrete enviado por e-mail e WhatsApp')">Lembrar</button></td></tr>
                 <tr><td class="main-cell" data-l="Documento">📎 Extrato Jul — Sicoob.ofx</td><td data-l="Cliente">Clínica Vida</td><td data-l="Enviado por">Cliente</td><td data-l="Data">14/08</td><td data-l="Status"><span class="pill inf"><i></i>Novo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="nav('conc')">Conciliar</button></td></tr>
                 <tr><td class="main-cell" data-l="Documento">📎 Notas de serviço tomado (12).zip</td><td data-l="Cliente">Auto Peças Cruzeiro</td><td data-l="Enviado por">Cliente</td><td data-l="Data">13/08</td><td data-l="Status"><span class="pill inf"><i></i>Novo</span></td><td class="acts" data-l=""><button class="btn sm" onclick="nav('nf')">Importar</button></td></tr>
-                <tr><td class="main-cell" data-l="Documento">📄 Contrato social — alteração.pdf</td><td data-l="Cliente">Barbearia Estilo</td><td data-l="Enviado por">Cliente</td><td data-l="Data">11/08</td><td data-l="Status"><span class="pill ok"><i></i>Arquivado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Download')">Baixar</button></td></tr>
+                <tr><td class="main-cell" data-l="Documento">📄 Contrato social — alteração.pdf</td><td data-l="Cliente">Barbearia Estilo</td><td data-l="Enviado por">Cliente</td><td data-l="Data">11/08</td><td data-l="Status"><span class="pill ok"><i></i>Arquivado</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfRow(this)">Baixar</button></td></tr>
               </tbody>
             </table>
           </div>
@@ -417,8 +417,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar contrato…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('42 faturas de honorários geradas com boleto + PIX e enviadas ao portal de cada cliente')">Faturar honorários do mês</button>
-        <button class="btn pri" onclick="toast('Novo contrato com serviços, valores e reajuste anual')">+ Novo contrato</button>
+        <button class="btn" onclick="fOpen('faturar')">Faturar honorários do mês</button>
+        <button class="btn pri" onclick="fOpen('contrato')">+ Novo contrato</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Contratos &amp; Honorários</h2><span class="sub">receita recorrente do escritório</span></div>
@@ -452,7 +452,7 @@
               </tbody>
             </table>
           </div>
-          <div class="bulk" id="honbulk"><span class="bulktxt b"></span><button onclick="toast('Cobrança reenviada com boleto atualizado + link PIX')">Reenviar cobrança</button><button onclick="toast('Baixa manual registrada')">Registrar recebimento</button><button onclick="toast('Negociação/parcelamento')">Negociar</button></div>
+          <div class="bulk" id="honbulk"><span class="bulktxt b"></span><button onclick="toast('Cobrança reenviada com boleto atualizado + link PIX')">Reenviar cobrança</button><button onclick="toast('Baixa manual registrada')">Registrar recebimento</button><button onclick="fOpen('negociar')">Negociar</button></div>
           <div class="pgn"><span>1–6 de 42</span><button class="pg on">1</button><button class="pg" onclick="pgn(this)">2</button><button class="pg" onclick="pgn(this)">3</button><button class="pg" onclick="pgn(this)">›</button></div>
         </div>
       </div>
@@ -464,8 +464,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar por nome, CNPJ…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Importação de clientes por planilha ou pelo CNPJ (consulta cadastral)')">Importar</button>
-        <button class="btn pri" onclick="toast('Cadastro completo: dados, regime, sócios, certificado, serviços contratados')">+ Novo cliente</button>
+        <button class="btn" onclick="fOpen('impcli')">Importar</button>
+        <button class="btn pri" onclick="fOpen('clinovo')">+ Novo cliente</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Clientes</h2><span class="sub">42 empresas ativas · 3 em onboarding</span></div>
@@ -501,8 +501,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar conta…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Modelos de plano de contas por regime (Simples, Presumido, Real) prontos para aplicar')">Aplicar modelo</button>
-        <button class="btn pri" onclick="toast('Nova conta analítica/sintética')">+ Nova conta</button>
+        <button class="btn" onclick="fOpen('modelo')">Aplicar modelo</button>
+        <button class="btn pri" onclick="fOpen('contanova')">+ Nova conta</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Plano de Contas</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · saldos de julho/2026</span></div>
@@ -538,7 +538,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar lançamento…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Contabilização automática: notas, folha e extratos viram lançamentos pelas regras de parametrização')">⚙ Contabilizar pendentes (23)</button>
+        <button class="btn" onclick="contabiliza(this)">⚙ Contabilizar pendentes (23)</button>
         <button class="btn pri" onclick="openLanc()">+ Lançamento manual</button>
       </header>
       <div class="content">
@@ -580,8 +580,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Exportação em PDF assinado digitalmente e Excel')">Exportar PDF</button>
-        <button class="btn pri" onclick="toast('Balancete, Razão, Diário, Balanço Patrimonial e DRE gerados do mesmo motor')">Gerar demonstração</button>
+        <button class="btn" onclick="pdfDre()">Exportar PDF</button>
+        <button class="btn pri" onclick="fOpen('gerademo')">Gerar demonstração</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Demonstrações Contábeis</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · julho/2026</span></div>
@@ -670,7 +670,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
-        <button class="btn pri" onclick="toast('Período jul/2026 bloqueado para novos lançamentos após concluir o checklist')">🔒 Fechar competência Jul/2026</button>
+        <button class="btn pri" onclick="fecharComp(this)">🔒 Fechar competência Jul/2026</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Fechamento Contábil</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · competência julho/2026</span></div>
@@ -713,8 +713,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar por número, chave, emitente…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Upload de XML avulso ou lote ZIP')">↑ Importar XML</button>
-        <button class="btn pri" onclick="toast('Emissor de NFS-e integrado à prefeitura')">+ Emitir NFS-e</button>
+        <button class="btn" onclick="fOpen('xml')">↑ Importar XML</button>
+        <button class="btn pri" onclick="fOpen('nfse')">+ Emitir NFS-e</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Notas Fiscais</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · agosto/2026</span></div>
@@ -809,7 +809,7 @@
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar guia…</div>
         <div class="grow"></div>
         <button class="btn" onclick="toast('Guias enviadas em lote para o portal + e-mail/WhatsApp de cada cliente')">Enviar aos clientes</button>
-        <button class="btn pri" onclick="toast('Geração de guia manual DARF/DAS/GPS/FGTS')">+ Gerar guia</button>
+        <button class="btn pri" onclick="fOpen('guia')">+ Gerar guia</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Guias de Recolhimento</h2><span class="sub">DARF · DAS · GPS · FGTS · ISS — competência Jul/2026</span></div>
@@ -838,7 +838,7 @@
               </tbody>
             </table>
           </div>
-          <div class="bulk" id="guibulk"><span class="bulktxt b"></span><button onclick="toast('Guias enviadas ao portal dos clientes selecionados')">Enviar ao cliente</button><button onclick="toast('Download em lote')">Baixar PDFs</button><button onclick="toast('Baixa de pagamento registrada')">Registrar pagamento</button></div>
+          <div class="bulk" id="guibulk"><span class="bulktxt b"></span><button onclick="toast('Guias enviadas ao portal dos clientes selecionados')">Enviar ao cliente</button><button onclick="pdfDemo('guias-selecionadas.pdf','Guias de Recolhimento - Jul/2026')">Baixar PDFs</button><button onclick="toast('Baixa de pagamento registrada')">Registrar pagamento</button></div>
         </div>
       </div>
     </section>
@@ -849,15 +849,15 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
-        <button class="btn pri" onclick="toast('Arquivo gerado e validado no PVA antes da transmissão')">⬇ Gerar arquivo</button>
+        <button class="btn pri" onclick="fOpen('spedgen')">⬇ Gerar arquivo</button>
       </header>
       <div class="content">
         <div class="ph"><h2>SPED &amp; Declarações</h2><span class="sub">geração, validação e histórico de entregas</span></div>
         <div class="cards4">
-          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>EFD ICMS/IPI</h3><span class="pill err" style="margin-left:auto"><i></i>1 atrasada</span></div><div class="tiny muted">mensal · 15 empresas obrigadas</div><div style="margin-top:8px"><button class="lk" onclick="toast('Gerar EFD ICMS/IPI')">Gerar Jul/2026 →</button></div></div>
-          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>EFD Contribuições</h3><span class="pill pend" style="margin-left:auto"><i></i>6 pendentes</span></div><div class="tiny muted">mensal · até 25/08 · 9 de 15 entregues</div><div style="margin-top:8px"><button class="lk" onclick="toast('Gerar EFD Contribuições')">Gerar lote →</button></div></div>
-          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>SPED ECD</h3><span class="pill ok" style="margin-left:auto"><i></i>Em dia</span></div><div class="tiny muted">anual · ano-base 2025 entregue em Mai/2026</div><div style="margin-top:8px"><button class="lk" onclick="toast('Recibos de entrega ECD')">Ver recibos →</button></div></div>
-          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>SPED ECF</h3><span class="pill ok" style="margin-left:auto"><i></i>Em dia</span></div><div class="tiny muted">anual · ano-base 2025 entregue em Jul/2026</div><div style="margin-top:8px"><button class="lk" onclick="toast('Recibos de entrega ECF')">Ver recibos →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>EFD ICMS/IPI</h3><span class="pill err" style="margin-left:auto"><i></i>1 atrasada</span></div><div class="tiny muted">mensal · 15 empresas obrigadas</div><div style="margin-top:8px"><button class="lk" onclick="fOpen('spedgen')">Gerar Jul/2026 →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>EFD Contribuições</h3><span class="pill pend" style="margin-left:auto"><i></i>6 pendentes</span></div><div class="tiny muted">mensal · até 25/08 · 9 de 15 entregues</div><div style="margin-top:8px"><button class="lk" onclick="fOpen('spedgen')">Gerar lote →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>SPED ECD</h3><span class="pill ok" style="margin-left:auto"><i></i>Em dia</span></div><div class="tiny muted">anual · ano-base 2025 entregue em Mai/2026</div><div style="margin-top:8px"><button class="lk" onclick="pdfDemo('recibos-sped-ecd.pdf','Recibos de Entrega - SPED ECD 2025')">Ver recibos →</button></div></div>
+          <div class="card"><div class="ct" style="margin-bottom:6px"><h3>SPED ECF</h3><span class="pill ok" style="margin-left:auto"><i></i>Em dia</span></div><div class="tiny muted">anual · ano-base 2025 entregue em Jul/2026</div><div style="margin-top:8px"><button class="lk" onclick="pdfDemo('recibos-sped-ecf.pdf','Recibos de Entrega - SPED ECF 2025')">Ver recibos →</button></div></div>
         </div>
         <div class="card">
           <div class="ct"><h3>Histórico de entregas</h3><span class="hint">últimas transmissões</span></div>
@@ -883,8 +883,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar funcionário…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Importação por planilha modelo')">Importar planilha</button>
-        <button class="btn pri" onclick="toast('Admissão com envio automático do S-2200 ao eSocial')">+ Admissão</button>
+        <button class="btn" onclick="fOpen('impfun')">Importar planilha</button>
+        <button class="btn pri" onclick="fOpen('admissao')">+ Admissão</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Funcionários</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · 8 ativos</span></div>
@@ -913,7 +913,7 @@
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
         <button class="btn" onclick="toast('Holerites publicados no portal com aviso por e-mail/WhatsApp aos colaboradores')">Publicar holerites</button>
-        <button class="btn pri" onclick="toast('Cálculo da folha Ago/2026 com prévia de conferência')">▶ Calcular folha Ago</button>
+        <button class="btn pri" onclick="calcFolha(this)">▶ Calcular folha Ago</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Folha de Pagamento</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · competência agosto/2026</span></div>
@@ -998,7 +998,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar evento…</div>
         <div class="grow"></div>
-        <button class="btn pri" onclick="toast('Fila processada — eventos pendentes transmitidos com certificado digital A1')">⇪ Transmitir pendentes (3)</button>
+        <button class="btn pri" onclick="esoAll(this)">⇪ Transmitir pendentes (3)</button>
       </header>
       <div class="content">
         <div class="ph"><h2>eSocial &amp; EFD-Reinf</h2><span class="sub">fila de eventos · todas as empresas</span></div>
@@ -1014,11 +1014,11 @@
             <table class="tb">
               <thead><tr><th>Evento</th><th>Descrição</th><th>Empresa</th><th>Gerado em</th><th>Status</th><th class="acts"></th></tr></thead>
               <tbody>
-                <tr><td class="main-cell" data-l="Evento">S-2299</td><td class="desc" data-l="Descrição">Desligamento — José Pereira Filho</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">17/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Evento transmitido')">Transmitir</button></td></tr>
-                <tr><td class="main-cell" data-l="Evento">S-2200</td><td class="desc" data-l="Descrição">Admissão — 2 colaboradores</td><td data-l="Empresa">Mercado Central</td><td data-l="Gerado em">17/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Evento transmitido')">Transmitir</button></td></tr>
-                <tr><td class="main-cell" data-l="Evento">R-2010</td><td class="desc" data-l="Descrição">Reinf — serviços tomados c/ retenção INSS</td><td data-l="Empresa">Clínica Vida</td><td data-l="Gerado em">16/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Evento transmitido')">Transmitir</button></td></tr>
-                <tr><td class="main-cell" data-l="Evento">S-1200</td><td class="desc" data-l="Descrição">Remuneração Jul/2026 — 8 colaboradores</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">07/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Recibo do evento')">Recibo</button></td></tr>
-                <tr><td class="main-cell" data-l="Evento">S-2206</td><td class="desc" data-l="Descrição">Alteração contratual — reajuste salarial</td><td data-l="Empresa">Studio Fit Academia</td><td data-l="Gerado em">12/08</td><td data-l="Status"><span class="pill err"><i></i>Erro 301</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Detalhe do erro: CPF divergente no cadastro — corrigir e reenviar')">Corrigir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-2299</td><td class="desc" data-l="Descrição">Desligamento — José Pereira Filho</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">17/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="esoTransmit(this)">Transmitir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-2200</td><td class="desc" data-l="Descrição">Admissão — 2 colaboradores</td><td data-l="Empresa">Mercado Central</td><td data-l="Gerado em">17/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="esoTransmit(this)">Transmitir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">R-2010</td><td class="desc" data-l="Descrição">Reinf — serviços tomados c/ retenção INSS</td><td data-l="Empresa">Clínica Vida</td><td data-l="Gerado em">16/08</td><td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td><td class="acts" data-l=""><button class="btn sm" onclick="esoTransmit(this)">Transmitir</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-1200</td><td class="desc" data-l="Descrição">Remuneração Jul/2026 — 8 colaboradores</td><td data-l="Empresa">Padaria São José ME</td><td data-l="Gerado em">07/08</td><td data-l="Status"><span class="pill ok"><i></i>Aceito</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-esocial-s1200.pdf','Recibo eSocial - S-1200 Jul/2026')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Evento">S-2206</td><td class="desc" data-l="Descrição">Alteração contratual — reajuste salarial</td><td data-l="Empresa">Studio Fit Academia</td><td data-l="Gerado em">12/08</td><td data-l="Status"><span class="pill err"><i></i>Erro 301</span></td><td class="acts" data-l=""><button class="btn sm" onclick="esoFix(this)">Corrigir</button></td></tr>
               </tbody>
             </table>
           </div>
@@ -1061,7 +1061,7 @@
               </tbody>
             </table>
           </div>
-          <div class="bulk" id="recbulk"><span class="bulktxt b"></span><button onclick="toast('Baixa em lote registrada')">Registrar recebimento</button><button onclick="toast('Cobranças reenviadas')">Reenviar cobrança</button><button onclick="toast('2ª via de boletos gerada')">2ª via boleto</button></div>
+          <div class="bulk" id="recbulk"><span class="bulktxt b"></span><button onclick="toast('Baixa em lote registrada')">Registrar recebimento</button><button onclick="toast('Cobranças reenviadas')">Reenviar cobrança</button><button onclick="pdfDemo('segunda-via-boletos.pdf','2a via de boletos')">2ª via boleto</button></div>
           <div class="pgn"><span>1–6 de 152</span><button class="pg on">1</button><button class="pg" onclick="pgn(this)">2</button><button class="pg" onclick="pgn(this)">3</button><button class="pg" onclick="pgn(this)">›</button></div>
         </div>
       </div>
@@ -1073,7 +1073,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Arquivo de remessa de pagamentos CNAB gerado para o banco')">Gerar remessa CNAB</button>
+        <button class="btn" onclick="cnab()">Gerar remessa CNAB</button>
         <button class="btn pri" onclick="openModal('out')">+ Novo título</button>
       </header>
       <div class="content">
@@ -1107,7 +1107,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar movimento…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Importação de extrato OFX/CSV')">↑ Importar OFX</button>
+        <button class="btn" onclick="fOpen('ofx')">↑ Importar OFX</button>
         <button class="btn pri" id="concall" onclick="concAll()">Conciliar sugeridos (1)</button>
       </header>
       <div class="content">
@@ -1132,7 +1132,7 @@
             <div class="mcol">
               <h4>Título no sistema</h4>
               <div class="mitem hl" id="ln1"><div class="l1">Mercado Bom Preço — NF 4433<span class="v in">R$ 1.890,00</span></div><div class="l2" id="ln1l2">contas a receber · venc. 15/08 · boleto + PIX</div></div>
-              <div class="mitem"><div class="l1">— sem correspondência —<span class="v"></span></div><div class="l2">sugerir lançamento: Despesas Bancárias<br><button class="lk" onclick="toast('Lançamento criado e conciliado: débito 4.2.05 Despesas Bancárias, crédito Banco BB')">Criar lançamento e conciliar →</button></div></div>
+              <div class="mitem"><div class="l1">— sem correspondência —<span class="v"></span></div><div class="l2">sugerir lançamento: Despesas Bancárias<br><button class="lk" onclick="conc2(this)">Criar lançamento e conciliar →</button></div></div>
             </div>
           </div>
         </div>
@@ -1145,7 +1145,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Exportação Excel/PDF')">Exportar</button>
+        <button class="btn" onclick="csvView(this,'fluxo-de-caixa.csv')">Exportar</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Fluxo de Caixa</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · realizado + projetado</span></div>
@@ -1202,7 +1202,7 @@
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar cobrança…</div>
         <div class="grow"></div>
         <button class="btn" onclick="toast('Retorno CNAB processado: 12 liquidações baixadas automaticamente')">Processar retorno</button>
-        <button class="btn pri" onclick="toast('Emissão em lote: um boleto com PIX por título em aberto')">+ Emitir cobranças</button>
+        <button class="btn pri" onclick="fOpen('cobranca')">+ Emitir cobranças</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Cobrança — Boletos &amp; PIX</h2><span class="sub">emissão, registro e liquidação automática</span></div>
@@ -1236,7 +1236,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar usuário…</div>
         <div class="grow"></div>
-        <button class="btn pri" onclick="toast('Convite enviado por e-mail com definição de perfil e empresas visíveis')">+ Convidar usuário</button>
+        <button class="btn pri" onclick="fOpen('convite')">+ Convidar usuário</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Usuários &amp; Permissões</h2><span class="sub">controle de acesso por perfil e por empresa</span></div>
@@ -1270,8 +1270,8 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar na trilha…</div>
         <div class="grow"></div>
-        <button class="btn" onclick="toast('Relatório LGPD: acessos a dados pessoais por titular')">Relatório LGPD</button>
-        <button class="btn" onclick="toast('Exportação da trilha em CSV')">Exportar</button>
+        <button class="btn" onclick="pdfDemo('relatorio-lgpd.pdf','Relatorio LGPD - Acessos a Dados Pessoais')">Relatório LGPD</button>
+        <button class="btn" onclick="csvView(this,'trilha-auditoria.csv')">Exportar</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Auditoria &amp; LGPD</h2><span class="sub">trilha imutável de ações no sistema</span></div>
@@ -1305,7 +1305,7 @@
         <button class="burger" onclick="openDrawer()" aria-label="abrir menu"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
         <div class="search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar cadastro…</div>
         <div class="grow"></div>
-        <button class="btn pri" onclick="toast('Novo cadastro criado na aba ativa')">+ Novo cadastro</button>
+        <button class="btn pri" onclick="fOpen('cadaux')">+ Novo cadastro</button>
       </header>
       <div class="content">
         <div class="ph"><h2>Cadastros Auxiliares</h2><span class="sub"><b class="comp-echo">Padaria São José ME</b> · estruturas de apoio</span></div>
@@ -1403,7 +1403,7 @@
             </div>
           </div>
           <div class="card">
-            <div class="ct"><h3>Integrações bancárias</h3><div class="end"><button class="btn sm" onclick="toast('Assistente de conexão de novo banco iniciado')">+ Conectar banco</button></div></div>
+            <div class="ct"><h3>Integrações bancárias</h3><div class="end"><button class="btn sm" onclick="fOpen('banco')">+ Conectar banco</button></div></div>
             <div class="bankchips">
               <div class="bankchip"><span class="st"></span>Banco do Brasil <small>Open Finance</small></div>
               <div class="bankchip"><span class="st"></span>Sicoob <small>OFX</small></div>
@@ -1431,11 +1431,11 @@
               <div class="row"><div><div class="who">Backup diário automático</div><div class="cat">último: hoje 03:00 · íntegro ✓</div></div><span class="pill ok"><i></i>Ativo</span></div>
               <div class="row"><div><div class="who">Retenção de documentos</div><div class="cat">5 anos (padrão fiscal)</div></div><span class="pill inf"><i></i>Configurado</span></div>
             </div>
-            <div style="margin-top:10px"><button class="btn sm" onclick="toast('Exportação completa dos dados solicitada — você receberá o link por e-mail')">Exportar todos os dados</button></div>
+            <div style="margin-top:10px"><button class="btn sm" onclick="jsonExport()">Exportar todos os dados</button></div>
           </div>
           <div class="card">
             <div class="ct"><h3>API &amp; Webhooks</h3></div>
-            <div class="fld"><label>Token de API</label><div class="inp">lw_live_ •••• •••• •••• 8f2a <button class="lk" style="margin-left:auto" onclick="toast('Novo token gerado — o anterior foi revogado')">gerar novo</button></div></div>
+            <div class="fld"><label>Token de API</label><div class="inp">lw_live_ •••• •••• •••• 8f2a <button class="lk" style="margin-left:auto" onclick="tokenNew(this)">gerar novo</button></div></div>
             <div class="fld" style="margin-top:11px"><label>Webhook de eventos</label><div class="inp">https://meusite.com.br/hooks/ledware</div></div>
             <div class="tiny muted" style="margin-top:8px">eventos: título liquidado · nota importada · obrigação concluída</div>
           </div>
@@ -1465,7 +1465,7 @@
       <div class="pview on" id="p-inicio">
         <div class="paycard">
           <div><div class="lbl">Honorários · agosto/2026</div><div class="v">R$ 890,00</div><div class="d">vencimento 20/08 · boleto com PIX</div></div>
-          <div class="acts"><button class="btn wht" onclick="toast('QR Code PIX copia-e-cola exibido')">Pagar com PIX</button><button class="btn ghost-w" onclick="toast('Download do boleto em PDF')">2ª via do boleto</button></div>
+          <div class="acts"><button class="btn wht" onclick="fOpen('pix')">Pagar com PIX</button><button class="btn ghost-w" onclick="pdfDemo('boleto-honorarios-ago-2026.pdf','Boleto - Honorarios Ago/2026 - R$ 890,00')">2ª via do boleto</button></div>
         </div>
         <div class="cards3">
           <div class="card kpi"><div class="lbl"><span class="kdot w"></span>Impostos a pagar</div><div class="val">R$ 10.155,62</div><div class="sub">DAS + FGTS · vencem 20/08</div></div>
@@ -1474,19 +1474,19 @@
         </div>
         <div class="card">
           <div class="ct"><h3>Avisos do seu contador</h3></div>
-          <div class="alert warn"><div class="ic">−</div><div><b>Aprove o balancete de julho</b><small>sua aprovação libera o fechamento do mês</small><br><button class="lk" onclick="toast('Balancete aprovado digitalmente — o escritório foi notificado ✓')">Revisar e aprovar →</button></div></div>
+          <div class="alert warn"><div class="ic">−</div><div><b>Aprove o balancete de julho</b><small>sua aprovação libera o fechamento do mês</small><br><button class="lk" onclick="aprovarBal(this)">Revisar e aprovar →</button></div></div>
           <div class="alert info"><div class="ic">⧗</div><div><b>Guia DAS de julho disponível</b><small>R$ 7.943,12 · vencimento 20/08 · pague pelo app do seu banco</small></div></div>
         </div>
       </div>
 
       <div class="pview" id="p-docs">
         <div class="card">
-          <div class="ct"><h3>Meus Documentos</h3><div class="end"><button class="btn sm pri" onclick="toast('Upload de documento para o escritório')">↑ Enviar arquivo</button></div></div>
+          <div class="ct"><h3>Meus Documentos</h3><div class="end"><button class="btn sm pri" onclick="fOpen('updocp')">↑ Enviar arquivo</button></div></div>
           <div class="duelist">
-            <div class="row"><div><div class="who">📄 Balancete Jul/2026.pdf</div><div class="cat">enviado pelo escritório · 15/08</div></div><button class="btn sm" onclick="toast('Download')">Baixar</button></div>
-            <div class="row"><div><div class="who">📄 DAS Jul/2026 — guia.pdf</div><div class="cat">enviado pelo escritório · 15/08 · <b style="color:var(--warn)">novo</b></div></div><button class="btn sm" onclick="toast('Download')">Baixar</button></div>
-            <div class="row"><div><div class="who">📄 Holerites Jul/2026 (8).zip</div><div class="cat">enviado pelo escritório · 05/08</div></div><button class="btn sm" onclick="toast('Download')">Baixar</button></div>
-            <div class="row"><div><div class="who">📎 Extrato BB Jul.ofx</div><div class="cat">você enviou · 04/08 · recebido ✓</div></div><button class="btn sm" onclick="toast('Download')">Baixar</button></div>
+            <div class="row"><div><div class="who">📄 Balancete Jul/2026.pdf</div><div class="cat">enviado pelo escritório · 15/08</div></div><button class="btn sm" onclick="pdfRow(this)">Baixar</button></div>
+            <div class="row"><div><div class="who">📄 DAS Jul/2026 — guia.pdf</div><div class="cat">enviado pelo escritório · 15/08 · <b style="color:var(--warn)">novo</b></div></div><button class="btn sm" onclick="pdfRow(this)">Baixar</button></div>
+            <div class="row"><div><div class="who">📄 Holerites Jul/2026 (8).zip</div><div class="cat">enviado pelo escritório · 05/08</div></div><button class="btn sm" onclick="pdfRow(this)">Baixar</button></div>
+            <div class="row"><div><div class="who">📎 Extrato BB Jul.ofx</div><div class="cat">você enviou · 04/08 · recebido ✓</div></div><button class="btn sm" onclick="pdfRow(this)">Baixar</button></div>
           </div>
         </div>
       </div>
@@ -1499,7 +1499,7 @@
             <div class="row"><span class="avx" style="background:#E8B03A;color:#3A2B00">PS</span><div><div class="who">Você</div><div class="cat">“Recebi o balancete, podem fechar o mês. Obrigado!”</div></div><span class="d">17/08</span></div>
           </div>
           <div class="inp area" style="margin-top:10px">Escreva uma mensagem para o escritório…</div>
-          <div style="margin-top:9px; display:flex; justify-content:flex-end"><button class="btn pri sm" onclick="toast('Mensagem enviada — o escritório recebe notificação')">Enviar</button></div>
+          <div style="margin-top:9px; display:flex; justify-content:flex-end"><button class="btn pri sm" onclick="portalMsg(this)">Enviar</button></div>
         </div>
       </div>
 
@@ -1510,9 +1510,9 @@
             <table class="tb">
               <thead><tr><th>Competência</th><th>Vencimento</th><th class="num">Valor</th><th>Status</th><th class="acts"></th></tr></thead>
               <tbody>
-                <tr><td class="main-cell" data-l="Competência">Ago/2026</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill pend"><i></i>Em aberto</span></td><td class="acts" data-l=""><button class="btn sm pri" onclick="toast('QR Code PIX')">Pagar</button></td></tr>
-                <tr><td class="main-cell" data-l="Competência">Jul/2026</td><td data-l="Vencimento">20/07</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga 18/07</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Recibo')">Recibo</button></td></tr>
-                <tr><td class="main-cell" data-l="Competência">Jun/2026</td><td data-l="Vencimento">20/06</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga 19/06</span></td><td class="acts" data-l=""><button class="btn sm" onclick="toast('Recibo')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Ago/2026</td><td data-l="Vencimento">20/08</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill pend"><i></i>Em aberto</span></td><td class="acts" data-l=""><button class="btn sm pri" onclick="fOpen('pix')">Pagar</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Jul/2026</td><td data-l="Vencimento">20/07</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga 18/07</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-honorarios.pdf','Recibo de Pagamento - Honorarios')">Recibo</button></td></tr>
+                <tr><td class="main-cell" data-l="Competência">Jun/2026</td><td data-l="Vencimento">20/06</td><td class="num" data-l="Valor">R$ 890,00</td><td data-l="Status"><span class="pill ok"><i></i>Paga 19/06</span></td><td class="acts" data-l=""><button class="btn sm" onclick="pdfDemo('recibo-honorarios.pdf','Recibo de Pagamento - Honorarios')">Recibo</button></td></tr>
               </tbody>
             </table>
           </div>
@@ -1527,7 +1527,7 @@
             <div class="card kpi" style="border:1px solid var(--line)"><div class="lbl">Encargos</div><div class="val">R$ 4.052,50</div><div class="sub">INSS + FGTS</div></div>
             <div class="card kpi" style="border:1px solid var(--line)"><div class="lbl">Guias</div><div class="val">2</div><div class="sub">FGTS e INSS disponíveis</div></div>
           </div>
-          <div style="margin-top:12px"><button class="lk" onclick="toast('Holerites individuais em PDF')">Baixar holerites (8) →</button></div>
+          <div style="margin-top:12px"><button class="lk" onclick="pdfDemo('holerites-jul-2026.pdf','Holerites Jul/2026 - 8 colaboradores')">Baixar holerites (8) →</button></div>
         </div>
       </div>
     </div>
@@ -1561,7 +1561,7 @@
       <div class="fld"><label>Anexo</label><div class="drop">Arraste a nota fiscal ou o comprovante aqui, ou <b>clique para selecionar</b> · PDF, JPG ou PNG até 10 MB</div></div>
       <div class="ckrow" id="m-bol"><button class="chk on" onclick="ck(this)" aria-label="emitir boleto"></button> Emitir boleto com PIX ao salvar <span class="tag pri" style="margin-left:2px">◇ registro automático</span></div>
     </div>
-    <div class="mf"><button class="btn" onclick="closeModal()">Cancelar</button><span class="sp"></span><button class="btn" onclick="toast('Título salvo — formulário pronto para o próximo')">Salvar e novo</button><button class="btn pri" onclick="closeModal();toast('Título salvo com sucesso')">Salvar e voltar</button></div>
+    <div class="mf"><button class="btn" onclick="closeModal()">Cancelar</button><span class="sp"></span><button class="btn" onclick="toast('Título salvo — formulário pronto para o próximo')">Salvar e novo</button><button class="btn pri" onclick="closeModal();tituloSave()">Salvar e voltar</button></div>
   </div>
 </div>
 
@@ -1582,7 +1582,7 @@
       </div>
       <div class="alert good" style="margin:0"><div class="ic">✓</div><div><b>Partidas balanceadas</b><small>débito = crédito · lançamento pronto para gravar</small></div></div>
     </div>
-    <div class="mf"><button class="btn" onclick="closeLanc()">Cancelar</button><span class="sp"></span><button class="btn" onclick="toast('Lançamento gravado — próximo')">Gravar e novo</button><button class="btn pri" onclick="closeLanc();toast('Lançamento nº 2842 gravado no diário')">Gravar</button></div>
+    <div class="mf"><button class="btn" onclick="closeLanc()">Cancelar</button><span class="sp"></span><button class="btn" onclick="toast('Lançamento gravado — próximo')">Gravar e novo</button><button class="btn pri" onclick="closeLanc();lancSave()">Gravar</button></div>
   </div>
 </div>
 
@@ -1603,7 +1603,16 @@
       </div>
       <div class="fld"><label>Checklist</label><div class="inp area">1. Solicitar espelho de ponto · 2. Conferir horas extras · 3. Validar descontos…</div></div>
     </div>
-    <div class="mf"><button class="btn" onclick="closeTarefa()">Cancelar</button><span class="sp"></span><button class="btn pri" onclick="closeTarefa();toast('Tarefa criada e atribuída — notificação enviada')">Criar tarefa</button></div>
+    <div class="mf"><button class="btn" onclick="closeTarefa()">Cancelar</button><span class="sp"></span><button class="btn pri" onclick="closeTarefa();tarefaCreate()">Criar tarefa</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL DE FORMULÁRIO ===== -->
+<div class="mback" id="fback" onclick="if(event.target===this)closeF()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="f-title">
+    <div class="mh"><h3 id="f-title">Formulário</h3><button class="x" onclick="closeF()" aria-label="fechar">✕</button></div>
+    <div class="mb" id="f-body"></div>
+    <div class="mf"><button class="btn" onclick="closeF()">Cancelar</button><span class="sp"></span><button class="btn pri" id="f-save" onclick="fSave()">Salvar</button></div>
   </div>
 </div>
 

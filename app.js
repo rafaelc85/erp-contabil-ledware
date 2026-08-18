@@ -109,7 +109,7 @@ function openTarefa(){ document.getElementById('tback').classList.add('open'); }
 function closeTarefa(){ document.getElementById('tback').classList.remove('open'); }
 
 document.addEventListener('keydown', function(e){
-  if(e.key === 'Escape'){ closeModal(); closeLanc(); closeTarefa(); closeG(); closeDrawer(); }
+  if(e.key === 'Escape'){ closeModal(); closeLanc(); closeTarefa(); closeG(); closeF(); closeDrawer(); }
 });
 
 /* ---------- checkbox / seleção em lote ---------- */
@@ -398,3 +398,597 @@ function kEnd(e){
 }
 document.addEventListener('pointerup', kEnd);
 document.addEventListener('pointercancel', kEnd);
+
+/* =========================================================================
+   Extensões 2: formulários reais, downloads, ações com efeito visível
+   ========================================================================= */
+
+/* ---------- download helpers ---------- */
+function dl(name, blob){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function mkPdf(title, lines){
+  function txt(s){
+    return String(s).replace(/[—–]/g, '-').replace(/[“”]/g, '"').replace(/’/g, "'")
+      .replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+  }
+  var content = 'BT /F1 16 Tf 50 780 Td (' + txt(title) + ') Tj ET\n';
+  var y = 748;
+  (lines || []).forEach(function(l){
+    content += 'BT /F1 10 Tf 50 ' + y + ' Td (' + txt(l) + ') Tj ET\n';
+    y -= 16;
+  });
+  var objs = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+    '<< /Length ' + content.length + ' >>\nstream\n' + content + 'endstream'
+  ];
+  var pdf = '%PDF-1.4\n', offs = [];
+  objs.forEach(function(o, i){ offs.push(pdf.length); pdf += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
+  var xref = pdf.length;
+  pdf += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n';
+  offs.forEach(function(o){ pdf += ('0000000000' + o).slice(-10) + ' 00000 n \n'; });
+  pdf += 'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF';
+  var bytes = new Uint8Array(pdf.length);
+  for(var i = 0; i < pdf.length; i++){ var c = pdf.charCodeAt(i); bytes[i] = c <= 255 ? c : 63; }
+  return new Blob([bytes], {type: 'application/pdf'});
+}
+function pdfDemo(file, title, lines){
+  dl(file, mkPdf(title, lines || [
+    'Documento gerado pelo protótipo ERP Contábil Ledware.',
+    'Conteúdo fictício, sem valor fiscal ou legal.',
+    'Emitido em 18/08/2026.'
+  ]));
+  toast('Download iniciado — ' + file);
+}
+function pdfRow(el){
+  var name = 'Documento';
+  var tr = el.closest('tr'), row = el.closest('.row');
+  var src = tr ? tr.querySelector('.main-cell') : (row ? row.querySelector('.who') : null);
+  if(src) name = src.textContent.replace(/[📄📎]/g, '').trim();
+  var file = name.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '') || 'documento';
+  pdfDemo(file + '.pdf', name);
+}
+function csvView(btn, name){
+  var view = btn.closest('.view') || document;
+  var tb = view.querySelector('table.tb') || view.querySelector('table.dre');
+  var out = '﻿';
+  if(tb){
+    tb.querySelectorAll('tr').forEach(function(tr){
+      var cells = [];
+      tr.querySelectorAll('th,td').forEach(function(c){ cells.push('"' + c.textContent.trim().replace(/"/g, '""') + '"'); });
+      if(cells.length) out += cells.join(';') + '\n';
+    });
+  }
+  dl(name, new Blob([out], {type: 'text/csv;charset=utf-8'}));
+  toast('Exportado — ' + name);
+}
+function pdfDre(){
+  var tb = document.querySelector('#v-dre .dre');
+  var lines = [];
+  if(tb) tb.querySelectorAll('tr').forEach(function(tr){
+    var cells = [];
+    tr.querySelectorAll('th,td').forEach(function(c){ cells.push(c.textContent.trim()); });
+    if(cells.join('')) lines.push(cells.join('  |  '));
+  });
+  pdfDemo('dre-jul-2026.pdf', 'DRE - Demonstracao do Resultado - Jul/2026', lines.slice(0, 38));
+}
+function cnab(){
+  var l = [
+    '02REMESSA01PAGAMENTOS      04111222000105 LEDWARE CONTABILIDADE      001 BANCO DO BRASIL  180826',
+    '1 0001 DAS SIMPLES NACIONAL JUL/2026        VENC 20/08/2026  VALOR 0000794312',
+    '1 0002 FGTS DIGITAL JUL/2026                VENC 20/08/2026  VALOR 0000221250',
+    '9 TOTAL 000002 REGISTROS  VALOR 0001015562'
+  ];
+  dl('remessa-pagamentos-180826.rem', new Blob([l.join('\r\n')], {type: 'text/plain'}));
+  toast('Remessa CNAB gerada — 2 pagamentos incluídos');
+}
+function jsonExport(){
+  var data = {
+    exportadoEm: '2026-08-18T09:30:00-03:00', escritorio: 'Ledware Contabilidade LTDA',
+    clientes: 42, lancamentos: 312, notasFiscais: 91, guias: 64, colaboradores: 214,
+    observacao: 'Exportação fictícia do protótipo — sem dados reais.'
+  };
+  dl('export-dados-ledware.json', new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}));
+  toast('Exportação completa gerada — export-dados-ledware.json');
+}
+
+/* ---------- tarefas: criação real no kanban ---------- */
+function addTaskCard(title, meta, av){
+  var col = document.querySelector('#v-tar .kanban .kcol');
+  if(!col) return;
+  var d = document.createElement('div');
+  d.className = 'kcard';
+  d.setAttribute('onclick', 'kopen(this)');
+  d.innerHTML = '<b></b><div class="meta"><span class="avx">' + (av || 'RC') + '</span><span></span></div>';
+  d.querySelector('b').textContent = title;
+  d.querySelector('.meta span:last-child').textContent = meta;
+  var first = col.querySelector('.kcard');
+  if(first) col.insertBefore(d, first); else col.appendChild(d);
+  kcounts();
+}
+function tarefaCreate(){
+  addTaskCard('Conferir variáveis da folha de agosto', 'Padaria São José · vence 25/08', 'CN');
+  nav('tar');
+  toast('Tarefa criada e atribuída a Carla Nunes — já está no quadro');
+}
+function regTask(){
+  addTaskCard('Regularizar DCTF Jun — multa e retificação', 'Transportes Alvorada · vence 19/08', 'BL');
+  nav('tar');
+  toast('Tarefa de regularização criada e atribuída a Bruno Lima');
+}
+
+/* ---------- salvar título financeiro (modal mback) ---------- */
+function tituloSave(){
+  var isIn = document.getElementById('seg-in').className === 'on-in';
+  var tbody = document.querySelector(isIn ? '#rectb tbody' : '#pagtb tbody');
+  if(tbody){
+    var tr = document.createElement('tr');
+    tr.dataset.st = 'pend'; tr.dataset.val = isIn ? '890' : '24.9';
+    if(isIn){
+      tr.innerHTML = '<td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td>' +
+        '<td class="main-cell" data-l="Cliente">Padaria São José ME</td>' +
+        '<td class="desc" data-l="Descrição">Honorários contábeis · Set/2026</td>' +
+        '<td data-l="Vencimento">15/09</td><td class="num" data-l="Valor">R$ 890,00</td>' +
+        '<td data-l="Forma"><span class="tag pri">Boleto + PIX</span></td>' +
+        '<td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td>';
+    } else {
+      tr.innerHTML = '<td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td>' +
+        '<td class="main-cell" data-l="Fornecedor">Banco do Brasil</td>' +
+        '<td class="desc" data-l="Descrição">Tarifas bancárias · Ago/2026</td>' +
+        '<td data-l="Vencimento">15/09</td><td class="num" data-l="Valor">R$ 24,90</td>' +
+        '<td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td>';
+    }
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
+  nav(isIn ? 'rec' : 'pag');
+  toast('Título salvo — primeira linha da lista' + (isIn ? ' · boleto com PIX na fila de emissão' : ''));
+}
+
+/* ---------- gravar lançamento contábil (modal lback) ---------- */
+function lancSave(){
+  var tbody = document.querySelector('#v-lan table.tb tbody');
+  if(tbody){
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td data-l="Nº">2842</td><td data-l="Data">18/08</td>' +
+      '<td class="main-cell" data-l="Histórico">Pagamento de fornecedor — Moinho Sul, duplicata 4412/2</td>' +
+      '<td class="desc" data-l="Débito">2.1.01 Fornecedores</td>' +
+      '<td class="desc" data-l="Crédito">1.1.01.002 Banco BB</td>' +
+      '<td class="num" data-l="Valor">R$ 3.120,00</td>' +
+      '<td data-l="Origem"><span class="tag">Manual</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
+  nav('lan');
+  toast('Lançamento nº 2842 gravado — primeira linha do diário');
+}
+
+/* ---------- ações com efeito visível ---------- */
+function contabiliza(btn){
+  btn.disabled = true;
+  btn.textContent = '✓ Pendentes contabilizados (0)';
+  var kpi = document.querySelectorAll('#v-lan .kpi .val')[2];
+  if(kpi) kpi.textContent = '0';
+  toast('23 lançamentos sugeridos foram gravados no diário');
+}
+function fecharComp(btn){
+  document.querySelectorAll('#v-fec .mitem').forEach(function(m){
+    m.classList.remove('hl'); m.classList.add('ok');
+    var ic = m.querySelector('.mlink');
+    if(ic){ ic.textContent = '✓'; ic.className = 'mlink ok'; }
+  });
+  var tr = document.querySelectorAll('#v-fec table.tb tbody tr')[1];
+  if(tr){
+    var tds = tr.querySelectorAll('td');
+    tds[1].innerHTML = '<span class="pill ok"><i></i>Fechada</span>';
+    tds[2].textContent = '18/08';
+    tds[3].textContent = 'Rafael C.';
+  }
+  btn.disabled = true;
+  btn.textContent = '✓ Competência Jul/2026 fechada';
+  toast('Competência Jul/2026 fechada — lançamentos retroativos exigem reabertura auditada');
+}
+function calcFolha(btn){
+  var tr = document.querySelector('#v-fol [data-pane="comp"] tbody tr');
+  if(tr){
+    var tds = tr.querySelectorAll('td');
+    tds[2].textContent = 'R$ 15.120,00';
+    tds[3].textContent = 'R$ 4.090,20';
+    tds[4].textContent = 'R$ 12.729,90';
+    tds[5].innerHTML = '<span class="pill inf"><i></i>Prévia p/ conferência</span>';
+  }
+  var kpi = document.querySelectorAll('#v-fol .kpi .val')[3];
+  if(kpi) kpi.textContent = '100%';
+  btn.disabled = true;
+  btn.textContent = '✓ Folha Ago calculada';
+  toast('Folha Ago/2026 calculada — prévia pronta para conferência');
+}
+function esoTransmit(btn){
+  var tr = btn.closest('tr');
+  if(tr){
+    var st = tr.querySelector('.pill');
+    if(st) st.outerHTML = '<span class="pill ok"><i></i>Aceito</span>';
+    btn.textContent = 'Recibo';
+    btn.setAttribute('onclick', "pdfDemo('recibo-esocial.pdf','Recibo eSocial')");
+  }
+  toast('Evento transmitido e aceito pelo eSocial');
+}
+function esoAll(btn){
+  document.querySelectorAll('#v-eso table.tb tbody tr').forEach(function(tr){
+    var st = tr.querySelector('.pill.pend');
+    if(st){
+      st.outerHTML = '<span class="pill ok"><i></i>Aceito</span>';
+      var b = tr.querySelector('.btn.sm');
+      if(b){ b.textContent = 'Recibo'; b.setAttribute('onclick', "pdfDemo('recibo-esocial.pdf','Recibo eSocial')"); }
+    }
+  });
+  var vals = document.querySelectorAll('#v-eso .kpi .val');
+  if(vals[0]) vals[0].textContent = '129';
+  if(vals[1]) vals[1].textContent = '0';
+  btn.disabled = true;
+  btn.textContent = '✓ Fila transmitida (0)';
+  toast('3 eventos transmitidos com certificado digital A1 — todos aceitos');
+}
+var esoFixRow = null;
+function esoFix(btn){ esoFixRow = btn.closest('tr'); fOpen('corrigir'); }
+function tokenNew(el){
+  var inp = el.closest('.inp');
+  if(inp) inp.childNodes[0].textContent = 'lw_live_ •••• •••• •••• 3c7d ';
+  toast('Novo token gerado — o anterior foi revogado');
+}
+function portalMsg(btn){
+  var list = document.querySelector('#p-msgs .duelist');
+  var area = document.querySelector('#p-msgs .inp.area');
+  var txt = area && area.textContent.trim() && area.textContent.indexOf('Escreva') !== 0
+    ? area.textContent.trim() : 'Obrigado! Aguardamos o retorno sobre o fechamento.';
+  var d = document.createElement('div');
+  d.className = 'row';
+  d.innerHTML = '<span class="avx" style="background:#E8B03A;color:#3A2B00">PS</span><div><div class="who">Você</div><div class="cat"></div></div><span class="d">agora</span>';
+  d.querySelector('.cat').textContent = '“' + txt + '”';
+  list.appendChild(d);
+  if(area) area.textContent = 'Escreva uma mensagem para o escritório…';
+  toast('Mensagem enviada — o escritório recebe uma notificação');
+}
+function aprovarBal(el){
+  var al = el.closest('.alert');
+  if(al){
+    al.className = 'alert good';
+    al.innerHTML = '<div class="ic">✓</div><div><b>Balancete de julho aprovado digitalmente</b><small>hoje às 09:30 · o escritório foi notificado</small></div>';
+  }
+  toast('Balancete aprovado — registro assinado digitalmente');
+}
+
+/* ---------- QR PIX fictício ---------- */
+function qrSvg(){
+  var s = '<svg viewBox="0 0 25 25" width="160" height="160" style="background:#fff;border-radius:10px;padding:6px;border:1px solid var(--line)" aria-label="QR Code PIX fictício">';
+  function sq(x, y, w){ return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + w + '" fill="#0B3630"/>'; }
+  [[0,0],[18,0],[0,18]].forEach(function(p){
+    s += sq(p[0], p[1], 7) + '<rect x="' + (p[0]+1) + '" y="' + (p[1]+1) + '" width="5" height="5" fill="#fff"/>' + sq(p[0]+2, p[1]+2, 3);
+  });
+  for(var i = 0; i < 25; i++){
+    for(var j = 0; j < 25; j++){
+      var corner = (i < 8 && j < 8) || (i > 16 && j < 8) || (i < 8 && j > 16);
+      if(!corner && ((i * 7 + j * 13 + i * j) % 5 < 2)) s += sq(i, j, 1);
+    }
+  }
+  return s + '</svg>';
+}
+
+/* ---------- modal de formulário genérico ---------- */
+var fCur = null;
+function fld(label, val){ return '<div class="fld"><label>' + label + '</label><div class="inp">' + val + '</div></div>'; }
+function fsel(label, id, opts){
+  return '<div class="fld"><label>' + label + '</label><select class="inp" id="' + id + '">' +
+    opts.map(function(o){ return '<option>' + o + '</option>'; }).join('') + '</select></div>';
+}
+var FF = {
+  notif: { t: 'Notificações', save: 'Marcar todas como lidas', ok: 'Notificações marcadas como lidas',
+    body: '<div class="alert warn"><div class="ic">−</div><div><b>DAS e FGTS vencem em 20/08</b><small>R$ 10.155,62 · guias geradas</small><br><button class="lk" onclick="closeF();nav(\'gui\')">Ver guias →</button></div></div>' +
+      '<div class="alert bad"><div class="ic">!</div><div><b>3 obrigações em atraso</b><small>DCTF Jun, EFD ICMS Jul e mais 1</small><br><button class="lk" onclick="closeF();nav(\'obr\')">Ver agenda →</button></div></div>' +
+      '<div class="alert info"><div class="ic">⧗</div><div><b>2 mensagens de clientes aguardando resposta</b><small>Transportes Alvorada · Studio Fit</small><br><button class="lk" onclick="closeF();nav(\'doc\')">Responder →</button></div></div>',
+    apply: function(){ var d = document.querySelector('#v-dash .bell .dot'); if(d) d.remove(); } },
+  agenda: { t: 'Gerar agenda do mês', save: 'Gerar agenda', ok: 'Agenda de setembro gerada — 14 obrigações criadas para 42 empresas',
+    body: '<div class="alert info"><div class="ic">i</div><div><b>14 obrigações serão geradas para setembro/2026</b><small>com base no regime tributário e nas particularidades de cada uma das 42 empresas</small></div></div>' +
+      fld('Competência', 'Setembro/2026') +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Atribuir responsáveis pela regra padrão da equipe</div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Criar tarefas vinculadas no quadro</div>' },
+  obrig: { t: 'Nova obrigação manual', save: 'Criar obrigação', ok: 'Obrigação criada — primeira linha da lista',
+    body: fld('Obrigação', 'DCTFWeb') + '<div class="frow">' + fld('Competência', 'Ago/2026') + fld('Prazo', '28/08/2026 📅') + '</div>' +
+      '<div class="frow">' + fsel('Abrangência', 'ob-cli', ['Padaria São José ME', 'Todas as empresas', 'Auto Peças Cruzeiro', 'Clínica Vida']) +
+      fsel('Responsável', 'ob-resp', ['Ana Souza', 'Bruno Lima', 'Carla Nunes', 'Diego Alves']) + '</div>',
+    apply: function(){
+      var tbody = document.querySelector('#obrtb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.dataset.st = 'pend';
+      tr.innerHTML = '<td class="main-cell" data-l="Obrigação">DCTFWeb</td><td data-l="Competência">Ago/2026</td>' +
+        '<td class="desc" data-l="Abrangência">' + document.getElementById('ob-cli').value + '</td>' +
+        '<td data-l="Prazo">28/08</td><td data-l="Responsável">' + document.getElementById('ob-resp').value + '</td>' +
+        '<td data-l="Status"><span class="pill pend"><i></i>Pendente</span></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+      filtra('obrtabs', 'obrtb', 'pend', document.querySelector('#obrtabs [data-f="pend"]'));
+    } },
+  template: { t: 'Aplicar template de tarefas', save: 'Aplicar template', ok: 'Template aplicado — 3 tarefas criadas no quadro',
+    body: fsel('Template', 'tp-sel', ['Fechamento mensal (3 etapas)', 'Admissão de funcionário', 'Abertura de empresa', 'Troca de regime tributário']) +
+      '<div class="frow">' + fsel('Cliente', 'tp-cli', ['Padaria São José ME', 'Auto Peças Cruzeiro', 'Clínica Vida']) + fld('Prazo final', '31/08/2026 📅') + '</div>',
+    apply: function(){
+      var cli = document.getElementById('tp-cli').value;
+      addTaskCard('Gerar e revisar balancete', cli + ' · vence 31/08', 'RC');
+      addTaskCard('Conciliar contas bancárias', cli + ' · vence 28/08', 'DA');
+      addTaskCard('Importar e classificar notas do mês', cli + ' · vence 26/08', 'AS');
+    } },
+  soldoc: { t: 'Solicitar documento ao cliente', save: 'Enviar solicitação', ok: 'Solicitação enviada — lembretes automáticos programados',
+    body: fld('Documento solicitado', 'Extratos bancários de agosto (2 contas)') +
+      '<div class="frow">' + fsel('Cliente', 'sd-cli', ['Mercado Central', 'Padaria São José ME', 'Studio Fit Academia', 'Clínica Vida']) + fld('Prazo', '25/08/2026 📅') + '</div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="canal"></button> Lembrar por e-mail</div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="canal"></button> Lembrar por WhatsApp</div>',
+    apply: function(){
+      var tbody = document.querySelector('[data-pane="sol"] table tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="main-cell" data-l="Solicitação">Extratos bancários de agosto (2 contas)</td>' +
+        '<td data-l="Cliente">' + document.getElementById('sd-cli').value + '</td>' +
+        '<td data-l="Solicitado em">18/08</td><td data-l="Lembretes">programados</td>' +
+        '<td data-l="Status"><span class="pill pend"><i></i>Aguardando</span></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  updoc: { t: 'Enviar documento ao cliente', save: 'Enviar e publicar', ok: 'Documento publicado no portal — o cliente foi avisado',
+    body: '<div class="drop">Arraste o arquivo aqui, ou <b>clique para selecionar</b> · PDF, JPG, PNG ou ZIP até 25 MB</div>' +
+      '<div class="frow">' + fsel('Cliente', 'ud-cli', ['Padaria São José ME', 'Auto Peças Cruzeiro', 'Clínica Vida', 'Mercado Central']) + fld('Descrição', 'Relatório gerencial Jul/2026') + '</div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="notificar"></button> Notificar o cliente por e-mail</div>',
+    apply: function(){
+      var tbody = document.querySelector('[data-pane="docs"] table tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="main-cell" data-l="Documento">📄 Relatório gerencial Jul-2026.pdf</td>' +
+        '<td data-l="Cliente">' + document.getElementById('ud-cli').value + '</td>' +
+        '<td data-l="Enviado por">Escritório</td><td data-l="Data">18/08</td>' +
+        '<td data-l="Status"><span class="pill inf"><i></i>Novo</span></td>' +
+        '<td class="acts" data-l=""><button class="btn sm" onclick="pdfRow(this)">Baixar</button></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  updocp: { t: 'Enviar arquivo ao escritório', save: 'Enviar', ok: 'Arquivo enviado — o escritório recebe uma notificação',
+    body: '<div class="drop">Arraste o arquivo aqui, ou <b>clique para selecionar</b> · PDF, OFX, XML ou ZIP até 25 MB</div>' + fld('Descrição', 'Extrato BB Ago (parcial)'),
+    apply: function(){
+      var list = document.querySelector('#p-docs .duelist');
+      if(!list) return;
+      var d = document.createElement('div');
+      d.className = 'row';
+      d.innerHTML = '<div><div class="who">📎 Extrato BB Ago (parcial).ofx</div><div class="cat">você enviou · agora · recebido ✓</div></div><button class="btn sm" onclick="pdfRow(this)">Baixar</button>';
+      list.insertBefore(d, list.firstChild);
+    } },
+  faturar: { t: 'Faturar honorários de setembro', save: 'Faturar 42 contratos', ok: '42 faturas geradas com boleto + PIX e publicadas no portal de cada cliente',
+    body: '<div class="alert info"><div class="ic">i</div><div><b>42 contratos ativos · R$ 38.140,00</b><small>uma fatura por contrato, vencimento no dia definido em cada um</small></div></div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Emitir boleto registrado com QR Code PIX</div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Enviar por e-mail e WhatsApp</div>' +
+      '<div class="ckrow"><button class="chk" onclick="ck(this)" aria-label="opção"></button> Aplicar reajuste anual pendente (3 contratos)</div>' },
+  contrato: { t: 'Novo contrato de serviços', save: 'Criar contrato', ok: 'Contrato criado — honorários entram na régua de faturamento',
+    body: '<div class="frow">' + fsel('Cliente', 'ct-cli', ['Barbearia Estilo', 'Novo cliente…']) + fld('Valor mensal', 'R$ 420,00') + '</div>' +
+      '<div class="frow">' + fsel('Reajuste', 'ct-adj', ['IPCA · anual', 'IGP-M · anual', 'Sem reajuste']) + fld('Vigência', '01/09/2026 → 31/08/2027') + '</div>' +
+      '<div class="fld"><label>Serviços incluídos</label><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag pri">Contábil</span><span class="tag pri">Fiscal</span><span class="tag">Folha</span><span class="tag">Portal do Cliente</span></div></div>' },
+  impcli: { t: 'Importar clientes', save: 'Processar planilha', ok: 'Planilha processada — 3 clientes prontos para revisão no onboarding',
+    body: '<div class="drop">Arraste a planilha aqui, ou <b>clique para selecionar</b> · XLSX ou CSV no modelo padrão</div>' +
+      '<div class="alert info"><div class="ic">i</div><div><b>Consulta cadastral automática</b><small>razão social, regime e endereço são conferidos pelo CNPJ durante a importação</small></div></div>' },
+  clinovo: { t: 'Novo cliente', save: 'Cadastrar cliente', ok: 'Cliente cadastrado — onboarding iniciado, primeira linha da lista',
+    body: fld('Razão social', 'Café Aurora LTDA') +
+      '<div class="frow">' + fld('CNPJ', '31.415.926/0001-53') + fsel('Regime', 'cn-reg', ['Simples Nacional', 'Lucro Presumido', 'Lucro Real', 'MEI']) + '</div>' +
+      '<div class="frow">' + fsel('Responsável', 'cn-resp', ['Diego Alves', 'Ana Souza', 'Bruno Lima', 'Carla Nunes']) + fld('Honorário mensal', 'R$ 450,00') + '</div>',
+    apply: function(){
+      var tbody = document.querySelector('#v-cli table.tb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="main-cell" data-l="Empresa">Café Aurora LTDA</td><td data-l="CNPJ">31.415.926/0001-53</td>' +
+        '<td data-l="Regime"><span class="tag">' + document.getElementById('cn-reg').value + '</span></td>' +
+        '<td data-l="Responsável">' + document.getElementById('cn-resp').value + '</td>' +
+        '<td class="num" data-l="Honorário">R$ 450,00</td>' +
+        '<td data-l="Situação"><span class="pill inf"><i></i>Onboarding</span></td>' +
+        '<td class="acts" data-l=""><button class="btn sm" onclick="gOpen(\'cliente\',this)">Abrir</button></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  modelo: { t: 'Aplicar modelo de plano de contas', save: 'Aplicar modelo', ok: 'Modelo aplicado — contas sem movimento foram substituídas',
+    body: fsel('Modelo', 'md-sel', ['Comércio — Simples Nacional', 'Serviços — Simples Nacional', 'Comércio — Lucro Presumido', 'Indústria — Lucro Real']) +
+      '<div class="alert warn"><div class="ic">−</div><div><b>Contas com movimento são preservadas</b><small>apenas contas sem lançamentos são substituídas pelo modelo</small></div></div>' },
+  contanova: { t: 'Nova conta contábil', save: 'Criar conta', ok: 'Conta 1.1.04 criada no plano de contas',
+    body: '<div class="frow">' + fld('Código', '1.1.04') + fld('Descrição', 'Aplicações Financeiras') + '</div>' +
+      '<div class="frow">' + fsel('Tipo', 'nc-tipo', ['Analítica', 'Sintética']) + fsel('Natureza', 'nc-nat', ['Devedora', 'Credora']) + '</div>',
+    apply: function(){
+      var pass = document.querySelectorAll('#v-pla .tree .tr.l1')[1];
+      if(!pass) return;
+      var d = document.createElement('div');
+      d.className = 'tr l3';
+      d.innerHTML = '<span class="cod">1.1.04</span><span class="nm">Aplicações Financeiras</span><span class="sal">R$ 0,00</span>';
+      pass.parentNode.insertBefore(d, pass);
+    } },
+  gerademo: { t: 'Gerar demonstração', save: 'Gerar', ok: 'Demonstração gerada',
+    body: fsel('Demonstração', 'gd-sel', ['DRE', 'Balancete', 'Balanço Patrimonial', 'Razão analítico']) +
+      '<div class="frow">' + fsel('Período', 'gd-per', ['Jul/2026', 'Jun/2026', '1º semestre 2026']) +
+      fsel('Comparativo', 'gd-cmp', ['Mês anterior', 'Mesmo mês do ano anterior', 'Sem comparativo']) + '</div>',
+    apply: function(){
+      var i = document.getElementById('gd-sel').selectedIndex;
+      var tab = document.querySelectorAll('#v-dre .tabs button')[i];
+      if(tab) tab.click();
+    } },
+  xml: { t: 'Importar XML de notas', save: 'Importar', ok: '2 XMLs importados — aguardando classificação',
+    body: '<div class="drop">Arraste XMLs ou um lote ZIP aqui, ou <b>clique para selecionar</b></div>' +
+      '<div class="alert good"><div class="ic">✓</div><div><b>Captura automática ativa</b><small>o monitor baixa novas notas emitidas contra o CNPJ a cada hora — importe aqui apenas avulsos</small></div></div>',
+    apply: function(){
+      var tbody = document.querySelector('#nftb tbody');
+      if(!tbody) return;
+      ['NF-e 55.102 · Laticínios Serra Azul · R$ 1.240,00', 'NF-e 8.771 · Açúcar União Distribuidora · R$ 386,50'].forEach(function(s, ix){
+        var p = s.split(' · ');
+        var tr = document.createElement('tr');
+        tr.dataset.st = 'pend';
+        tr.innerHTML = '<td class="main-cell" data-l="Nota">' + p[0] + '</td>' +
+          '<td data-l="Tipo"><span class="pill inf"><i></i>Entrada</span></td>' +
+          '<td class="desc" data-l="Emitente">' + p[1] + '</td><td data-l="Emissão">18/08</td>' +
+          '<td class="num" data-l="Valor">' + p[2] + '</td>' +
+          '<td data-l="Situação"><span class="pill pend"><i></i>Classificar</span></td>';
+        tbody.insertBefore(tr, tbody.firstChild);
+      });
+    } },
+  nfse: { t: 'Emitir NFS-e', save: 'Emitir NFS-e', ok: 'NFS-e 443 autorizada pela prefeitura — primeira linha da lista',
+    body: '<div class="frow">' + fsel('Tomador', 'nf-tom', ['Hotel Jardim Real', 'Mercado Bom Preço', 'Consumidor final']) + fld('Valor', 'R$ 850,00') + '</div>' +
+      fld('Discriminação do serviço', 'Fornecimento de coffee break — evento 22/08') +
+      '<div class="ckrow"><button class="chk" onclick="ck(this)" aria-label="ISS"></button> ISS retido pelo tomador</div>',
+    apply: function(){
+      var tbody = document.querySelector('#nftb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.dataset.st = 'sai';
+      tr.innerHTML = '<td class="main-cell" data-l="Nota">NFS-e 443</td>' +
+        '<td data-l="Tipo"><span class="pill ok"><i></i>Saída</span></td>' +
+        '<td class="desc" data-l="Destinatário">' + document.getElementById('nf-tom').value + '</td>' +
+        '<td data-l="Emissão">18/08</td><td class="num" data-l="Valor">R$ 850,00</td>' +
+        '<td data-l="Situação"><span class="tag pri">Autorizada</span></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  guia: { t: 'Gerar guia de recolhimento', save: 'Gerar guia', ok: 'Guia gerada — primeira linha da lista, pronta para envio',
+    body: '<div class="frow">' + fsel('Tipo', 'gg-tipo', ['DARF IRPJ', 'DAS Simples', 'GPS INSS', 'FGTS Digital', 'ISS Municipal']) +
+      fsel('Cliente', 'gg-cli', ['Auto Peças Cruzeiro', 'Padaria São José ME', 'Clínica Vida', 'Transportes Alvorada']) + '</div>' +
+      '<div class="frow">' + fld('Competência', 'Jul/2026') + fld('Vencimento', '31/08/2026 📅') + '</div>' + fld('Valor', 'R$ 2.140,00'),
+    apply: function(){
+      var tbody = document.querySelector('#guitb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.dataset.st = 'pend'; tr.dataset.val = '2140';
+      tr.innerHTML = '<td data-l=""><button class="chk" onclick="ck(this)" aria-label="selecionar"></button></td>' +
+        '<td class="main-cell" data-l="Guia">' + document.getElementById('gg-tipo').value + '</td>' +
+        '<td data-l="Cliente">' + document.getElementById('gg-cli').value + '</td>' +
+        '<td data-l="Competência">Jul/2026</td><td data-l="Vencimento">31/08</td>' +
+        '<td class="num" data-l="Valor">R$ 2.140,00</td>' +
+        '<td data-l="Status"><span class="pill pend"><i></i>A vencer</span></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  spedgen: { t: 'Gerar arquivo SPED / declaração', save: 'Gerar e transmitir', ok: 'Arquivo validado e transmitido — recibo no histórico',
+    body: '<div class="frow">' + fsel('Declaração', 'sp-sel', ['EFD Contribuições', 'EFD ICMS/IPI', 'SPED ECD', 'SPED ECF', 'DCTFWeb']) +
+      fsel('Cliente', 'sp-cli', ['Transportes Alvorada', 'Auto Peças Cruzeiro', 'Mercado Central', 'Lote — todas as obrigadas']) + '</div>' +
+      fld('Período', 'Jul/2026') +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="validar"></button> Validar no PVA antes de transmitir</div>',
+    apply: function(){
+      var tbody = document.querySelector('#v-sped table.tb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="main-cell" data-l="Declaração">' + document.getElementById('sp-sel').value + '</td>' +
+        '<td data-l="Cliente">' + document.getElementById('sp-cli').value + '</td>' +
+        '<td data-l="Período">Jul/2026</td><td data-l="Transmitida">18/08 09:31</td>' +
+        '<td data-l="Recibo" class="desc">41.' + String(Math.floor(Math.random() * 90) + 10) + '.88.20.' + String(Math.floor(Math.random() * 9000) + 1000) + '</td>' +
+        '<td data-l="Status"><span class="pill ok"><i></i>Aceita</span></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  impfun: { t: 'Importar funcionários', save: 'Processar planilha', ok: 'Planilha processada — 2 admissões prontas para conferência',
+    body: '<div class="drop">Arraste a planilha aqui, ou <b>clique para selecionar</b> · XLSX no modelo padrão</div>' +
+      '<div class="alert info"><div class="ic">i</div><div><b>Validação automática</b><small>CPF, PIS e datas são validados antes de gerar os eventos S-2200</small></div></div>' },
+  admissao: { t: 'Nova admissão', save: 'Registrar admissão', ok: 'Admissão registrada — S-2200 na fila do eSocial',
+    body: fld('Nome completo', 'Paulo Henrique Souza') +
+      '<div class="frow">' + fld('Cargo', 'Atendente') + fld('Salário', 'R$ 1.720,00') + '</div>' +
+      '<div class="frow">' + fld('Admissão', '01/09/2026 📅') + fsel('Jornada', 'ad-jor', ['44 h semanais', '40 h semanais', '30 h semanais', 'Intermitente']) + '</div>',
+    apply: function(){
+      var tbody = document.querySelector('#v-fun table.tb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="main-cell" data-l="Nome">Paulo Henrique Souza</td><td data-l="Cargo">Atendente</td>' +
+        '<td data-l="Admissão">01/09/2026</td><td class="num" data-l="Salário">R$ 1.720,00</td>' +
+        '<td data-l="Situação"><span class="pill inf"><i></i>Admissão em curso</span></td>' +
+        '<td class="acts" data-l=""><button class="btn sm" onclick="gOpen(\'func\',this)">Abrir</button></td>';
+      tbody.insertBefore(tr, tbody.firstChild);
+    } },
+  corrigir: { t: 'Corrigir evento S-2206', save: 'Corrigir e reenviar', ok: 'Cadastro corrigido — evento retransmitido e aceito',
+    body: '<div class="alert bad"><div class="ic">!</div><div><b>Erro 301 — CPF divergente do cadastro CNIS</b><small>retorno do eSocial em 12/08</small></div></div>' +
+      '<div class="frow">' + fld('CPF informado', '412.588.109-**') + fld('CPF correto (CNIS)', '412.858.109-**') + '</div>',
+    apply: function(){
+      if(!esoFixRow) return;
+      var st = esoFixRow.querySelector('.pill');
+      if(st) st.outerHTML = '<span class="pill ok"><i></i>Aceito</span>';
+      var b = esoFixRow.querySelector('.btn.sm');
+      if(b){ b.textContent = 'Recibo'; b.setAttribute('onclick', "pdfDemo('recibo-esocial.pdf','Recibo eSocial')"); }
+      esoFixRow = null;
+    } },
+  ofx: { t: 'Importar extrato bancário', save: 'Importar extrato', ok: 'Extrato importado — 2 novos movimentos aguardando conciliação',
+    body: '<div class="drop">Arraste o arquivo OFX/CSV aqui, ou <b>clique para selecionar</b></div>' +
+      fsel('Conta de destino', 'ofx-cta', ['Sicoob · CC 11.207-3', 'Banco do Brasil · CC 4.812-6', 'Caixa interno']) },
+  cobranca: { t: 'Emitir cobranças em lote', save: 'Emitir 12 cobranças', ok: '12 cobranças emitidas — boletos registrados com QR Code PIX',
+    body: '<div class="alert info"><div class="ic">i</div><div><b>12 títulos em aberto sem cobrança emitida · R$ 9.870,00</b><small>um boleto registrado com PIX por título</small></div></div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="régua"></button> Ativar régua de cobrança automática</div>' +
+      '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="enviar"></button> Enviar por e-mail e WhatsApp ao sacado</div>' },
+  convite: { t: 'Convidar usuário', save: 'Enviar convite', ok: 'Convite enviado por e-mail — expira em 7 dias',
+    body: fld('E-mail', 'novo.colaborador@ledware.com.br') +
+      '<div class="frow">' + fsel('Perfil', 'cv-perfil', ['Colaborador', 'Contador', 'Administrador']) +
+      fsel('Empresas visíveis', 'cv-emp', ['Todas', 'Selecionar…']) + '</div>',
+    apply: function(){
+      var tbody = document.querySelector('#v-usu table.tb tbody');
+      if(!tbody) return;
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="main-cell" data-l="Usuário">Novo colaborador</td>' +
+        '<td class="desc" data-l="E-mail">novo.colaborador@ledware.com.br</td>' +
+        '<td data-l="Perfil"><span class="pill ok"><i></i>' + document.getElementById('cv-perfil').value + '</span></td>' +
+        '<td data-l="2FA"><span class="pill pend"><i></i>Pendente</span></td>' +
+        '<td data-l="Último acesso">—</td>' +
+        '<td data-l="Status"><span class="pill inf"><i></i>Convite enviado</span></td>';
+      tbody.appendChild(tr);
+    } },
+  cadaux: { t: 'Novo cadastro auxiliar', save: 'Criar cadastro', ok: 'Cadastro criado na estrutura selecionada',
+    body: fsel('Tipo', 'cx-tipo', ['Centro de custo', 'Conta bancária', 'Bem patrimonial', 'Certificado digital']) +
+      fld('Nome / descrição', 'Marketing e divulgação') + fld('Complemento', 'Tipo: Apoio · rateio manual') },
+  banco: { t: 'Conectar novo banco', save: 'Iniciar conexão', ok: 'Conexão iniciada — autorize o acesso no app do banco',
+    body: fsel('Banco', 'bk-sel', ['Itaú', 'Bradesco', 'Caixa Econômica', 'Banco Inter', 'Sicredi']) +
+      fsel('Tipo de integração', 'bk-tipo', ['Open Finance (automática)', 'Importação OFX (manual)']),
+    apply: function(){
+      var chips = document.querySelector('#v-cfg .bankchips');
+      if(!chips) return;
+      var d = document.createElement('div');
+      d.className = 'bankchip';
+      d.innerHTML = '<span class="st off"></span>' + document.getElementById('bk-sel').value + ' <small>aguardando autorização</small>';
+      chips.appendChild(d);
+    } },
+  pix: { t: 'Pagar com PIX', save: 'Copiar código PIX', ok: 'Código PIX copia-e-cola copiado',
+    body: '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">' + qrSvg() +
+      '<div style="flex:1;min-width:200px"><div class="kpi"><div class="lbl">Honorários · Ago/2026</div><div class="val">R$ 890,00</div><div class="sub">Ledware Contabilidade LTDA · vence 20/08</div></div></div></div>' +
+      '<div class="fld"><label>PIX copia-e-cola</label><div class="inp" style="font-size:11px;word-break:break-all;white-space:normal">00020126580014BR.GOV.BCB.PIX0136a1b2c3d4-ledw-4re0-cont-abil20260890005204000053039865406890.005802BR5925LEDWARE CONTABILIDADE LTD6009SAO PAULO62070503***6304A1B2</div></div>',
+    apply: function(){
+      try{ navigator.clipboard.writeText('00020126580014BR.GOV.BCB.PIX0136a1b2c3d4-ledw-4re0-cont-abil20260890005204000053039865406890.005802BR5925LEDWARE CONTABILIDADE LTD6009SAO PAULO62070503***6304A1B2'); }catch(e){}
+    } }
+};
+function fOpen(key){
+  fCur = FF[key];
+  if(!fCur) return;
+  document.getElementById('f-title').textContent = fCur.t;
+  document.getElementById('f-body').innerHTML = fCur.body;
+  document.getElementById('f-save').textContent = fCur.save || 'Salvar';
+  document.getElementById('fback').classList.add('open');
+}
+function fSave(){
+  var cur = fCur;
+  closeF();
+  if(cur && cur.apply){ try{ cur.apply(); }catch(e){} }
+  if(cur) toast(cur.ok || 'Salvo');
+}
+function closeF(){
+  var f = document.getElementById('fback');
+  if(f) f.classList.remove('open');
+  fCur = null;
+}
+
+/* ---------- conciliação: criar lançamento da tarifa ---------- */
+function conc2(el){
+  var item = el.closest('.mitem');
+  if(item){
+    item.classList.add('ok');
+    item.querySelector('.l1').childNodes[0].textContent = 'Tarifa bancária — lançamento criado';
+    item.querySelector('.l2').innerHTML = 'lançamento nº 2843 · débito 4.2.05 Despesas Bancárias × crédito Banco BB · conciliado ✓';
+  }
+  var ex = document.querySelectorAll('#v-conc .mcol')[0].querySelectorAll('.mitem')[1];
+  if(ex) ex.classList.add('ok');
+  toast('Lançamento nº 2843 criado e conciliado');
+}
+/* ---------- negociação de honorários ---------- */
+FF.negociar = { t: 'Negociar títulos vencidos', save: 'Enviar proposta', ok: 'Proposta de parcelamento enviada — o cliente aceita pelo portal',
+  body: '<div class="alert warn"><div class="ic">−</div><div><b>Títulos selecionados em atraso</b><small>a proposta substitui os títulos originais após o aceite</small></div></div>' +
+    '<div class="frow">' + fsel('Parcelamento', 'ng-parc', ['3× sem juros', '2× sem juros', '4× com juros de 1% a.m.']) +
+    fsel('Primeira parcela', 'ng-ini', ['25/08/2026', '01/09/2026', '10/09/2026']) + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Emitir boletos com PIX para cada parcela</div>' };
