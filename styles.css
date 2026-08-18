@@ -473,3 +473,10 @@ tr.rowsel td{background:var(--pri-soft) !important}
   .app{display:block}
   .card{break-inside:avoid; box-shadow:none}
 }
+
+/* ===== kanban: arrastar e soltar ===== */
+.kcard{cursor:grab; touch-action:pan-y; user-select:none; -webkit-user-select:none}
+.kcard:active{cursor:grabbing}
+.kghost{position:fixed; z-index:99; pointer-events:none; box-shadow:0 18px 40px rgba(5,25,30,.35); transform:rotate(2.5deg); opacity:.95; margin:0}
+.kdrag-src{opacity:.4; border-style:dashed; border-color:#7FC7AF}
+.kcol.kover{border-color:#7FC7AF; box-shadow:0 0 0 3px var(--pri-soft)}

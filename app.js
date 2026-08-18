@@ -39,7 +39,7 @@ function persona(p, silent){
 function go(v, btn){
   document.querySelectorAll('#app .view').forEach(function(x){ x.classList.remove('on'); });
   var target = document.getElementById('v-' + v);
-  if(!target){ toast('Tela em construção no protótipo'); return; }
+  if(!target){ toast('Tela indisponível'); return; }
   target.classList.add('on');
   document.querySelectorAll('.nav button[data-v]').forEach(function(b){ b.classList.remove('on'); });
   if(btn && btn.dataset && btn.dataset.v){
@@ -109,7 +109,7 @@ function openTarefa(){ document.getElementById('tback').classList.add('open'); }
 function closeTarefa(){ document.getElementById('tback').classList.remove('open'); }
 
 document.addEventListener('keydown', function(e){
-  if(e.key === 'Escape'){ closeModal(); closeLanc(); closeTarefa(); closeDrawer(); }
+  if(e.key === 'Escape'){ closeModal(); closeLanc(); closeTarefa(); closeG(); closeDrawer(); }
 });
 
 /* ---------- checkbox / seleção em lote ---------- */
@@ -176,7 +176,7 @@ function fecStep(el, msg){
   var icon = el.querySelector('.mlink');
   if(icon){ icon.textContent = '✓'; icon.className = 'mlink ok'; }
   el.classList.add('ok');
-  toast(msg || 'Etapa concluída (protótipo)');
+  toast(msg || 'Etapa concluída');
 }
 
 /* ---------- portal do cliente ---------- */
@@ -197,3 +197,204 @@ function navFilter(q){
     li.style.display = (!q || t.indexOf(q) >= 0) ? '' : 'none';
   });
 }
+
+/* =========================================================================
+   Extensões: kanban drag & drop, modal de detalhe, filtros e paginação
+   ========================================================================= */
+
+/* ---------- paginação (visual) ---------- */
+function pgn(btn){
+  var wrap = btn.parentElement;
+  var pages = Array.prototype.slice.call(wrap.querySelectorAll('.pg'));
+  var nums = pages.filter(function(b){ return /^\d+$/.test(b.textContent.trim()); });
+  var target = btn;
+  if(!/^\d+$/.test(btn.textContent.trim())){
+    var cur = nums.findIndex(function(b){ return b.classList.contains('on'); });
+    target = nums[Math.min(cur + 1, nums.length - 1)];
+  }
+  pages.forEach(function(b){ b.classList.remove('on'); });
+  if(target) target.classList.add('on');
+}
+
+/* ---------- chips de filtro: alternam entre valores ---------- */
+function fcycle(el, opts){
+  var label = el.querySelector('span') ? el.querySelector('span').textContent : '';
+  var cur = el.textContent.replace(label, '').replace('▾', '').trim();
+  var i = (opts.indexOf(cur) + 1) % opts.length;
+  el.innerHTML = '<span>' + label + '</span> ' + opts[i] + ' ▾';
+}
+
+/* ---------- modal genérico de detalhe ---------- */
+var CLI_DATA = {
+  'Padaria São José ME':      ['12.345.678/0001-90', 'Simples Nacional · Anexo I', 'Ana Souza', 'R$ 890,00', 'Mar/2020'],
+  'Auto Peças Cruzeiro LTDA': ['98.765.432/0001-10', 'Lucro Presumido', 'Ana Souza', 'R$ 1.150,00', 'Jun/2019'],
+  'Clínica Vida':             ['45.678.912/0001-55', 'Lucro Presumido', 'Carla Nunes', 'R$ 640,00', 'Jan/2022'],
+  'Transportes Alvorada':     ['33.222.111/0001-77', 'Lucro Real', 'Bruno Lima', 'R$ 1.180,00', 'Set/2018'],
+  'Mercado Central':          ['22.333.444/0001-21', 'Simples Nacional', 'Ana Souza', 'R$ 890,00', 'Fev/2021'],
+  'Studio Fit Academia':      ['55.666.777/0001-33', 'Simples Nacional', 'Carla Nunes', 'R$ 520,00', 'Ago/2023'],
+  'Barbearia Estilo':         ['77.888.999/0001-44', 'Simples Nacional', 'Diego Alves', 'R$ 420,00', 'Jul/2026'],
+  'Pet Shop Amigo Fiel':      ['11.222.333/0001-88', 'Simples Nacional', 'Rafael C.', 'R$ 480,00', 'Nov/2022']
+};
+var FUNC_DATA = {
+  'Maria Aparecida Santos': ['Padeira chefe', '03/02/2020', 'R$ 3.240,00', '2 dependentes', 'Dez/2026 (programadas)'],
+  'João Pedro Oliveira':    ['Atendente', '15/07/2023', 'R$ 1.720,00', 'sem dependentes', 'período vence 14/10 ⚠'],
+  'Fernanda Costa Lima':    ['Confeiteira', '01/03/2022', 'R$ 2.480,00', '1 dependente', '01–30/09 (aviso enviado)'],
+  'Carlos Eduardo Ramos':   ['Auxiliar de produção', '10/01/2024', 'R$ 1.640,00', 'sem dependentes', 'a programar'],
+  'José Pereira Filho':     ['Entregador', '05/05/2021', 'R$ 1.880,00', '1 dependente', '— (rescisão em curso)']
+};
+function fldRow(label, val){
+  return '<div class="fld"><label>' + label + '</label><div class="inp">' + val + '</div></div>';
+}
+var GDET = {
+  cliente: function(t){
+    t = t || 'Padaria São José ME';
+    var d = CLI_DATA[t] || ['—', '—', '—', '—', '—'];
+    return { title: t, html:
+      '<div class="frow">' + fldRow('CNPJ', d[0]) + fldRow('Regime tributário', d[1]) + '</div>' +
+      '<div class="frow3">' + fldRow('Responsável', d[2]) + fldRow('Honorário mensal', d[3]) + fldRow('Cliente desde', d[4]) + '</div>' +
+      '<div class="fld"><label>Serviços contratados</label><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag pri">Contábil</span><span class="tag pri">Fiscal</span><span class="tag pri">Folha</span><span class="tag">Portal do Cliente</span></div></div>' +
+      '<div class="fld"><label>Atividade recente</label><div class="tline" style="margin-top:4px">' +
+        '<div class="ti g"><b>Balancete Jul/2026 aprovado no portal</b><small>ontem 17:40</small></div>' +
+        '<div class="ti"><b>18 XMLs importados pelo monitor</b><small>hoje 07:40</small></div>' +
+        '<div class="ti w"><b>Honorário Ago/2026 gerado — boleto + PIX</b><small>15/08</small></div></div></div>' };
+  },
+  func: function(t){
+    t = t || 'Maria Aparecida Santos';
+    var d = FUNC_DATA[t] || ['—', '—', '—', '—', '—'];
+    return { title: t, html:
+      '<div class="frow">' + fldRow('Cargo', d[0]) + fldRow('Admissão', d[1]) + '</div>' +
+      '<div class="frow3">' + fldRow('Salário base', d[2]) + fldRow('Dependentes', d[3]) + fldRow('Próximas férias', d[4]) + '</div>' +
+      '<div class="fld"><label>Documentos</label><div class="duelist">' +
+        '<div class="row"><div><div class="who">📄 Contrato de trabalho.pdf</div><div class="cat">assinado digitalmente</div></div><span class="pill ok"><i></i>OK</span></div>' +
+        '<div class="row"><div><div class="who">📄 Exame admissional (ASO)</div><div class="cat">válido até renovar</div></div><span class="pill ok"><i></i>OK</span></div>' +
+        '<div class="row"><div><div class="who">📄 Ficha de registro</div><div class="cat">eSocial S-2200 aceito</div></div><span class="pill ok"><i></i>OK</span></div></div></div>' };
+  },
+  resc: function(t){
+    t = t || 'José Pereira Filho';
+    return { title: 'Rescisão — ' + t, html:
+      '<div class="frow3">' + fldRow('Modalidade', 'Dispensa sem justa causa') + fldRow('Aviso', 'Indenizado') + fldRow('Total rescisório', 'R$ 6.412,80') + '</div>' +
+      '<div class="fld"><label>Checklist</label>' +
+        '<div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> TRCT emitido e conferido</div></div>' +
+        '<div class="mitem ok"><div class="l1"><span class="mlink ok">✓</span> Guia FGTS rescisório gerada</div></div>' +
+        '<div class="mitem"><div class="l1"><span class="mlink q">›</span> Homologação agendada — 22/08</div></div>' +
+        '<div class="mitem"><div class="l1"><span class="mlink q">›</span> Transmitir S-2299 ao eSocial</div></div></div>' };
+  },
+  folha: function(t){
+    t = t || 'Jul/2026';
+    return { title: 'Folha de Pagamento — ' + t, html:
+      '<div class="frow3">' + fldRow('Total bruto', 'R$ 14.980,00') + fldRow('Encargos', 'R$ 4.052,50') + fldRow('Líquido', 'R$ 12.610,40') + '</div>' +
+      '<div class="fld"><label>Colaboradores</label><div class="duelist">' +
+        '<div class="row"><div><div class="who">Maria Aparecida Santos</div><div class="cat">Padeira chefe · 22 dias</div></div><span class="amt">R$ 2.874,10</span></div>' +
+        '<div class="row"><div><div class="who">Fernanda Costa Lima</div><div class="cat">Confeiteira · 22 dias</div></div><span class="amt">R$ 2.201,60</span></div>' +
+        '<div class="row"><div><div class="who">João Pedro Oliveira</div><div class="cat">Atendente · 22 dias + 6 h extras</div></div><span class="amt">R$ 1.598,45</span></div>' +
+        '<div class="row"><div><div class="who">Carlos Eduardo Ramos</div><div class="cat">Aux. produção · 22 dias</div></div><span class="amt">R$ 1.489,20</span></div>' +
+        '<div class="row"><div><div class="who">Demais colaboradores (4)</div><div class="cat">ver folha completa</div></div><span class="amt">R$ 4.447,05</span></div></div></div>' +
+      '<div class="alert good" style="margin:0"><div class="ic">✓</div><div><b>Holerites publicados no portal</b><small>eSocial S-1200/S-1210 aceitos · guias FGTS e INSS geradas</small></div></div>' };
+  }
+};
+function gOpen(kind, el){
+  var title = null;
+  if(el && el.closest){
+    var tr = el.closest('tr');
+    if(tr){ var mc = tr.querySelector('.main-cell'); if(mc) title = mc.textContent.trim(); }
+  }
+  var make = GDET[kind];
+  if(!make) return;
+  var d = make(title);
+  document.getElementById('g-title').textContent = d.title;
+  document.getElementById('g-body').innerHTML = d.html;
+  document.getElementById('gback').classList.add('open');
+}
+function closeG(){
+  var g = document.getElementById('gback');
+  if(g) g.classList.remove('open');
+}
+
+/* ---------- detalhe de tarefa (a partir do cartão) ---------- */
+function kopen(el){
+  if(kSuppress) return;
+  var t = el.querySelector('b') ? el.querySelector('b').textContent : 'Tarefa';
+  var meta = el.querySelector('.meta') ? el.querySelector('.meta').textContent.trim() : '';
+  document.getElementById('g-title').textContent = t;
+  document.getElementById('g-body').innerHTML =
+    (meta ? '<div><span class="tag pri">' + meta + '</span></div>' : '') +
+    '<div class="fld"><label>Checklist</label>' +
+      '<div class="ckrow" style="padding:5px 0"><button class="chk on" onclick="ck(this)" aria-label="etapa"></button> Reunir documentos e conferências</div>' +
+      '<div class="ckrow" style="padding:5px 0"><button class="chk on" onclick="ck(this)" aria-label="etapa"></button> Executar e validar valores</div>' +
+      '<div class="ckrow" style="padding:5px 0"><button class="chk" onclick="ck(this)" aria-label="etapa"></button> Revisão do contador</div>' +
+      '<div class="ckrow" style="padding:5px 0"><button class="chk" onclick="ck(this)" aria-label="etapa"></button> Comunicar o cliente</div></div>' +
+    '<div class="fld"><label>Comentários</label><div class="duelist">' +
+      '<div class="row"><span class="avx">RC</span><div><div class="who">Rafael Contador</div><div class="cat">“Priorizar até quinta — o cliente pediu retorno.”</div></div><span class="d">ontem</span></div></div></div>' +
+    '<div class="fld"><label>Novo comentário</label><div class="inp area">Escreva um comentário…</div></div>';
+  document.getElementById('gback').classList.add('open');
+}
+
+/* ---------- kanban: arrastar e soltar (mouse e toque) ---------- */
+var kCard = null, kGhost = null, kDragging = false, kSuppress = false;
+var kStartX = 0, kStartY = 0, kOffX = 0, kOffY = 0;
+
+function kcounts(){
+  document.querySelectorAll('.kanban .kcol').forEach(function(col){
+    var s = col.querySelector('h4 span');
+    if(!s) return;
+    var extra = parseInt(s.dataset.extra || '0', 10);
+    s.textContent = col.querySelectorAll('.kcard').length + extra;
+  });
+}
+document.addEventListener('pointerdown', function(e){
+  var c = e.target.closest('.kcard');
+  if(!c || e.button > 0) return;
+  kCard = c; kDragging = false;
+  kStartX = e.clientX; kStartY = e.clientY;
+  var r = c.getBoundingClientRect();
+  kOffX = e.clientX - r.left; kOffY = e.clientY - r.top;
+});
+document.addEventListener('pointermove', function(e){
+  if(!kCard) return;
+  if(!kDragging && Math.hypot(e.clientX - kStartX, e.clientY - kStartY) > 7){
+    kDragging = true;
+    kGhost = kCard.cloneNode(true);
+    kGhost.classList.add('kghost');
+    kGhost.style.width = kCard.offsetWidth + 'px';
+    document.body.appendChild(kGhost);
+    kCard.classList.add('kdrag-src');
+  }
+  if(!kDragging) return;
+  e.preventDefault();
+  kGhost.style.left = (e.clientX - kOffX) + 'px';
+  kGhost.style.top  = (e.clientY - kOffY) + 'px';
+  kGhost.style.display = 'none';
+  var under = document.elementFromPoint(e.clientX, e.clientY);
+  kGhost.style.display = '';
+  var col = under && under.closest ? under.closest('.kcol') : null;
+  document.querySelectorAll('.kcol').forEach(function(k){ k.classList.remove('kover'); });
+  if(col){
+    col.classList.add('kover');
+    var cards = Array.prototype.slice.call(col.querySelectorAll('.kcard')).filter(function(k){ return k !== kCard; });
+    var next = null;
+    for(var i = 0; i < cards.length; i++){
+      var r = cards[i].getBoundingClientRect();
+      if(e.clientY < r.top + r.height / 2){ next = cards[i]; break; }
+    }
+    if(next) col.insertBefore(kCard, next); else col.appendChild(kCard);
+  }
+}, {passive:false});
+function kEnd(e){
+  if(kDragging){
+    var col = kCard.closest('.kcol');
+    document.querySelectorAll('.kcol').forEach(function(k){ k.classList.remove('kover'); });
+    kCard.classList.remove('kdrag-src');
+    if(kGhost){ kGhost.remove(); kGhost = null; }
+    kcounts();
+    if(col){
+      var h4 = col.querySelector('h4');
+      var name = h4 ? h4.childNodes[0].textContent.trim() : '';
+      toast('Tarefa movida para “' + name + '”');
+    }
+    kSuppress = true;
+    setTimeout(function(){ kSuppress = false; }, 80);
+  }
+  kCard = null; kDragging = false;
+}
+document.addEventListener('pointerup', kEnd);
+document.addEventListener('pointercancel', kEnd);

@@ -17,17 +17,19 @@ Mockup completo e navegável do **ERP Contábil da Ledware Tecnologia** (versão
 |---|---|
 | **Visão geral** | Dashboard da empresa · Dashboard do Escritório |
 | **Escritório** | Agenda de Obrigações (calendário) · Tarefas (kanban) · Documentos & Mensagens · Contratos & Honorários |
-| **Cadastros** | Clientes · Plano de Contas (árvore) |
+| **Cadastros** | Clientes · Plano de Contas (árvore) · Cadastros Auxiliares (centros de custo, contas, patrimônio, certificados) |
 | **Contabilidade** | Lançamentos (partida dobrada) · Demonstrações (DRE / Balancete) · Fechamento Contábil (checklist) |
 | **Fiscal** | Notas Fiscais · Apuração de Impostos (memória de cálculo) · Guias DARF/DAS/GPS/FGTS · SPED & Declarações |
 | **Folha & Pessoal** | Funcionários · Folha de Pagamento (férias, rescisões, 13º) · eSocial & EFD-Reinf |
 | **Financeiro** | Contas a Receber · Contas a Pagar · Conciliação Bancária · Fluxo de Caixa · Cobrança Boletos & PIX |
-| **Administração** | Usuários & Permissões · Auditoria & LGPD |
+| **Administração** | Usuários & Permissões · Auditoria & LGPD · Configurações |
 | **Portal do Cliente** | Início · Documentos · Mensagens · Faturas · Folha & Holerites |
 
 ## Interações demonstradas
 
-- Filtros por status (tabs), seleção em lote com barra de ações, paginação
+- Filtros por status (tabs), seleção em lote com barra de ações, paginação e chips de filtro funcionais
+- Kanban de tarefas com arrastar e soltar (estilo Trello) e detalhe da tarefa
+- Fichas de detalhe (cliente, funcionário, folha, rescisão) em modal
 - Modais: novo título financeiro, lançamento contábil, nova tarefa
 - Conciliação bancária com sugestão de pareamento (aceitar sugestão dá baixa)
 - Checklist de fechamento com progressão de etapas
