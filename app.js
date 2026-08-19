@@ -1359,3 +1359,145 @@ FF.wppmodelo = { t: 'Editar modelo de mensagem', save: 'Salvar e enviar para apr
     '<div class="fld"><label>Mensagem (variáveis: {cliente}, {documento}, {obrigacao}, {prazo}, {faltam}, {link})</label><div class="inp area" style="color:var(--ink)">Bom dia {cliente}! Ainda aguardamos {documento}. Prazo: {prazo}. Envie pelo portal: {link}</div></div>' +
     '<div class="fld"><label>Pré-visualização</label><div class="inp" style="white-space:normal">Bom dia Padaria São José! Ainda aguardamos o extrato BB de julho. Prazo: amanhã. Envie pelo portal: led.wr/p7x2</div></div>' +
     '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Incluir botão “Abrir portal” na mensagem</div>' };
+
+/* =========================================================================
+   Extensões 6: planejamento tributário, societário, IRPF, central de
+   relatórios, CRM/precificação, assinatura eletrônica, ponto e IA
+   ========================================================================= */
+
+/* ---------- CRM: detalhe do lead ---------- */
+function crmOpen(el){
+  if(kSuppress) return;
+  var t = el.querySelector('b') ? el.querySelector('b').textContent : 'Lead';
+  var meta = el.querySelector('.meta') ? el.querySelector('.meta').textContent.trim() : '';
+  document.getElementById('g-title').textContent = t;
+  document.getElementById('g-body').innerHTML =
+    (meta ? '<div><span class="tag pri">' + meta + '</span></div>' : '') +
+    '<div class="frow3">' + fldRow('Origem', 'Tráfego pago / indicação') + fldRow('Contato', '(11) 9 8888-0000') + fldRow('Responsável', 'Rafael C.') + '</div>' +
+    '<div class="fld"><label>Interesse</label><div class="inp">Contábil + fiscal + folha · migração de contador</div></div>' +
+    '<div class="fld"><label>Ações</label><div style="display:flex; gap:8px; flex-wrap:wrap">' +
+      '<button class="btn sm pri" onclick="closeG();pdfDemo(\'proposta-honorarios.pdf\',\'Proposta de Honorarios - \' + document.getElementById(\'g-title\').textContent)">Gerar proposta (PDF)</button>' +
+      '<button class="btn sm" onclick="closeG();fOpen(\'precific\')">Calcular honorário</button>' +
+      '<button class="btn sm" onclick="closeG();fOpen(\'clinovo\')">Converter em cliente</button>' +
+      '<button class="btn sm" onclick="closeG();toast(\'Follow-up agendado para amanhã 09:00 — lembrete no WhatsApp do responsável\')">Agendar follow-up</button></div></div>' +
+    '<div class="fld"><label>Histórico</label><div class="tline" style="margin-top:4px">' +
+      '<div class="ti"><b>Proposta enviada por WhatsApp</b><small>14/08 · visualizada 2×</small></div>' +
+      '<div class="ti g"><b>Lead captado</b><small>12/08 · landing page do Growth</small></div></div></div>';
+  document.getElementById('gback').classList.add('open');
+}
+
+/* ---------- Assistente IA ---------- */
+var IA_RESP = [
+  [/lucro|margem|rentab/i, 'A maior margem líquida de julho foi da Clínica Vida (31,2%), seguida da Padaria São José (25,3%). Na carteira, 6 clientes fecharam julho com margem acima de 20%. Quer o ranking completo em PDF?'],
+  [/inadimpl|atras|vencid|dever|deve/i, 'Há R$ 4.310 vencidos: Transportes Alvorada (R$ 1.180, 34 dias) e Mercado Central (R$ 890, 18 dias) são os críticos. Posso disparar a cobrança por WhatsApp com 2ª via + PIX agora — é só pedir.'],
+  [/imposto|das|guia|vencim/i, 'Vencimentos de 20/08: DAS de 26 empresas do Simples (R$ 41,2 mil no total) e FGTS de 18 empresas (R$ 41,3 mil). Duas guias DAS ainda não foram enviadas aos clientes — Padaria São José e Mercado Central.'],
+  [/fatur|receita|vend/i, 'O faturamento de agosto da Padaria São José está em R$ 86.410 (37 notas), +8% vs julho. Na carteira, o total capturado no mês passa de R$ 2,4 mi em 1.243 notas.'],
+  [/tarefa|atras|equipe|prazo/i, 'A equipe está com 87% das tarefas no prazo. Diego Alves tem a fila mais pesada (13 abertas). A mais urgente é a regularização da DCTF de junho da Transportes Alvorada, que vence amanhã.'],
+  [/.*/, 'Resumo de agora: 3 obrigações em atraso, DAS + FGTS vencem em 2 dias (R$ 82,5 mil na carteira), 23 lançamentos aguardando revisão e 2 divergências na conferência FGTS. Pergunte sobre lucro, inadimplência, impostos, faturamento ou tarefas.']
+];
+function iaOpen(){
+  document.getElementById('g-title').textContent = '✨ Assistente IA — pergunte aos seus dados';
+  document.getElementById('g-body').innerHTML =
+    '<div class="duelist" id="iabox">' +
+      '<div class="row"><span class="avx" style="background:var(--pri-soft);color:var(--pri)">IA</span><div><div class="who">Assistente</div><div class="cat">Olá! Eu enxergo os dados das 42 empresas. Pergunte em português — ex.: “quem está inadimplente?”, “qual cliente deu mais lucro?”.</div></div></div></div>' +
+    '<div style="display:flex; gap:6px; flex-wrap:wrap">' +
+      '<button class="tag pri" style="cursor:pointer; border:0" onclick="iaAsk(\'Qual cliente deu mais lucro?\')">Qual cliente deu mais lucro?</button>' +
+      '<button class="tag pri" style="cursor:pointer; border:0" onclick="iaAsk(\'Quem está inadimplente?\')">Quem está inadimplente?</button>' +
+      '<button class="tag pri" style="cursor:pointer; border:0" onclick="iaAsk(\'O que vence esta semana?\')">O que vence esta semana?</button></div>' +
+    '<div style="display:flex; gap:8px"><input class="inp" id="iainp" placeholder="Escreva sua pergunta…" onkeydown="if(event.key===\'Enter\')iaSend()">' +
+      '<button class="btn pri" onclick="iaSend()">Enviar</button></div>';
+  document.getElementById('gback').classList.add('open');
+}
+function iaAsk(q){
+  var box = document.getElementById('iabox');
+  if(!box) return;
+  var u = document.createElement('div');
+  u.className = 'row';
+  u.innerHTML = '<span class="avx" style="background:#E8B03A;color:#3A2B00">RC</span><div><div class="who">Você</div><div class="cat"></div></div>';
+  u.querySelector('.cat').textContent = q;
+  box.appendChild(u);
+  var resp = IA_RESP.find(function(r){ return r[0].test(q); })[1];
+  var a = document.createElement('div');
+  a.className = 'row';
+  a.innerHTML = '<span class="avx" style="background:var(--pri-soft);color:var(--pri)">IA</span><div><div class="who">Assistente</div><div class="cat"></div></div>';
+  a.querySelector('.cat').textContent = resp;
+  box.appendChild(a);
+  a.scrollIntoView({block: 'nearest'});
+}
+function iaSend(){
+  var inp = document.getElementById('iainp');
+  if(!inp || !inp.value.trim()) return;
+  iaAsk(inp.value.trim());
+  inp.value = '';
+}
+
+/* ---------- novos formulários ---------- */
+FF.simtrib = { t: 'Nova simulação tributária', save: 'Simular regimes', ok: 'Simulação gerada — comparativo atualizado na tela',
+  body: '<div class="frow">' + fsel('Cliente', 'st-cli', ['Padaria São José ME', 'Transportes Alvorada', 'Clínica Vida', 'Lead (dados manuais)']) +
+    fsel('Ano-base', 'st-ano', ['Últimos 12 meses', '2025 fechado', 'Projeção 2027']) + '</div>' +
+    '<div class="fld"><label>Considerar na simulação</label>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Fator R (folha ÷ receita) e mudança de anexo</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Créditos de PIS/COFINS no regime não cumulativo</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Benefícios estaduais de ICMS</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk" onclick="ck(this)" aria-label="opção"></button> Cenário da reforma tributária (IBS/CBS — transição)</div></div>' };
+FF.socnovo = { t: 'Novo processo societário', save: 'Criar processo', ok: 'Processo criado com checklist, prazos e acompanhamento de protocolos',
+  body: '<div class="frow">' + fsel('Tipo', 'sc-tipo', ['Abertura de empresa', 'Alteração contratual', 'Transformação (MEI → ME…)', 'Baixa / distrato']) +
+    fsel('Cliente / lead', 'sc-cli', ['Dra. Paula Nutrição (lead)', 'Café Aurora LTDA', 'Barbearia Estilo', 'Novo…']) + '</div>' +
+    '<div class="fld"><label>Órgãos do fluxo</label>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="órgão"></button> Viabilidade + DBE (Redesim)</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="órgão"></button> Junta Comercial</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="órgão"></button> Prefeitura — inscrição municipal e alvará</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk" onclick="ck(this)" aria-label="órgão"></button> Vigilância sanitária / bombeiros</div></div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Gerar minuta do contrato social pelo modelo do escritório</div>' };
+FF.irpfret = { t: 'Retificadora IRPF — Antônio Ferreira', save: 'Transmitir retificadora', ok: 'Retificadora transmitida — saiu da malha, sem multa (antes da intimação)',
+  body: '<div class="alert warn"><div class="ic">−</div><div><b>Pendência de malha</b><small>despesa médica de R$ 4.200 sem informe do prestador (Lab. Diagnósticos Sul)</small></div></div>' +
+    fsel('Correção', 'ir-cor', ['Excluir a despesa sem comprovante', 'Incluir informe recebido agora', 'Ajustar valor para o informe oficial']) +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Recalcular imposto e gerar DARF complementar se houver</div>' };
+FF.relag = { t: 'Agendar envio de relatório', save: 'Agendar', ok: 'Envio agendado — o cliente recebe automaticamente, com registro de leitura',
+  body: '<div class="frow">' + fsel('Relatório', 'ra-rel', ['DRE gerencial', 'Balancete', 'Impostos do mês', 'Folha analítica', 'Honorários & inadimplência', 'Fluxo de caixa']) +
+    fsel('Cliente', 'ra-cli', ['Todos (42)', 'Padaria São José ME', 'Auto Peças Cruzeiro', 'Clínica Vida']) + '</div>' +
+    '<div class="frow">' + fsel('Periodicidade', 'ra-per', ['Mensal · dia 5', 'Mensal · após o fechamento', 'Trimestral', 'Semanal']) +
+    fsel('Canal', 'ra-can', ['Portal + e-mail', 'Portal + WhatsApp', 'Somente portal']) + '</div>',
+  apply: function(){
+    var tbody = document.querySelector('#relagtb tbody');
+    if(!tbody) return;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="main-cell" data-l="Relatório">' + document.getElementById('ra-rel').value + '</td>' +
+      '<td data-l="Cliente">' + document.getElementById('ra-cli').value + '</td>' +
+      '<td data-l="Periodicidade">' + document.getElementById('ra-per').value + '</td>' +
+      '<td data-l="Canal"><span class="tag pri">' + document.getElementById('ra-can').value + '</span></td>' +
+      '<td data-l="Próximo">próximo ciclo</td><td data-l="Status"><span class="pill ok"><i></i>Ativo</span></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  } };
+FF.precific = { t: 'Calculadora de honorários', save: 'Calcular honorário', ok: 'Honorário sugerido: R$ 780–860/mês (tabela do escritório + fatores de complexidade) — proposta pronta para gerar',
+  body: '<div class="frow">' + fsel('Regime', 'pr-reg', ['Simples Nacional', 'Lucro Presumido', 'Lucro Real', 'MEI']) +
+    fsel('Segmento', 'pr-seg', ['Comércio', 'Serviços', 'Indústria', 'Transporte']) + '</div>' +
+    '<div class="frow">' + fld('Funcionários', '6') + fld('Notas por mês', '~350') + '</div>' +
+    '<div class="fld"><label>Serviços incluídos</label>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Contábil + fiscal</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Folha de pagamento</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk" onclick="ck(this)" aria-label="opção"></button> Planejamento tributário anual (+R$ 90/mês)</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk" onclick="ck(this)" aria-label="opção"></button> BPO financeiro (+R$ 350/mês)</div></div>' };
+FF.envelope = { t: 'Novo envelope de assinatura', save: 'Enviar para assinatura', ok: 'Envelope enviado — signatários recebem o link por e-mail e WhatsApp',
+  body: '<div class="drop">Arraste o PDF aqui, ou <b>clique para selecionar</b></div>' +
+    '<div class="frow">' + fld('Signatário 1', 'José da Silva — jose@padariasj.com.br') + fld('Signatário 2', 'Maria da Silva — maria@padariasj.com.br') + '</div>' +
+    '<div class="frow">' + fsel('Tipo de assinatura', 'en-tipo', ['Eletrônica (e-mail + WhatsApp verificados)', 'ICP-Brasil (certificado digital)']) +
+    fsel('Prazo', 'en-prazo', ['7 dias', '15 dias', '30 dias']) + '</div>' +
+    '<div class="ckrow"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Ordem de assinatura (1º sócio, depois 2º)</div>',
+  apply: function(){
+    var tbody = document.querySelector('#envtb tbody');
+    if(!tbody) return;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="main-cell" data-l="Documento">Novo documento.pdf</td><td data-l="Signatários">0 de 2</td>' +
+      '<td data-l="Enviado">agora</td><td data-l="Status"><span class="pill pend"><i></i>Aguardando</span></td>' +
+      '<td class="acts" data-l=""><button class="btn sm" onclick="toast(\'Lembrete reenviado aos signatários\')">Lembrar</button></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  } };
+FF.pontocfg = { t: 'Integração de ponto eletrônico', save: 'Salvar integração', ok: 'Integração ativa — as variáveis de ponto entram na prévia da folha automaticamente',
+  body: '<div class="frow">' + fsel('Fonte', 'pt-fonte', ['REP-C — arquivo AFD (Portaria 671)', 'REP-P — API do app de ponto', 'Planilha de horas']) +
+    fsel('Empresas', 'pt-emp', ['Todas com folha (18)', 'Selecionar…']) + '</div>' +
+    '<div class="fld"><label>Tratamento automático</label>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Horas extras 50% / 100% para a folha</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Banco de horas com compensação</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk on" onclick="ck(this)" aria-label="opção"></button> Faltas e atrasos → DSR</div>' +
+      '<div class="ckrow" style="padding:4px 0"><button class="chk" onclick="ck(this)" aria-label="opção"></button> Adicional noturno automático</div></div>' };
